@@ -77,6 +77,11 @@ export interface GitHubRepo {
   fork: boolean
 }
 
+export interface SleepEntry {
+  date: string
+  minutes: number
+}
+
 export interface TrackedProject {
   name: string
   totalMinutes: number

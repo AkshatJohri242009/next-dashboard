@@ -5,7 +5,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useEffect } from "react"
 import {
-  LayoutDashboard, Activity, Dumbbell, Weight, FolderGit2,
+  LayoutDashboard, Activity, Dumbbell, Weight, FolderGit2, Moon,
   ChevronLeft, ChevronRight, Sparkles, X,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -17,6 +17,7 @@ const navItems = [
   { href: "/health", label: "Health", icon: Activity },
   { href: "/gym", label: "Gym", icon: Dumbbell },
   { href: "/weight", label: "Weight", icon: Weight },
+  { href: "/sleep", label: "Sleep", icon: Moon },
   { href: "/projects", label: "Projects", icon: FolderGit2 },
 ]
 

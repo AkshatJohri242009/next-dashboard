@@ -41,7 +41,7 @@ export function PeakRing() {
   }
 
   return (
-    <div className="glass rounded-2xl p-5 flex items-center gap-6 flex-wrap">
+    <div className="glass rounded-2xl p-5 flex items-start gap-6 flex-wrap">
       <div className="relative w-[140px] h-[140px] sm:w-[168px] sm:h-[168px] shrink-0">
         <svg viewBox="0 0 120 120" className="w-full h-full">
           <circle cx="60" cy="60" r={RING_RADIUS} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="8" />

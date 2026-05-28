@@ -1,7 +1,7 @@
 "use client"
 
 import { create } from "zustand"
-import type { Goal, HealthState, GymState, Reminder, GitHubRepo, TrackedProject } from "./types"
+import type { Goal, HealthState, GymState, Reminder, GitHubRepo, TrackedProject, SleepEntry } from "./types"
 import {
   getActiveDateString, getTomorrowDateString,
   keyFor, todayKey, tomorrowKey,
@@ -50,8 +50,10 @@ interface DashboardState {
   activePage: string
 
   sleepTimerStart: number | null
+  sleepLog: SleepEntry[]
   startSleepTimer: () => void
   stopSleepTimer: () => void
+  loadSleepLog: () => void
   loadGoals: () => void
   addGoal: (text: string, reminderMin?: number) => void
   toggleGoal: (idx: number) => void
@@ -121,6 +123,7 @@ export const useStore = create<DashboardState>((set, get) => ({
   streak: 0,
   sleep: 8,
   sleepTimerStart: null,
+  sleepLog: [],
   sidebarOpen: true,
   commandPaletteOpen: false,
   aiPanelOpen: false,
@@ -271,7 +274,20 @@ export const useStore = create<DashboardState>((set, get) => ({
     const elapsed = started ? Math.round((Date.now() - started) / 60000) : 0
     set({ sleepTimerStart: null })
     localStorage.removeItem("sleep_timer_start")
+    if (elapsed > 0) {
+      const date = new Date().toISOString().slice(0, 10)
+      const log = [...get().sleepLog]
+      const existing = log.findIndex(e => e.date === date)
+      if (existing >= 0) { log[existing] = { date, minutes: elapsed } }
+      else { log.push({ date, minutes: elapsed }) }
+      storeSet("sleep_log", log)
+      set({ sleepLog: log })
+    }
     get().addReminder(`Slept for ${elapsed} min`, "task", 0)
+  },
+  loadSleepLog: () => {
+    const log = storeGet<SleepEntry[]>("sleep_log") || []
+    set({ sleepLog: log })
   },
 
   toggleSidebar: () => set(s => ({ sidebarOpen: !s.sidebarOpen })),
