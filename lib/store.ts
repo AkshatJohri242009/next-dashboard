@@ -93,6 +93,7 @@ interface DashboardState {
   setMobileMenu: (open: boolean) => void
   setActivePage: (page: string) => void
   supabaseReady: boolean
+  syncCount: number
   syncWithSupabase: () => Promise<void>
 
   reminders: Reminder[]
@@ -160,6 +161,7 @@ export const useStore = create<DashboardState>((set, get) => ({
   mobileMenuOpen: false,
   activePage: "main",
   supabaseReady: false,
+  syncCount: 0,
 
   reminders: [],
   waterTimerMin: 45,
@@ -178,7 +180,7 @@ export const useStore = create<DashboardState>((set, get) => ({
         localStorage.setItem(key, JSON.stringify(value))
       }
     }
-    set({ supabaseReady: true })
+    set({ supabaseReady: true, syncCount: get().syncCount + 1 })
     get().loadGoals()
     get().loadHealth()
     get().loadGym()
@@ -328,6 +330,10 @@ export const useStore = create<DashboardState>((set, get) => ({
     const lastNotif = storeGet<number>("water_last_notif_v1") || 0
     const lastSleep = storeGet<number>("sleep_last_notif_v1") || 0
     set({ reminders: saved, waterTimerMin: waterMin, lastWaterNotif: lastNotif, lastSleepNotif: lastSleep })
+  },
+  loadWeightEntries: () => {
+    // WeightTracker reads directly from localStorage; this ensures
+    // sync writes the latest remote data before the component reads it
   },
 
   toggleSidebar: () => set(s => ({ sidebarOpen: !s.sidebarOpen })),

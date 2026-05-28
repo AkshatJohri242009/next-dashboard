@@ -106,7 +106,7 @@ export function TodoList() {
                 type="checkbox"
                 checked={goal.done}
                 onChange={() => toggleGoal(idx)}
-                className="w-4.5 h-4.5 sm:w-4.5 sm:h-4.5 rounded-lg appearance-none border-1.5 border-white/20 bg-black/20 checked:bg-brand-400 checked:border-brand-400 cursor-pointer shrink-0
+                className="w-5 h-5 rounded-lg appearance-none border-2 border-white/20 bg-black/20 checked:bg-brand-400 checked:border-brand-400 cursor-pointer shrink-0
                   checked:shadow-[0_0_12px_rgba(107,227,164,0.4)]
                   checked:after:content-[''] checked:after:block checked:after:w-1.5 checked:after:h-3 checked:after:border-r-2 checked:after:border-b-2 checked:after:border-black checked:after:rotate-45 checked:after:mx-auto checked:after:mt-[-1px]"
               />

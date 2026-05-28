@@ -6,7 +6,7 @@ import { Plus, Trash2, TrendingUp, TrendingDown, Minus } from "lucide-react"
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area, Cell } from "recharts"
 import { toDateString } from "@/lib/utils"
 import { useMediaQuery } from "@/lib/use-media-query"
-import { markModified } from "@/lib/store"
+import { markModified, useStore } from "@/lib/store"
 
 interface WeightEntry {
   date: string
@@ -15,6 +15,7 @@ interface WeightEntry {
 }
 
 export function WeightTracker() {
+  const syncCount = useStore(s => s.syncCount)
   const [entries, setEntries] = useState<WeightEntry[]>([])
   const [weight, setWeight] = useState("")
   const [note, setNote] = useState("")
@@ -25,7 +26,7 @@ export function WeightTracker() {
       const saved = JSON.parse(localStorage.getItem("weight_entries_v1") || "[]")
       if (Array.isArray(saved)) setEntries(saved)
     } catch {}
-  }, [])
+  }, [syncCount])
 
   const save = (next: WeightEntry[]) => {
     setEntries(next)
