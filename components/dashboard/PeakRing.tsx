@@ -94,10 +94,10 @@ export function PeakRing() {
             min={0} max={16} step={0.5}
             value={sleep}
             onChange={e => useStore.getState().setSleep(parseFloat(e.target.value))}
-            className="flex-1 min-w-0 h-1.5 rounded-full appearance-none bg-white/[0.08] accent-brand-400 cursor-pointer
-              [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3.5 [&::-webkit-slider-thumb]:h-3.5
+            className="flex-1 min-w-0 h-2 sm:h-1.5 rounded-full appearance-none bg-white/[0.08] accent-brand-400 cursor-pointer
+              [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6 sm:[&::-webkit-slider-thumb]:w-3.5 sm:[&::-webkit-slider-thumb]:h-3.5
               [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-brand-400
-              [&::-webkit-slider-thumb]:shadow-[0_0_8px_rgba(107,227,164,0.5)]"
+              [&::-webkit-slider-thumb]:shadow-[0_0_12px_rgba(107,227,164,0.6)]"
           />
           <span className="text-[11px] font-mono font-bold text-white/60 tabular-nums shrink-0">{sleep}h</span>
           <span className={`text-[11px] font-mono font-bold tabular-nums shrink-0 ${
@@ -116,7 +116,7 @@ export function PeakRing() {
               </span>
               <button
                 onClick={stopSleepTimer}
-                className="h-7 px-3 rounded-lg bg-brand-500/20 text-brand-300 text-[10px] font-bold border border-brand-500/30 hover:bg-brand-500/30 transition-colors shrink-0"
+                className="h-9 sm:h-7 px-4 sm:px-3 rounded-xl sm:rounded-lg bg-brand-500/20 text-brand-300 text-xs sm:text-[10px] font-bold border border-brand-500/30 hover:bg-brand-500/30 transition-colors shrink-0"
               >
                 Stop Timer
               </button>
@@ -124,9 +124,9 @@ export function PeakRing() {
           ) : (
             <button
               onClick={startSleepTimer}
-              className="flex items-center gap-1.5 h-7 px-3 rounded-lg bg-white/[0.04] text-white/50 text-[10px] font-bold border border-white/[0.06] hover:text-white/70 hover:bg-white/[0.08] transition-colors"
+              className="flex items-center gap-1.5 h-9 sm:h-7 px-4 sm:px-3 rounded-xl sm:rounded-lg bg-white/[0.04] text-white/50 text-xs sm:text-[10px] font-bold border border-white/[0.06] hover:text-white/70 hover:bg-white/[0.08] transition-colors"
             >
-              <Moon className="w-3 h-3" />
+              <Moon className="w-3.5 h-3.5 sm:w-3 sm:h-3" />
               Start Sleep Timer
             </button>
           )}

@@ -95,8 +95,8 @@ export function WorkoutLog() {
                       +2kg
                     </span>
                   )}
-                  <button onClick={() => deleteLog(idx)} className="h-7 w-7 rounded-lg flex items-center justify-center text-white/30 hover:text-red-400 hover:bg-red-400/10 transition-colors">
-                    <Trash2 className="w-3.5 h-3.5" />
+                  <button onClick={() => deleteLog(idx)} className="h-9 w-9 sm:h-7 sm:w-7 rounded-xl sm:rounded-lg flex items-center justify-center text-white/30 hover:text-red-400 hover:bg-red-400/10 transition-colors">
+                    <Trash2 className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
                   </button>
                 </div>
               </motion.div>

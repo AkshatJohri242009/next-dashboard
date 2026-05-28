@@ -5,6 +5,7 @@ import { Sidebar } from "@/components/layout/Sidebar"
 import { TopNav } from "@/components/layout/TopNav"
 import { CommandPalette } from "@/components/layout/CommandPalette"
 import { AIPanel } from "@/components/layout/AIPanel"
+import { SwipeHandler } from "@/components/layout/SwipeHandler"
 import { useStore } from "@/lib/store"
 import { useMediaQuery } from "@/lib/use-media-query"
 import "./globals.css"
@@ -36,6 +37,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Sidebar />
         <CommandPalette />
         <AIPanel />
+        <SwipeHandler />
 
         <div
           style={{

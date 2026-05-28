@@ -132,8 +132,8 @@ export function WeightTracker() {
                 <span className="text-xs text-white/40 ml-3 font-mono">{e.date}</span>
                 {e.note && <span className="text-xs text-white/30 ml-2">· {e.note}</span>}
               </div>
-              <button onClick={() => remove(idx)} className="h-7 w-7 rounded-lg flex items-center justify-center text-white/30 hover:text-red-400 hover:bg-red-400/10 transition-colors">
-                <Trash2 className="w-3.5 h-3.5" />
+              <button onClick={() => remove(idx)} className="h-9 w-9 sm:h-7 sm:w-7 rounded-xl sm:rounded-lg flex items-center justify-center text-white/30 hover:text-red-400 hover:bg-red-400/10 transition-colors">
+                <Trash2 className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
               </button>
             </motion.div>
           )

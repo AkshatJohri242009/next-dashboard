@@ -83,16 +83,16 @@ export function WaterTracker() {
             <button
               key={ml}
               onClick={() => addWater(ml)}
-              className="h-8 px-3 rounded-xl text-xs font-bold text-white/50 bg-white/[0.04] border border-white/[0.06] hover:text-white/80 hover:bg-white/[0.08] transition-colors"
+              className="h-10 sm:h-8 flex-1 sm:flex-none px-4 sm:px-3 rounded-xl text-xs font-bold text-white/50 bg-white/[0.04] border border-white/[0.06] hover:text-white/80 hover:bg-white/[0.08] transition-colors"
             >
               +{ml}ml
             </button>
           ))}
           <button
             onClick={resetWater}
-            className="h-8 px-3 rounded-xl text-xs font-bold text-white/30 bg-white/[0.04] border border-white/[0.06] hover:text-red-400 hover:bg-red-400/10 transition-colors flex items-center gap-1"
+            className="h-10 sm:h-8 flex-1 sm:flex-none px-4 sm:px-3 rounded-xl text-xs font-bold text-white/30 bg-white/[0.04] border border-white/[0.06] hover:text-red-400 hover:bg-red-400/10 transition-colors flex items-center justify-center gap-1"
           >
-            <RotateCcw className="w-3 h-3" />
+            <RotateCcw className="w-3.5 h-3.5 sm:w-3 sm:h-3" />
             Reset
           </button>
         </div>

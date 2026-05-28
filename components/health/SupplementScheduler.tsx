@@ -56,19 +56,19 @@ export function SupplementScheduler() {
               {win.items.map(item => {
                 const key = `${today}:${win.id}:${item}`
                 return (
-                  <div key={item} className="flex items-center gap-2">
+                  <div key={item} className="flex items-center gap-3 py-1">
                     <input
                       type="checkbox"
                       checked={!!health.done[key]}
                       onChange={() => toggleSupp(key)}
-                      className="w-4 h-4 rounded accent-brand-400 cursor-pointer"
+                      className="w-5 h-5 rounded accent-brand-400 cursor-pointer shrink-0"
                     />
                     <span className="flex-1 text-sm text-white/60">{item}</span>
                     <button
                       onClick={() => toggleLow(item)}
                       className={cn(
-                        "px-2 py-0.5 rounded-full text-[10px] font-bold font-mono transition-colors",
-                        health.low[item] ? "bg-amber-400/20 text-amber-400" : "bg-white/[0.05] text-white/30",
+                        "h-8 px-4 rounded-full text-xs font-bold font-mono transition-colors",
+                        health.low[item] ? "bg-amber-400/20 text-amber-400" : "bg-white/[0.05] text-white/30 hover:bg-white/[0.08]",
                       )}
                     >
                       {health.low[item] ? "LOW" : "OK"}
