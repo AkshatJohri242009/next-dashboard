@@ -18,7 +18,7 @@ function storeSet(key: string, value: unknown) {
 }
 
 function autoSync() {
-  setTimeout(() => pushToSupabase(allLocalState()), 0)
+  pushToSupabase(allLocalState())
 }
 
 function allLocalState(): Record<string, unknown> {
@@ -159,22 +159,17 @@ export const useStore = create<DashboardState>((set, get) => ({
   syncWithSupabase: async () => {
     const remote = await pullFromSupabase()
     if (remote === null) {
-      // Supabase not configured (no env vars)
       set({ supabaseReady: false })
       return
     }
-    if (Object.keys(remote).length === 0) {
-      // Empty remote, push local
-      await pushToSupabase(allLocalState())
-    } else {
-      // Merge remote into localStorage
-      for (const [key, value] of Object.entries(remote)) {
-        localStorage.setItem(key, JSON.stringify(value))
-      }
-      // Push any local keys the remote doesn't have
-      const local = allLocalState()
-      const merged = { ...remote, ...local }
-      await pushToSupabase(merged)
+    // Push local state first so latest changes are on server
+    await pushToSupabase(allLocalState())
+    // Pull the merged state (our changes + other devices' changes)
+    const updated = await pullFromSupabase()
+    if (!updated) { set({ supabaseReady: false }); return }
+    // Overwrite localStorage with latest server state
+    for (const [key, value] of Object.entries(updated)) {
+      localStorage.setItem(key, JSON.stringify(value))
     }
     set({ supabaseReady: true })
     get().loadGoals()
@@ -348,19 +343,22 @@ export const useStore = create<DashboardState>((set, get) => ({
         completed: false,
       }],
     }))
-    setTimeout(() => { storeSet("reminders_v1", get().reminders); pushToSupabase(allLocalState()) }, 0)
+    storeSet("reminders_v1", get().reminders)
+    autoSync()
   },
   completeReminder: (id) => {
     set(s => ({
       reminders: s.reminders.map(r => r.id === id ? { ...r, completed: true } : r),
     }))
-    setTimeout(() => { storeSet("reminders_v1", get().reminders); pushToSupabase(allLocalState()) }, 0)
+    storeSet("reminders_v1", get().reminders)
+    autoSync()
   },
   deleteReminder: (id) => {
     set(s => ({
       reminders: s.reminders.filter(r => r.id !== id),
     }))
-    setTimeout(() => { storeSet("reminders_v1", get().reminders); pushToSupabase(allLocalState()) }, 0)
+    storeSet("reminders_v1", get().reminders)
+    autoSync()
   },
   setWaterTimerMin: (m) => {
     set({ waterTimerMin: m, lastWaterNotif: Date.now() })
