@@ -31,6 +31,10 @@ function autoSync() {
   pushToSupabase(allLocalState())
 }
 
+async function waitSync() {
+  try { await pushToSupabase(allLocalState()) } catch {}
+}
+
 function allLocalState(): Record<string, unknown> {
   const state: Record<string, unknown> = {}
   for (let i = 0; i < localStorage.length; i++) {
@@ -296,14 +300,14 @@ export const useStore = create<DashboardState>((set, get) => ({
     autoSync()
   },
 
-  startSleepTimer: () => {
+  startSleepTimer: async () => {
     const now = Date.now()
     set({ sleepTimerStart: now, lastSleepNotif: now })
     storeSet("sleep_timer_start", now)
     storeSet("sleep_last_notif_v1", now)
-    autoSync()
+    await waitSync()
   },
-  stopSleepTimer: () => {
+  stopSleepTimer: async () => {
     const started = get().sleepTimerStart
     const elapsed = started ? Math.round((Date.now() - started) / 60000) : 0
     set({ sleepTimerStart: null })
@@ -318,7 +322,7 @@ export const useStore = create<DashboardState>((set, get) => ({
       set({ sleepLog: log })
     }
     get().addReminder(`Slept for ${elapsed} min`, "task", 0)
-    autoSync()
+    await waitSync()
   },
   loadSleepLog: () => {
     const log = storeGet<SleepEntry[]>("sleep_log") || []
