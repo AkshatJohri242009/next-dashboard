@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import { Plus, Trash2, TrendingUp, TrendingDown, Minus } from "lucide-react"
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area, Cell } from "recharts"
+import { Plus, Trash2, TrendingUp, TrendingDown, Minus, Flame } from "lucide-react"
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, ComposedChart, Area, Line, Cell } from "recharts"
 import { toDateString } from "@/lib/utils"
 import { useMediaQuery } from "@/lib/use-media-query"
 import { markModified, useStore } from "@/lib/store"
@@ -51,7 +51,23 @@ export function WeightTracker() {
   const prev = entries.length > 1 ? entries[entries.length - 2].weight : null
   const change = latest !== null && prev !== null ? (latest - prev).toFixed(1) : null
 
-  const chartData = entries.map((e, i) => ({ set: i + 1, weight: e.weight, date: e.date }))
+  const chartData = entries.map((e, i, arr) => {
+    const window = arr.slice(Math.max(0, i - 6), i + 1)
+    const avg = window.reduce((s, x) => s + x.weight, 0) / window.length
+    return { set: i + 1, weight: e.weight, date: e.date, movingAvg: Math.round(avg * 10) / 10 }
+  })
+
+  let streak = 0
+  if (entries.length > 0) {
+    const today = new Date()
+    for (let i = 0; i < 365; i++) {
+      const d = new Date(today)
+      d.setDate(d.getDate() - i)
+      const key = toDateString(d)
+      if (entries.some(e => e.date === key)) streak++
+      else break
+    }
+  }
 
   const last7 = entries.slice(-7)
   const weekAvg = last7.length > 0 ? last7.reduce((s, e) => s + e.weight, 0) / last7.length : 0
@@ -60,10 +76,10 @@ export function WeightTracker() {
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div>
           <div className="flex items-baseline gap-1">
-            <span className="text-[42px] font-bold leading-none tracking-tight tabular-nums">{latest || "--"}</span>
+            <span className="text-[36px] sm:text-[42px] font-bold leading-none tracking-tight tabular-nums">{latest || "--"}</span>
             <span className="text-lg text-white/30">kg</span>
             {change !== null && (
               <span className={`flex items-center gap-1 text-sm font-bold ml-2 ${Number(change) > 0 ? "text-red-400" : Number(change) < 0 ? "text-brand-400" : "text-white/30"}`}>
@@ -72,7 +88,15 @@ export function WeightTracker() {
               </span>
             )}
           </div>
-          <span className="text-xs text-white/40">{entries.length} entries logged</span>
+          <span className="text-xs text-white/40">{entries.length} entries</span>
+        </div>
+        <div>
+          <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase">Streak</span>
+          <div className="mt-1 flex items-baseline gap-1">
+            <Flame className="w-4 h-4 text-brand-400 inline" />
+            <span className="text-[28px] sm:text-[32px] font-bold tabular-nums">{streak}</span>
+            <span className="text-xs text-white/40">days</span>
+          </div>
         </div>
         {entries.length >= 7 && (
           <>
@@ -127,7 +151,7 @@ export function WeightTracker() {
           <div className="glass-strong rounded-xl p-4">
             <div className="text-[11px] font-mono font-bold text-white/30 mb-3 uppercase">Weight Trend</div>
             <ResponsiveContainer width="100%" height={isMobile ? 180 : 200}>
-              <AreaChart data={chartData}>
+              <ComposedChart data={chartData}>
                 <defs>
                   <linearGradient id="weightGrad" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="#6be3a4" stopOpacity={0.3} />
@@ -138,10 +162,15 @@ export function WeightTracker() {
                 <YAxis domain={["dataMin - 2", "dataMax + 2"]} tick={{ fill: "rgba(255,255,255,0.3)", fontSize: 10 }} axisLine={false} tickLine={false} />
                 <Tooltip
                   contentStyle={{ background: "rgba(8,8,9,0.9)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", fontSize: "12px", color: "#fff" }}
-                  formatter={(value: number) => [`${value}kg`, "Weight"]}
+                  formatter={(value: number, name: string) => {
+                    if (name === "weight") return [`${value}kg`, "Weight"]
+                    if (name === "movingAvg") return [`${value}kg`, "7-day Avg"]
+                    return [value, name]
+                  }}
                 />
                 <Area type="monotone" dataKey="weight" stroke="#6be3a4" strokeWidth={2} fill="url(#weightGrad)" dot={{ fill: "#6be3a4", r: 3 }} />
-              </AreaChart>
+                <Line type="monotone" dataKey="movingAvg" stroke="#fcc419" strokeWidth={2} dot={false} strokeDasharray="4 3" />
+              </ComposedChart>
             </ResponsiveContainer>
           </div>
 

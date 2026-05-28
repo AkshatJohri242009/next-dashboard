@@ -5,6 +5,7 @@ import { motion } from "framer-motion"
 import { WorkoutLog } from "@/components/gym/WorkoutLog"
 import { StrengthChart } from "@/components/gym/StrengthChart"
 import { ProgressPhotos } from "@/components/gym/ProgressPhotos"
+import { GymCalendar } from "@/components/gym/GymCalendar"
 import { GlassPanel } from "@/components/ui/GlassPanel"
 import { useStore } from "@/lib/store"
 
@@ -39,6 +40,16 @@ export default function GymPage() {
             <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase">Workout Log</span>
           </div>
           <WorkoutLog />
+        </GlassPanel>
+      </motion.div>
+
+      <motion.div variants={item}>
+        <GlassPanel variant="strong" glow="green">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-1 h-4 rounded-full bg-brand-400" />
+            <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase">Consistency Calendar</span>
+          </div>
+          <GymCalendar />
         </GlassPanel>
       </motion.div>
 

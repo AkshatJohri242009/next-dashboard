@@ -1,11 +1,11 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts"
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, Line, ComposedChart } from "recharts"
 import { useStore } from "@/lib/store"
-import { Moon, Clock, Brain } from "lucide-react"
+import { Moon, Clock, Brain, TrendingUp } from "lucide-react"
 import { useMediaQuery } from "@/lib/use-media-query"
-import { toDateString } from "@/lib/utils"
+
 
 function timeFmt(min: number): string {
   const h = Math.floor(min / 60)
@@ -18,13 +18,20 @@ export function SleepTracker() {
   const isMobile = useMediaQuery("(max-width: 1023px)")
 
   const sorted = [...sleepLog].sort((a, b) => a.date.localeCompare(b.date))
-  const chartData = sorted.map(e => ({
-    date: e.date.slice(5),
-    hours: Math.round((e.minutes / 60) * 10) / 10,
-    minutes: e.minutes,
-  }))
+  const chartData = sorted.map((e, i, arr) => {
+    const window = arr.slice(Math.max(0, i - 6), i + 1)
+    const avg = window.reduce((s, x) => s + x.minutes, 0) / window.length
+    return {
+      date: e.date.slice(5),
+      hours: Math.round((e.minutes / 60) * 10) / 10,
+      minutes: e.minutes,
+      movingAvg: Math.round((avg / 60) * 10) / 10,
+    }
+  })
 
   const last7 = sorted.slice(-7)
+  const goodDays = last7.filter(e => e.minutes >= 420 && e.minutes <= 540).length
+  const consistency = last7.length > 0 ? Math.round((goodDays / last7.length) * 100) : 0
   const avg = last7.length > 0 ? Math.round(last7.reduce((s, e) => s + e.minutes, 0) / last7.length) : 0
   const latest = sorted.length > 0 ? sorted[sorted.length - 1] : null
 
@@ -33,7 +40,7 @@ export function SleepTracker() {
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div className="glass-strong rounded-xl p-4">
           <div className="flex items-center gap-2 mb-2">
             <Moon className="w-3.5 h-3.5 text-accent-400" />
@@ -41,7 +48,7 @@ export function SleepTracker() {
           </div>
           {latest ? (
             <div>
-              <span className="text-[32px] font-bold tabular-nums">{timeFmt(latest.minutes)}</span>
+              <span className="text-[28px] sm:text-[32px] font-bold tabular-nums">{timeFmt(latest.minutes)}</span>
               <span className="text-xs text-white/40 ml-2 font-mono">{latest.date}</span>
             </div>
           ) : (
@@ -56,8 +63,25 @@ export function SleepTracker() {
           </div>
           {last7.length > 0 ? (
             <div>
-              <span className="text-[32px] font-bold tabular-nums">{timeFmt(avg)}</span>
+              <span className="text-[28px] sm:text-[32px] font-bold tabular-nums">{timeFmt(avg)}</span>
               <span className={`text-xs font-bold ml-2 ${statusColor}`}>{statusText}</span>
+            </div>
+          ) : (
+            <span className="text-sm text-white/30 italic">Need more data</span>
+          )}
+        </div>
+
+        <div className="glass-strong rounded-xl p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <TrendingUp className="w-3.5 h-3.5 text-brand-400" />
+            <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase">Consistency</span>
+          </div>
+          {last7.length > 0 ? (
+            <div>
+              <span className="text-[28px] sm:text-[32px] font-bold tabular-nums">{consistency}%</span>
+              <span className={`text-xs font-bold ml-2 ${consistency >= 70 ? "text-brand-400" : consistency >= 40 ? "text-amber-400" : "text-red-400"}`}>
+                {goodDays}/{last7.length} good days
+              </span>
             </div>
           ) : (
             <span className="text-sm text-white/30 italic">Need more data</span>
@@ -74,10 +98,10 @@ export function SleepTracker() {
             className="text-sm text-white/60 hover:text-brand-400 transition-colors text-left"
           >
             {avg < 420
-              ? `You're averaging ${timeFmt(avg)} — below the 7-9h range. Ask AI for sleep tips.`
+              ? `Averaging ${timeFmt(avg)} — below the 7-9h range.`
               : avg > 540
-              ? `Averaging ${timeFmt(avg)} — oversleeping can affect energy. Ask AI about it.`
-              : `Good sleep avg of ${timeFmt(avg)}. Ask AI to optimize further.`}
+              ? `Averaging ${timeFmt(avg)} — oversleeping.`
+              : `${timeFmt(avg)} avg — good range.`}
           </button>
         </div>
       </div>
@@ -86,12 +110,22 @@ export function SleepTracker() {
         <div className="glass-strong rounded-xl p-4">
           <span className="text-[11px] font-mono font-bold text-white/30 mb-3 block uppercase">Sleep History</span>
           <ResponsiveContainer width="100%" height={isMobile ? 180 : 250}>
-            <BarChart data={chartData} margin={{ top: 4, right: 4, left: -16, bottom: 4 }}>
+            <ComposedChart data={chartData} margin={{ top: 4, right: 4, left: -16, bottom: 4 }}>
+              <defs>
+                <linearGradient id="sleepAvgLine" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stopColor="#6be3a4" stopOpacity={0.8} />
+                  <stop offset="100%" stopColor="#6be3a4" stopOpacity={0.4} />
+                </linearGradient>
+              </defs>
               <XAxis dataKey="date" tick={{ fill: "rgba(255,255,255,0.3)", fontSize: 10 }} axisLine={false} tickLine={false} />
               <YAxis domain={[0, 12]} tick={{ fill: "rgba(255,255,255,0.3)", fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={v => `${v}h`} />
               <Tooltip
                 contentStyle={{ background: "rgba(8,8,9,0.9)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", fontSize: "12px", color: "#fff" }}
-                formatter={(value: number) => [`${value}h`, "Sleep"]}
+                formatter={(value: number, name: string) => {
+                  if (name === "hours") return [`${value}h`, "Sleep"]
+                  if (name === "movingAvg") return [`${value}h`, "7-day Avg"]
+                  return [value, name]
+                }}
               />
               <Bar dataKey="hours" radius={[4, 4, 0, 0]} maxBarSize={32}>
                 {chartData.map((entry, i) => (
@@ -101,7 +135,8 @@ export function SleepTracker() {
                   />
                 ))}
               </Bar>
-            </BarChart>
+              <Line type="monotone" dataKey="movingAvg" stroke="url(#sleepAvgLine)" strokeWidth={2} dot={false} strokeDasharray="4 3" />
+            </ComposedChart>
           </ResponsiveContainer>
         </div>
       )}
