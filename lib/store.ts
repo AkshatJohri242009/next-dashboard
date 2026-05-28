@@ -35,6 +35,7 @@ function allLocalState(): Record<string, unknown> {
         "goal_streak_v1", "health_dashboard_v1", "gym_dashboard_v1",
         "last_sleep_hours", "weight_entries_v1", "reminders_v1",
         "water_timer_min_v1", "water_last_notif_v1",
+        "sleep_last_notif_v1",
       ].includes(key)
     )) {
       try { state[key] = JSON.parse(localStorage.getItem(key)!) }
@@ -95,6 +96,7 @@ interface DashboardState {
   lastSleepNotif: number
   setWaterTimerMin: (m: number) => void
   markWaterNotif: () => void
+  markSleepNotif: () => void
 
   health: HealthState
   loadHealth: () => void
@@ -249,6 +251,7 @@ export const useStore = create<DashboardState>((set, get) => ({
       goals[idx].queued = !goals[idx].queued
       storeSet(key, goals)
       set({ goals: [...goals] })
+      autoSync()
     }
   },
 
@@ -293,6 +296,7 @@ export const useStore = create<DashboardState>((set, get) => ({
     const now = Date.now()
     set({ sleepTimerStart: now, lastSleepNotif: now })
     localStorage.setItem("sleep_timer_start", JSON.stringify(now))
+    storeSet("sleep_last_notif_v1", now)
     autoSync()
   },
   stopSleepTimer: () => {
@@ -333,6 +337,7 @@ export const useStore = create<DashboardState>((set, get) => ({
 
   saveReminders: () => {
     storeSet("reminders_v1", get().reminders)
+    autoSync()
   },
   addReminder: (text, type, minutes, goalIdx) => {
     set(s => ({
@@ -366,6 +371,12 @@ export const useStore = create<DashboardState>((set, get) => ({
   markWaterNotif: () => {
     set({ lastWaterNotif: Date.now() })
     storeSet("water_last_notif_v1", Date.now())
+    autoSync()
+  },
+  markSleepNotif: () => {
+    set({ lastSleepNotif: Date.now() })
+    storeSet("sleep_last_notif_v1", Date.now())
+    autoSync()
   },
 
   health: { ...defaultHealth },

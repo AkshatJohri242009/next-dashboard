@@ -2,7 +2,7 @@
 
 import { Bell, X, Droplets, Moon, Square } from "lucide-react"
 import { useStore } from "@/lib/store"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef } from "react"
 
 const WATER_INTERVAL = 45 * 60 * 1000
 const SLEEP_INTERVAL = 45 * 60 * 1000
@@ -12,18 +12,14 @@ export function NotificationPanel() {
     notificationPanelOpen, setNotificationPanel,
     sleepTimerStart, stopSleepTimer,
     waterTimerMin, lastWaterNotif, markWaterNotif,
+    lastSleepNotif, markSleepNotif,
   } = useStore()
   const panelRef = useRef<HTMLDivElement>(null)
-  const sleepNotifRef = useRef(0)
 
   useEffect(() => {
     if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "default") {
       Notification.requestPermission()
     }
-    try {
-      const saved = localStorage.getItem("sleep_last_notif")
-      if (saved) sleepNotifRef.current = Number(saved)
-    } catch {}
   }, [])
 
   useEffect(() => {
@@ -46,20 +42,19 @@ export function NotificationPanel() {
           new Notification("Hydration time", { body: "Time to drink water." })
         }
       }
-      if (sleepTimerStart && (now - sleepNotifRef.current) >= SLEEP_INTERVAL) {
-        sleepNotifRef.current = now
-        localStorage.setItem("sleep_last_notif", String(now))
+      if (sleepTimerStart && (now - lastSleepNotif) >= SLEEP_INTERVAL) {
+        markSleepNotif()
         if ("Notification" in window && Notification.permission === "granted") {
           new Notification("Sleep timer", { body: "Still sleeping? Turn off the sleep timer." })
         }
       }
     }, 15000)
     return () => clearInterval(interval)
-  }, [waterTimerMin, lastWaterNotif, markWaterNotif, sleepTimerStart])
+  }, [waterTimerMin, lastWaterNotif, markWaterNotif, sleepTimerStart, lastSleepNotif, markSleepNotif])
 
   const now = Date.now()
   const waterDue = waterTimerMin > 0 && (now - lastWaterNotif) >= waterTimerMin * 60 * 1000
-  const sleepDue = sleepTimerStart && (now - sleepNotifRef.current) >= SLEEP_INTERVAL
+  const sleepDue = sleepTimerStart && (now - lastSleepNotif) >= SLEEP_INTERVAL
   const badgeCount = Math.min((waterDue ? 1 : 0) + (sleepDue ? 1 : 0), 99)
 
   const dismiss = () => setNotificationPanel(false)
