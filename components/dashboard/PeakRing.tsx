@@ -94,10 +94,11 @@ export function PeakRing() {
             min={0} max={16} step={0.5}
             value={sleep}
             onChange={e => useStore.getState().setSleep(parseFloat(e.target.value))}
-            className="flex-1 min-w-0 h-2 sm:h-1.5 rounded-full appearance-none bg-white/[0.08] accent-brand-400 cursor-pointer
-              [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6 sm:[&::-webkit-slider-thumb]:w-3.5 sm:[&::-webkit-slider-thumb]:h-3.5
+            className="flex-1 min-w-0 h-5 sm:h-1.5 rounded-full appearance-none bg-white/[0.08] accent-brand-400 cursor-pointer
+              [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-7 [&::-webkit-slider-thumb]:h-7 sm:[&::-webkit-slider-thumb]:w-3.5 sm:[&::-webkit-slider-thumb]:h-3.5
               [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-brand-400
-              [&::-webkit-slider-thumb]:shadow-[0_0_12px_rgba(107,227,164,0.6)]"
+              [&::-webkit-slider-thumb]:shadow-[0_0_16px_rgba(107,227,164,0.7)]
+              [&::-webkit-slider-track]:h-full [&::-webkit-slider-track]:rounded-full"
           />
           <span className="text-[11px] font-mono font-bold text-white/60 tabular-nums shrink-0">{sleep}h</span>
           <span className={`text-[11px] font-mono font-bold tabular-nums shrink-0 ${

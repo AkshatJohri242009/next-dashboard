@@ -164,9 +164,12 @@ export function TodoList() {
                       onChange={e => {
                         const m = Number(e.target.value)
                         if (m > 0) {
-                          const updated = [...goals]
-                          updated[idx] = { ...updated[idx], reminderMin: m }
-                          localStorage.setItem("goals:" + new Date().toISOString().slice(0, 10), JSON.stringify(updated))
+                          const key = new Date().toISOString().slice(0, 10)
+                          const updated = JSON.parse(localStorage.getItem("goals:" + key) || "[]")
+                          if (updated[idx]) {
+                            updated[idx] = { ...updated[idx], reminderMin: m }
+                            localStorage.setItem("goals:" + key, JSON.stringify(updated))
+                          }
                         }
                       }}
                       className="w-14 h-7 px-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06] text-[10px] text-white outline-none text-center"

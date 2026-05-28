@@ -17,14 +17,26 @@ function storeSet(key: string, value: unknown) {
   localStorage.setItem(key, JSON.stringify(value))
 }
 
+function autoSync() {
+  setTimeout(() => pushToSupabase(allLocalState()), 0)
+}
+
 function allLocalState(): Record<string, unknown> {
   const state: Record<string, unknown> = {}
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i)
-    if (key && (key.startsWith("goals:") || [
-      "goal_streak_v1", "health_dashboard_v1", "gym_dashboard_v1",
-      "last_sleep_hours", "weight_entries_v1",
-    ].includes(key))) {
+    if (key && (
+      key.startsWith("goals:") ||
+      key.startsWith("sleep_") ||
+      key.startsWith("water_") ||
+      key.startsWith("tracked_") ||
+      key.startsWith("featured_") ||
+      [
+        "goal_streak_v1", "health_dashboard_v1", "gym_dashboard_v1",
+        "last_sleep_hours", "weight_entries_v1", "reminders_v1",
+        "water_timer_min_v1", "water_last_notif_v1",
+      ].includes(key)
+    )) {
       try { state[key] = JSON.parse(localStorage.getItem(key)!) }
       catch { state[key] = localStorage.getItem(key) }
     }
@@ -73,6 +85,8 @@ interface DashboardState {
   syncWithSupabase: () => Promise<void>
 
   reminders: Reminder[]
+  saveReminders: () => void
+  loadReminders: () => void
   addReminder: (text: string, type: Reminder["type"], minutes: number, goalIdx?: number) => void
   completeReminder: (id: string) => void
   deleteReminder: (id: string) => void
@@ -160,6 +174,8 @@ export const useStore = create<DashboardState>((set, get) => ({
     get().loadGoals()
     get().loadHealth()
     get().loadGym()
+    get().loadSleepLog()
+    get().loadReminders()
   },
 
   loadGoals: () => {
@@ -186,6 +202,7 @@ export const useStore = create<DashboardState>((set, get) => ({
     if (reminderMin && reminderMin > 0) {
       get().addReminder(text, "task", reminderMin, goals.length - 1)
     }
+    autoSync()
   },
 
   toggleGoal: (idx) => {
@@ -196,6 +213,7 @@ export const useStore = create<DashboardState>((set, get) => ({
       goals[idx].doneAt = goals[idx].done ? Date.now() : undefined
       storeSet(key, goals)
       set({ goals: [...goals] })
+      autoSync()
     }
   },
 
@@ -205,6 +223,7 @@ export const useStore = create<DashboardState>((set, get) => ({
     goals.splice(idx, 1)
     storeSet(key, goals)
     set({ goals: [...goals] })
+    autoSync()
   },
 
   editGoal: (idx, text) => {
@@ -214,6 +233,7 @@ export const useStore = create<DashboardState>((set, get) => ({
       goals[idx].text = text
       storeSet(key, goals)
       set({ goals: [...goals] })
+      autoSync()
     }
   },
 
@@ -231,6 +251,7 @@ export const useStore = create<DashboardState>((set, get) => ({
     const key = todayKey()
     storeSet(key, newOrder)
     set({ goals: newOrder })
+    autoSync()
   },
 
   pushToTomorrow: () => {
@@ -254,11 +275,13 @@ export const useStore = create<DashboardState>((set, get) => ({
       goals: getGoals(todayKey()),
       tomorrowGoals: getGoals(tomorrowKey()),
     })
+    autoSync()
   },
 
   setSleep: (hours) => {
     set({ sleep: hours })
     localStorage.setItem("last_sleep_hours", JSON.stringify(hours))
+    autoSync()
   },
 
   startSleepTimer: () => {
@@ -268,6 +291,7 @@ export const useStore = create<DashboardState>((set, get) => ({
     get().addReminder("Turn off sleep timer?", "task", 30)
     get().addReminder("Still sleeping? Turn off sleep timer", "task", 60)
     get().addReminder("Sleep timer running for 90min — turn it off?", "task", 90)
+    autoSync()
   },
   stopSleepTimer: () => {
     const started = get().sleepTimerStart
@@ -284,10 +308,17 @@ export const useStore = create<DashboardState>((set, get) => ({
       set({ sleepLog: log })
     }
     get().addReminder(`Slept for ${elapsed} min`, "task", 0)
+    autoSync()
   },
   loadSleepLog: () => {
     const log = storeGet<SleepEntry[]>("sleep_log") || []
     set({ sleepLog: log })
+  },
+  loadReminders: () => {
+    const saved = storeGet<Reminder[]>("reminders_v1") || []
+    const waterMin = storeGet<number>("water_timer_min_v1") || 30
+    const lastNotif = storeGet<number>("water_last_notif_v1") || 0
+    set({ reminders: saved, waterTimerMin: waterMin, lastWaterNotif: lastNotif })
   },
 
   toggleSidebar: () => set(s => ({ sidebarOpen: !s.sidebarOpen })),
@@ -297,22 +328,42 @@ export const useStore = create<DashboardState>((set, get) => ({
   setMobileMenu: (open) => set({ mobileMenuOpen: open }),
   setActivePage: (page) => set({ activePage: page }),
 
-  addReminder: (text, type, minutes, goalIdx) => set(s => ({
-    reminders: [...s.reminders, {
-      id: `rem_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
-      text, type, goalIdx,
-      dueAt: Date.now() + minutes * 60000,
-      completed: false,
-    }],
-  })),
-  completeReminder: (id) => set(s => ({
-    reminders: s.reminders.map(r => r.id === id ? { ...r, completed: true } : r),
-  })),
-  deleteReminder: (id) => set(s => ({
-    reminders: s.reminders.filter(r => r.id !== id),
-  })),
-  setWaterTimerMin: (m) => set({ waterTimerMin: m, lastWaterNotif: Date.now() }),
-  markWaterNotif: () => set({ lastWaterNotif: Date.now() }),
+  saveReminders: () => {
+    storeSet("reminders_v1", get().reminders)
+  },
+  addReminder: (text, type, minutes, goalIdx) => {
+    set(s => ({
+      reminders: [...s.reminders, {
+        id: `rem_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+        text, type, goalIdx,
+        dueAt: Date.now() + minutes * 60000,
+        completed: false,
+      }],
+    }))
+    setTimeout(() => { storeSet("reminders_v1", get().reminders); pushToSupabase(allLocalState()) }, 0)
+  },
+  completeReminder: (id) => {
+    set(s => ({
+      reminders: s.reminders.map(r => r.id === id ? { ...r, completed: true } : r),
+    }))
+    setTimeout(() => { storeSet("reminders_v1", get().reminders); pushToSupabase(allLocalState()) }, 0)
+  },
+  deleteReminder: (id) => {
+    set(s => ({
+      reminders: s.reminders.filter(r => r.id !== id),
+    }))
+    setTimeout(() => { storeSet("reminders_v1", get().reminders); pushToSupabase(allLocalState()) }, 0)
+  },
+  setWaterTimerMin: (m) => {
+    set({ waterTimerMin: m, lastWaterNotif: Date.now() })
+    storeSet("water_timer_min_v1", m)
+    storeSet("water_last_notif_v1", Date.now())
+    pushToSupabase(allLocalState())
+  },
+  markWaterNotif: () => {
+    set({ lastWaterNotif: Date.now() })
+    storeSet("water_last_notif_v1", Date.now())
+  },
 
   health: { ...defaultHealth },
   loadHealth: () => {
@@ -323,28 +374,33 @@ export const useStore = create<DashboardState>((set, get) => ({
     const health = { ...get().health, ...partial }
     storeSet("health_dashboard_v1", health)
     set({ health })
+    autoSync()
   },
   toggleSupp: (key) => {
     const health = { ...get().health, done: { ...get().health.done } }
     health.done[key] = !health.done[key]
     storeSet("health_dashboard_v1", health)
     set({ health })
+    autoSync()
   },
   toggleLow: (item) => {
     const health = { ...get().health, low: { ...get().health.low } }
     health.low[item] = !health.low[item]
     storeSet("health_dashboard_v1", health)
     set({ health })
+    autoSync()
   },
   addWater: (ml) => {
     const health = { ...get().health, waterMl: (get().health.waterMl || 0) + ml }
     storeSet("health_dashboard_v1", health)
     set({ health })
+    autoSync()
   },
   resetWater: () => {
     const health = { ...get().health, waterMl: 0 }
     storeSet("health_dashboard_v1", health)
     set({ health })
+    autoSync()
   },
 
   gym: { ...defaultGym },
@@ -356,21 +412,25 @@ export const useStore = create<DashboardState>((set, get) => ({
     const gym = { ...get().gym, split }
     storeSet("gym_dashboard_v1", gym)
     set({ gym })
+    autoSync()
   },
   addLog: (log) => {
     const gym = { ...get().gym, logs: [...get().gym.logs, log] }
     storeSet("gym_dashboard_v1", gym)
     set({ gym })
+    autoSync()
   },
   deleteLog: (idx) => {
     const gym = { ...get().gym, logs: get().gym.logs.filter((_, i) => i !== idx) }
     storeSet("gym_dashboard_v1", gym)
     set({ gym })
+    autoSync()
   },
   setPhoto: (id, data) => {
     const gym = { ...get().gym, photos: { ...get().gym.photos, [id]: data } }
     storeSet("gym_dashboard_v1", gym)
     set({ gym })
+    autoSync()
   },
 
   repos: [],
@@ -383,6 +443,7 @@ export const useStore = create<DashboardState>((set, get) => ({
     const next = featured.includes(name) ? featured.filter(n => n !== name) : [...featured, name]
     storeSet("featured_repos", next)
     set({ featuredRepos: next })
+    autoSync()
   },
   setCurrentProject: (name) => {
     const current = get().currentProject
