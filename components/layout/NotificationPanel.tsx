@@ -1,17 +1,17 @@
 "use client"
 
-import { Bell, X, Droplets, Target, Clock, Timer, Dumbbell, ArrowRight, CheckCircle } from "lucide-react"
+import { Bell, X, Droplets, Target, Dumbbell, ArrowRight } from "lucide-react"
 import { useStore } from "@/lib/store"
 import { useMediaQuery } from "@/lib/use-media-query"
 import { waterGoalMl } from "@/lib/utils"
-import { useEffect, useRef, useState, useCallback } from "react"
+import { useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 
 export function NotificationPanel() {
   const {
     notificationPanelOpen, setNotificationPanel,
     goals, health, toggleGoal,
-    reminders, setWaterTimerMin,
+    reminders,
     waterTimerMin, lastWaterNotif, markWaterNotif,
   } = useStore()
   const isMobile = useMediaQuery("(max-width: 1023px)")
@@ -146,14 +146,14 @@ export function NotificationPanel() {
           {isMobile && (
             <div className="fixed inset-0 z-50 flex justify-end">
               <div className="fixed inset-0 bg-black/60" onClick={() => setNotificationPanel(false)} />
-              <div className="relative z-10 w-3/4 max-w-sm h-full bg-[#0a0a0d] border-l border-white/[0.08] shadow-2xl overflow-y-auto">
-                <div className="flex items-center justify-between h-12 px-4 border-b border-white/[0.08]">
+              <div className="relative z-10 w-3/4 max-w-sm h-full bg-[#0a0a0d] border-l border-white/[0.08] shadow-2xl flex flex-col">
+                <div className="flex items-center justify-between h-12 px-4 border-b border-white/[0.08] shrink-0">
                   <span className="text-sm font-bold text-white">Notifications</span>
                   <button onClick={() => setNotificationPanel(false)} className="h-8 w-8 rounded-lg flex items-center justify-center text-white/30 hover:text-white/60 transition-colors">
                     <X className="w-4 h-4" />
                   </button>
                 </div>
-                <div className="p-3 space-y-2">
+                <div className="flex-1 overflow-y-auto p-3 space-y-2">
                   {items.length === 0 && (
                     <div className="py-8 text-center text-sm text-white/30 italic">No notifications yet.</div>
                   )}
