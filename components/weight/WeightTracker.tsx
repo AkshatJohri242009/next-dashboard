@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import { Plus, Trash2, TrendingUp, TrendingDown } from "lucide-react"
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area } from "recharts"
+import { Plus, Trash2, TrendingUp, TrendingDown, Minus } from "lucide-react"
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area, Cell } from "recharts"
 import { toDateString } from "@/lib/utils"
+import { useMediaQuery } from "@/lib/use-media-query"
 
 interface WeightEntry {
   date: string
@@ -16,6 +17,7 @@ export function WeightTracker() {
   const [entries, setEntries] = useState<WeightEntry[]>([])
   const [weight, setWeight] = useState("")
   const [note, setNote] = useState("")
+  const isMobile = useMediaQuery("(max-width: 1023px)")
 
   useEffect(() => {
     try {
@@ -48,23 +50,46 @@ export function WeightTracker() {
 
   const chartData = entries.map((e, i) => ({ set: i + 1, weight: e.weight, date: e.date }))
 
+  const last7 = entries.slice(-7)
+  const weekAvg = last7.length > 0 ? last7.reduce((s, e) => s + e.weight, 0) / last7.length : 0
+  const first7 = last7.length > 0 ? last7[0].weight : 0
+  const weekDelta = weekAvg > 0 ? (latest || 0) - first7 : 0
+
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-6 flex-wrap">
-        {latest !== null && (
-          <div>
-            <div className="flex items-baseline gap-1">
-              <span className="text-[42px] font-bold leading-none tracking-tight tabular-nums">{latest}</span>
-              <span className="text-lg text-white/30">kg</span>
-              {change !== null && (
-                <span className={`flex items-center gap-1 text-sm font-bold ml-2 ${Number(change) > 0 ? "text-red-400" : Number(change) < 0 ? "text-brand-400" : "text-white/30"}`}>
-                  {Number(change) > 0 ? <TrendingUp className="w-3.5 h-3.5" /> : <TrendingDown className="w-3.5 h-3.5" />}
-                  {Math.abs(Number(change))}kg
-                </span>
-              )}
-            </div>
-            <span className="text-xs text-white/40">{entries.length} entries logged</span>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div>
+          <div className="flex items-baseline gap-1">
+            <span className="text-[42px] font-bold leading-none tracking-tight tabular-nums">{latest || "--"}</span>
+            <span className="text-lg text-white/30">kg</span>
+            {change !== null && (
+              <span className={`flex items-center gap-1 text-sm font-bold ml-2 ${Number(change) > 0 ? "text-red-400" : Number(change) < 0 ? "text-brand-400" : "text-white/30"}`}>
+                {Number(change) > 0 ? <TrendingUp className="w-3.5 h-3.5" /> : Number(change) < 0 ? <TrendingDown className="w-3.5 h-3.5" /> : <Minus className="w-3.5 h-3.5" />}
+                {Math.abs(Number(change))}kg
+              </span>
+            )}
           </div>
+          <span className="text-xs text-white/40">{entries.length} entries logged</span>
+        </div>
+        {entries.length >= 7 && (
+          <>
+            <div>
+              <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase">7-day Avg</span>
+              <div className="mt-1">
+                <span className="text-[28px] font-bold tabular-nums">{weekAvg.toFixed(1)}</span>
+                <span className="text-xs text-white/30 ml-1">kg</span>
+              </div>
+            </div>
+            <div>
+              <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase">7-day Trend</span>
+              <div className="mt-1">
+                <span className={`text-[28px] font-bold tabular-nums ${weekDelta > 0 ? "text-red-400" : weekDelta < 0 ? "text-brand-400" : "text-white/60"}`}>
+                  {weekDelta > 0 ? "+" : ""}{weekDelta.toFixed(1)}
+                </span>
+                <span className="text-xs text-white/30 ml-1">kg</span>
+              </div>
+            </div>
+          </>
         )}
       </div>
 
@@ -95,26 +120,48 @@ export function WeightTracker() {
       </div>
 
       {entries.length > 1 && (
-        <div className="glass-strong rounded-xl p-4">
-          <div className="text-[11px] font-mono font-bold text-white/30 mb-3 uppercase">Weight Trend</div>
-          <ResponsiveContainer width="100%" height={200}>
-            <AreaChart data={chartData}>
-              <defs>
-                <linearGradient id="weightGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#6be3a4" stopOpacity={0.3} />
-                  <stop offset="100%" stopColor="#6be3a4" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <XAxis dataKey="date" tick={{ fill: "rgba(255,255,255,0.3)", fontSize: 10 }} axisLine={false} tickLine={false} />
-              <YAxis domain={["dataMin - 2", "dataMax + 2"]} tick={{ fill: "rgba(255,255,255,0.3)", fontSize: 10 }} axisLine={false} tickLine={false} />
-              <Tooltip
-                contentStyle={{ background: "rgba(8,8,9,0.9)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", fontSize: "12px", color: "#fff" }}
-                formatter={(value: number) => [`${value}kg`, "Weight"]}
-              />
-              <Area type="monotone" dataKey="weight" stroke="#6be3a4" strokeWidth={2} fill="url(#weightGrad)" dot={{ fill: "#6be3a4", r: 3 }} />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
+        <>
+          <div className="glass-strong rounded-xl p-4">
+            <div className="text-[11px] font-mono font-bold text-white/30 mb-3 uppercase">Weight Trend</div>
+            <ResponsiveContainer width="100%" height={isMobile ? 180 : 200}>
+              <AreaChart data={chartData}>
+                <defs>
+                  <linearGradient id="weightGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#6be3a4" stopOpacity={0.3} />
+                    <stop offset="100%" stopColor="#6be3a4" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <XAxis dataKey="date" tick={{ fill: "rgba(255,255,255,0.3)", fontSize: 10 }} axisLine={false} tickLine={false} />
+                <YAxis domain={["dataMin - 2", "dataMax + 2"]} tick={{ fill: "rgba(255,255,255,0.3)", fontSize: 10 }} axisLine={false} tickLine={false} />
+                <Tooltip
+                  contentStyle={{ background: "rgba(8,8,9,0.9)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", fontSize: "12px", color: "#fff" }}
+                  formatter={(value: number) => [`${value}kg`, "Weight"]}
+                />
+                <Area type="monotone" dataKey="weight" stroke="#6be3a4" strokeWidth={2} fill="url(#weightGrad)" dot={{ fill: "#6be3a4", r: 3 }} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+
+          <div className="glass-strong rounded-xl p-4">
+            <div className="text-[11px] font-mono font-bold text-white/30 mb-3 uppercase">Changes</div>
+            <ResponsiveContainer width="100%" height={isMobile ? 150 : 180}>
+              <BarChart data={chartData.slice(1).map((d, i) => ({ ...d, change: d.weight - chartData[i].weight }))}>
+                <XAxis dataKey="date" tick={{ fill: "rgba(255,255,255,0.3)", fontSize: 10 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: "rgba(255,255,255,0.3)", fontSize: 10 }} axisLine={false} tickLine={false} />
+                <Tooltip
+                  contentStyle={{ background: "rgba(8,8,9,0.9)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", fontSize: "12px", color: "#fff" }}
+                  formatter={(value: number) => [`${value > 0 ? "+" : ""}${value.toFixed(1)}kg`, "Change"]}
+                />
+                <Bar dataKey="change" radius={[4, 4, 0, 0]} maxBarSize={24}>
+                  {chartData.slice(1).map((d, i) => {
+                    const delta = d.weight - chartData[i].weight
+                    return <Cell key={i} fill={delta > 0 ? "#ff6b6b" : delta < 0 ? "#6be3a4" : "#888"} />
+                  })}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </>
       )}
 
       <div className="space-y-1">

@@ -115,6 +115,8 @@ interface DashboardState {
   currentProject: string | null
   trackedProjects: TrackedProject[]
   setRepos: (repos: GitHubRepo[]) => void
+  loadTrackedProjects: () => void
+  removeTrackedProject: (name: string) => void
   toggleFeatured: (name: string) => void
   setCurrentProject: (name: string | null) => void
   startTracking: () => void
@@ -176,6 +178,7 @@ export const useStore = create<DashboardState>((set, get) => ({
     get().loadGym()
     get().loadSleepLog()
     get().loadReminders()
+    get().loadTrackedProjects()
   },
 
   loadGoals: () => {
@@ -438,6 +441,20 @@ export const useStore = create<DashboardState>((set, get) => ({
   currentProject: null,
   trackedProjects: storeGet<TrackedProject[]>("tracked_projects") || [],
   setRepos: (repos) => set({ repos }),
+  loadTrackedProjects: () => {
+    const tracked = storeGet<TrackedProject[]>("tracked_projects") || []
+    const current = tracked.find(t => t.startTime)?.name || null
+    set({ trackedProjects: tracked, currentProject: current })
+  },
+  removeTrackedProject: (name) => {
+    const tracked = get().trackedProjects.filter(t => t.name !== name)
+    if (get().currentProject === name) {
+      set({ currentProject: null })
+    }
+    storeSet("tracked_projects", tracked)
+    set({ trackedProjects: tracked })
+    autoSync()
+  },
   toggleFeatured: (name) => {
     const featured = get().featuredRepos
     const next = featured.includes(name) ? featured.filter(n => n !== name) : [...featured, name]
@@ -457,6 +474,7 @@ export const useStore = create<DashboardState>((set, get) => ({
     }
     set({ currentProject: name, trackedProjects: tracked })
     storeSet("tracked_projects", tracked)
+    autoSync()
   },
   startTracking: () => {
     const name = get().currentProject
@@ -467,6 +485,7 @@ export const useStore = create<DashboardState>((set, get) => ({
     tp.startTime = Date.now()
     set({ trackedProjects: tracked })
     storeSet("tracked_projects", tracked)
+    autoSync()
   },
   stopTracking: () => {
     const name = get().currentProject
@@ -479,5 +498,6 @@ export const useStore = create<DashboardState>((set, get) => ({
     }
     set({ trackedProjects: tracked })
     storeSet("tracked_projects", tracked)
+    autoSync()
   },
 }))

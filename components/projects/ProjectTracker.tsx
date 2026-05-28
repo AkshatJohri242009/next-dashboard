@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
-import { Star, GitFork, ExternalLink, Clock, Play, Square, Search, Bookmark, BookmarkCheck } from "lucide-react"
+import { Star, GitFork, ExternalLink, Clock, Play, Square, Search, Bookmark, BookmarkCheck, Trash2 } from "lucide-react"
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts"
 import { useStore } from "@/lib/store"
 import { cn } from "@/lib/utils"
+import { useMediaQuery } from "@/lib/use-media-query"
 import type { GitHubRepo } from "@/lib/types"
 
 const GITHUB_USER = "AkshatJohri242009"
@@ -21,12 +23,13 @@ export function ProjectTracker() {
     repos, setRepos,
     featuredRepos, toggleFeatured,
     currentProject, setCurrentProject,
-    trackedProjects, startTracking, stopTracking,
+    trackedProjects, startTracking, stopTracking, removeTrackedProject,
   } = useStore()
+  const isMobile = useMediaQuery("(max-width: 1023px)")
   const [loading, setLoading] = useState(false)
   const [search, setSearch] = useState("")
   const [showAll, setShowAll] = useState(false)
-  const [elapsed, setElapsed] = useState(0)
+  const [now, setNow] = useState(Date.now())
 
   useEffect(() => {
     if (repos.length > 0) return
@@ -38,18 +41,29 @@ export function ProjectTracker() {
       .finally(() => setLoading(false))
   }, [repos.length, setRepos])
 
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 10000)
+    return () => clearInterval(id)
+  }, [])
+
   const activeTracked = trackedProjects.find(t => t.startTime)
   const filtered = repos.filter(r => !r.fork)
   const display = showAll ? filtered : (featuredRepos.length > 0 ? filtered.filter(r => featuredRepos.includes(r.name)) : filtered.slice(0, 12))
   const searched = search ? display.filter(r => r.name.toLowerCase().includes(search.toLowerCase()) || (r.description || "").toLowerCase().includes(search.toLowerCase())) : display
 
-  useEffect(() => {
-    if (!activeTracked?.startTime) { setElapsed(0); return }
-    const id = setInterval(() => setElapsed(Math.round((Date.now() - activeTracked.startTime!) / 60000)), 10000)
-    return () => clearInterval(id)
-  }, [activeTracked?.startTime])
+  const totalActiveMins = activeTracked
+    ? activeTracked.totalMinutes + Math.round((now - activeTracked.startTime!) / 60000)
+    : 0
 
-  const total = activeTracked ? (activeTracked.totalMinutes + elapsed) : 0
+  const chartData = trackedProjects
+    .filter(t => t.totalMinutes > 0 || t.startTime)
+    .map(t => ({
+      name: t.name.length > 14 ? t.name.slice(0, 12) + ".." : t.name,
+      fullName: t.name,
+      minutes: t.totalMinutes + (t.startTime ? Math.round((now - t.startTime) / 60000) : 0),
+    }))
+    .sort((a, b) => b.minutes - a.minutes)
+    .slice(0, 10)
 
   return (
     <div className="space-y-4">
@@ -60,9 +74,9 @@ export function ProjectTracker() {
         </div>
         <button
           onClick={() => setShowAll(!showAll)}
-          className="h-10 px-4 rounded-xl bg-white/[0.04] border border-white/[0.06] text-xs font-bold text-white/50 hover:text-white/80 hover:bg-white/[0.08] transition-colors"
+          className="h-9 sm:h-10 px-3 sm:px-4 rounded-xl bg-white/[0.04] border border-white/[0.06] text-[10px] sm:text-xs font-bold text-white/50 hover:text-white/80 hover:bg-white/[0.08] transition-colors"
         >
-          {showAll ? "Show Featured" : "Show All Repos"}
+          {showAll ? "Show Featured" : "Show All"}
         </button>
       </div>
 
@@ -70,25 +84,51 @@ export function ProjectTracker() {
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass-strong rounded-2xl p-5 border border-brand-500/20"
+          className="glass-strong rounded-2xl p-4 sm:p-5 border border-brand-500/20"
         >
           <div className="flex items-center justify-between gap-4 flex-wrap">
-            <div>
-              <span className="text-[10px] font-mono font-extrabold tracking-widest text-brand-400/70 uppercase">Tracking</span>
-              <div className="flex items-baseline gap-2 mt-1">
-                <span className="text-lg font-bold text-white/90">{activeTracked.name}</span>
-                <span className="text-[28px] font-bold tabular-nums text-brand-400">{timeFmt(total)}</span>
+            <div className="min-w-0 flex-1">
+              <span className="text-[9px] sm:text-[10px] font-mono font-extrabold tracking-widest text-brand-400/70 uppercase">Tracking</span>
+              <div className="flex items-baseline gap-2 mt-1 flex-wrap">
+                <span className="text-base sm:text-lg font-bold text-white/90 truncate">{activeTracked.name}</span>
+                <span className="text-2xl sm:text-[28px] font-bold tabular-nums text-brand-400">{timeFmt(totalActiveMins)}</span>
               </div>
             </div>
             <button
               onClick={stopTracking}
-              className="h-10 px-5 rounded-xl bg-red-500/20 text-red-400 text-xs font-bold border border-red-500/30 flex items-center gap-2 hover:bg-red-500/30 transition-colors"
+              className="h-9 sm:h-10 px-4 sm:px-5 rounded-xl bg-red-500/20 text-red-400 text-[10px] sm:text-xs font-bold border border-red-500/30 flex items-center gap-1.5 hover:bg-red-500/30 transition-colors shrink-0"
             >
-              <Square className="w-3.5 h-3.5" />
+              <Square className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
               Stop
             </button>
           </div>
         </motion.div>
+      )}
+
+      {chartData.length > 0 && (
+        <div className="glass-strong rounded-xl p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <Clock className="w-3.5 h-3.5 text-accent-400" />
+            <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase">Time per project</span>
+          </div>
+          <ResponsiveContainer width="100%" height={isMobile ? 160 : 220}>
+            <BarChart data={chartData} layout="vertical" margin={{ top: 4, right: 8, left: 0, bottom: 4 }}>
+              <XAxis type="number" tick={{ fill: "rgba(255,255,255,0.3)", fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={v => timeFmt(v)} />
+              <YAxis type="category" dataKey="name" tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 10 }} axisLine={false} tickLine={false} width={isMobile ? 80 : 100} />
+              <Tooltip
+                contentStyle={{ background: "rgba(8,8,9,0.9)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", fontSize: "12px", color: "#fff" }}
+                formatter={(value: number) => [timeFmt(value), "Time"]}
+                labelFormatter={(label: string) => `${label}`}
+              />
+              <Bar dataKey="minutes" radius={[0, 4, 4, 0]} maxBarSize={isMobile ? 12 : 20}>
+                {chartData.map((_, i) => {
+                  const colors = ["#748ffc", "#6be3a4", "#fcc419", "#ff6b6b", "#9775fa", "#20c997", "#ff922b", "#e599f7", "#74c0fc", "#f06595"]
+                  return <Cell key={i} fill={colors[i % colors.length]} />
+                })}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       )}
 
       <div className="relative">
@@ -97,7 +137,7 @@ export function ProjectTracker() {
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="Search repos..."
-          className="w-full h-11 pl-10 pr-4 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white outline-none placeholder:text-white/30 focus:border-white/20 transition-colors"
+          className="w-full h-10 sm:h-11 pl-10 pr-4 rounded-xl bg-white/[0.04] border border-white/[0.06] text-xs sm:text-sm text-white outline-none placeholder:text-white/30 focus:border-white/20 transition-colors"
         />
       </div>
 
@@ -117,7 +157,7 @@ export function ProjectTracker() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: Math.min(i * 0.03, 0.3) }}
               className={cn(
-                "rounded-xl p-4 border transition-all duration-200 flex flex-col",
+                "rounded-xl p-3 sm:p-4 border transition-all duration-200 flex flex-col",
                 isCurrent ? "border-brand-500/30 bg-brand-500/5" : "border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04]",
               )}
             >
@@ -143,7 +183,7 @@ export function ProjectTracker() {
                 <p className="text-xs text-white/40 mb-3 line-clamp-2">{repo.description}</p>
               )}
 
-              <div className="flex items-center gap-3 text-[11px] text-white/30 font-mono mb-3">
+              <div className="flex items-center gap-3 text-[10px] sm:text-[11px] text-white/30 font-mono mb-3 flex-wrap">
                 {repo.language && (
                   <span className="flex items-center gap-1">
                     <span className="w-2 h-2 rounded-full bg-brand-400" />
@@ -171,7 +211,7 @@ export function ProjectTracker() {
                 <button
                   onClick={() => setCurrentProject(repo.name)}
                   className={cn(
-                    "flex-1 h-9 rounded-xl text-xs font-bold transition-colors",
+                    "flex-1 h-8 sm:h-9 rounded-xl text-[10px] sm:text-xs font-bold transition-colors",
                     isCurrent
                       ? "bg-brand-500/20 text-brand-300 border border-brand-500/30"
                       : "bg-white/[0.04] text-white/40 border border-white/[0.06] hover:text-white/70 hover:bg-white/[0.08]",
@@ -182,9 +222,17 @@ export function ProjectTracker() {
                 {isCurrent && !activeTracked && (
                   <button
                     onClick={startTracking}
-                    className="h-9 w-9 rounded-xl bg-brand-500 text-black flex items-center justify-center hover:bg-brand-400 transition-colors"
+                    className="h-8 sm:h-9 w-8 sm:w-9 rounded-xl bg-brand-500 text-black flex items-center justify-center hover:bg-brand-400 transition-colors"
                   >
                     <Play className="w-3.5 h-3.5" />
+                  </button>
+                )}
+                {tracked && tracked.totalMinutes > 0 && (
+                  <button
+                    onClick={() => removeTrackedProject(repo.name)}
+                    className="h-8 sm:h-9 w-8 sm:w-9 rounded-xl bg-red-500/10 text-red-400 border border-red-500/20 flex items-center justify-center hover:bg-red-500/20 transition-colors"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
                   </button>
                 )}
               </div>
