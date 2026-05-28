@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
+import { Moon, Clock } from "lucide-react"
 import { useStore } from "@/lib/store"
 import { interpolateColor, computePeakWindow, waterGoalMl } from "@/lib/utils"
 
@@ -12,6 +13,9 @@ const WAKE_HOUR = 8
 export function PeakRing() {
   const sleep = useStore(s => s.sleep)
   const health = useStore(s => s.health)
+  const sleepTimerStart = useStore(s => s.sleepTimerStart)
+  const startSleepTimer = useStore(s => s.startSleepTimer)
+  const stopSleepTimer = useStore(s => s.stopSleepTimer)
   const [time, setTime] = useState<Date | null>(null)
 
   useEffect(() => {
@@ -101,6 +105,31 @@ export function PeakRing() {
           }`}>
             {sleep >= 8 ? "0h debt" : `+${(8 - sleep).toFixed(1)}h debt`}
           </span>
+        </div>
+
+        <div className="flex items-center gap-2 pt-2 border-t border-white/[0.06]">
+          {sleepTimerStart ? (
+            <>
+              <Clock className="w-3.5 h-3.5 text-brand-400 shrink-0" />
+              <span className="text-[11px] font-mono text-white/60 flex-1">
+                Sleeping for {Math.floor((Date.now() - sleepTimerStart) / 60000)}m
+              </span>
+              <button
+                onClick={stopSleepTimer}
+                className="h-7 px-3 rounded-lg bg-brand-500/20 text-brand-300 text-[10px] font-bold border border-brand-500/30 hover:bg-brand-500/30 transition-colors shrink-0"
+              >
+                Stop Timer
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={startSleepTimer}
+              className="flex items-center gap-1.5 h-7 px-3 rounded-lg bg-white/[0.04] text-white/50 text-[10px] font-bold border border-white/[0.06] hover:text-white/70 hover:bg-white/[0.08] transition-colors"
+            >
+              <Moon className="w-3 h-3" />
+              Start Sleep Timer
+            </button>
+          )}
         </div>
       </div>
     </div>

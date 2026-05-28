@@ -49,6 +49,9 @@ interface DashboardState {
   mobileMenuOpen: boolean
   activePage: string
 
+  sleepTimerStart: number | null
+  startSleepTimer: () => void
+  stopSleepTimer: () => void
   loadGoals: () => void
   addGoal: (text: string, reminderMin?: number) => void
   toggleGoal: (idx: number) => void
@@ -107,6 +110,7 @@ export const useStore = create<DashboardState>((set, get) => ({
   tomorrowGoals: [],
   streak: 0,
   sleep: 8,
+  sleepTimerStart: null,
   sidebarOpen: true,
   commandPaletteOpen: false,
   aiPanelOpen: false,
@@ -150,11 +154,13 @@ export const useStore = create<DashboardState>((set, get) => ({
     const tomorrowGoals = getGoals(tomorrowKey())
     const streakData = storeGet<{ count: number }>("goal_streak_v1")
     const sleepData = storeGet<number>("last_sleep_hours")
+    const sleepTimerData = storeGet<number>("sleep_timer_start")
     set({
       goals,
       tomorrowGoals,
       streak: streakData?.count ?? 0,
       sleep: typeof sleepData === "number" ? sleepData : 8,
+      sleepTimerStart: typeof sleepTimerData === "number" ? sleepTimerData : null,
     })
   },
 
@@ -240,6 +246,22 @@ export const useStore = create<DashboardState>((set, get) => ({
   setSleep: (hours) => {
     set({ sleep: hours })
     localStorage.setItem("last_sleep_hours", JSON.stringify(hours))
+  },
+
+  startSleepTimer: () => {
+    const now = Date.now()
+    set({ sleepTimerStart: now })
+    localStorage.setItem("sleep_timer_start", JSON.stringify(now))
+    get().addReminder("Turn off sleep timer?", "task", 30)
+    get().addReminder("Still sleeping? Turn off sleep timer", "task", 60)
+    get().addReminder("Sleep timer running for 90min — turn it off?", "task", 90)
+  },
+  stopSleepTimer: () => {
+    const started = get().sleepTimerStart
+    const elapsed = started ? Math.round((Date.now() - started) / 60000) : 0
+    set({ sleepTimerStart: null })
+    localStorage.removeItem("sleep_timer_start")
+    get().addReminder(`Slept for ${elapsed} min`, "task", 0)
   },
 
   toggleSidebar: () => set(s => ({ sidebarOpen: !s.sidebarOpen })),

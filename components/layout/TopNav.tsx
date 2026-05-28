@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Search, Command, Menu, X } from "lucide-react"
+import { Search, Command, Menu, X, Github } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useStore } from "@/lib/store"
 import { NotificationPanel } from "./NotificationPanel"
@@ -52,15 +52,16 @@ export function TopNav() {
 
         <NotificationPanel />
 
-        <motion.button
+        <motion.a
+          href="https://github.com/AkshatJohri242009"
+          target="_blank"
+          rel="noopener noreferrer"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           className="h-9 w-9 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center overflow-hidden"
         >
-          <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-accent-400 to-brand-400 flex items-center justify-center text-[10px] font-bold text-black">
-            U
-          </div>
-        </motion.button>
+          <Github className="w-4 h-4 text-white/50" />
+        </motion.a>
       </div>
     </header>
   )
