@@ -64,4 +64,23 @@ export interface WeightEntry {
   note?: string
 }
 
-export type Page = 'main' | 'health' | 'gym' | 'weight'
+export interface GitHubRepo {
+  id: number
+  name: string
+  description: string | null
+  html_url: string
+  language: string | null
+  stargazers_count: number
+  forks_count: number
+  updated_at: string
+  topics: string[]
+  fork: boolean
+}
+
+export interface TrackedProject {
+  name: string
+  totalMinutes: number
+  startTime: number | null
+}
+
+export type Page = 'main' | 'health' | 'gym' | 'weight' | 'projects'

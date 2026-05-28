@@ -1,7 +1,7 @@
 "use client"
 
 import { create } from "zustand"
-import type { Goal, HealthState, GymState, Reminder } from "./types"
+import type { Goal, HealthState, GymState, Reminder, GitHubRepo, TrackedProject } from "./types"
 import {
   getActiveDateString, getTomorrowDateString,
   keyFor, todayKey, tomorrowKey,
@@ -93,6 +93,16 @@ interface DashboardState {
   addLog: (log: GymState["logs"][0]) => void
   deleteLog: (idx: number) => void
   setPhoto: (id: string, data: string) => void
+
+  repos: GitHubRepo[]
+  featuredRepos: string[]
+  currentProject: string | null
+  trackedProjects: TrackedProject[]
+  setRepos: (repos: GitHubRepo[]) => void
+  toggleFeatured: (name: string) => void
+  setCurrentProject: (name: string | null) => void
+  startTracking: () => void
+  stopTracking: () => void
 }
 
 const defaultHealth: HealthState = {
@@ -345,5 +355,52 @@ export const useStore = create<DashboardState>((set, get) => ({
     const gym = { ...get().gym, photos: { ...get().gym.photos, [id]: data } }
     storeSet("gym_dashboard_v1", gym)
     set({ gym })
+  },
+
+  repos: [],
+  featuredRepos: storeGet<string[]>("featured_repos") || [],
+  currentProject: null,
+  trackedProjects: storeGet<TrackedProject[]>("tracked_projects") || [],
+  setRepos: (repos) => set({ repos }),
+  toggleFeatured: (name) => {
+    const featured = get().featuredRepos
+    const next = featured.includes(name) ? featured.filter(n => n !== name) : [...featured, name]
+    storeSet("featured_repos", next)
+    set({ featuredRepos: next })
+  },
+  setCurrentProject: (name) => {
+    const current = get().currentProject
+    const tracked = [...get().trackedProjects]
+    if (current && current !== name) {
+      const tp = tracked.find(t => t.name === current)
+      if (tp && tp.startTime) {
+        tp.totalMinutes += Math.round((Date.now() - tp.startTime) / 60000)
+        tp.startTime = null
+      }
+    }
+    set({ currentProject: name, trackedProjects: tracked })
+    storeSet("tracked_projects", tracked)
+  },
+  startTracking: () => {
+    const name = get().currentProject
+    if (!name) return
+    const tracked = [...get().trackedProjects]
+    let tp = tracked.find(t => t.name === name)
+    if (!tp) { tp = { name, totalMinutes: 0, startTime: null }; tracked.push(tp) }
+    tp.startTime = Date.now()
+    set({ trackedProjects: tracked })
+    storeSet("tracked_projects", tracked)
+  },
+  stopTracking: () => {
+    const name = get().currentProject
+    if (!name) return
+    const tracked = [...get().trackedProjects]
+    const tp = tracked.find(t => t.name === name)
+    if (tp && tp.startTime) {
+      tp.totalMinutes += Math.round((Date.now() - tp.startTime) / 60000)
+      tp.startTime = null
+    }
+    set({ trackedProjects: tracked })
+    storeSet("tracked_projects", tracked)
   },
 }))
