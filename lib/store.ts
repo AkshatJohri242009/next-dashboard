@@ -299,7 +299,7 @@ export const useStore = create<DashboardState>((set, get) => ({
     const started = get().sleepTimerStart
     const elapsed = started ? Math.round((Date.now() - started) / 60000) : 0
     set({ sleepTimerStart: null })
-    localStorage.removeItem("sleep_timer_start")
+    localStorage.setItem("sleep_timer_start", JSON.stringify(null))
     if (elapsed > 0) {
       const date = new Date().toISOString().slice(0, 10)
       const log = [...get().sleepLog]
