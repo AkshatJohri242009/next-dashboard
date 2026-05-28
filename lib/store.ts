@@ -164,6 +164,7 @@ export const useStore = create<DashboardState>((set, get) => ({
     }
     if (Object.keys(remote).length > 0) {
       for (const [key, value] of Object.entries(remote)) {
+        if (key === "sleep_timer_start" && localStorage.getItem(key) === "null") continue
         localStorage.setItem(key, JSON.stringify(value))
       }
     }
