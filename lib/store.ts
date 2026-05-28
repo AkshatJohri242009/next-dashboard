@@ -162,14 +162,10 @@ export const useStore = create<DashboardState>((set, get) => ({
       set({ supabaseReady: false })
       return
     }
-    // Push local state first so latest changes are on server
-    await pushToSupabase(allLocalState())
-    // Pull the merged state (our changes + other devices' changes)
-    const updated = await pullFromSupabase()
-    if (!updated) { set({ supabaseReady: false }); return }
-    // Overwrite localStorage with latest server state
-    for (const [key, value] of Object.entries(updated)) {
-      localStorage.setItem(key, JSON.stringify(value))
+    if (Object.keys(remote).length > 0) {
+      for (const [key, value] of Object.entries(remote)) {
+        localStorage.setItem(key, JSON.stringify(value))
+      }
     }
     set({ supabaseReady: true })
     get().loadGoals()
