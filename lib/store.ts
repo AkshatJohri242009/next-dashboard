@@ -8,6 +8,15 @@ import {
 } from "./utils"
 import { pullFromSupabase, pushToSupabase } from "./supabase"
 
+const recentlyModified = new Set<string>()
+let clearRecentlyModified: ReturnType<typeof setTimeout> | null = null
+
+function markModified(key: string) {
+  recentlyModified.add(key)
+  if (clearRecentlyModified) clearTimeout(clearRecentlyModified)
+  clearRecentlyModified = setTimeout(() => recentlyModified.clear(), 5000)
+}
+
 function storeGet<T>(key: string): T | null {
   try { return JSON.parse(localStorage.getItem(key) || "null") }
   catch { return null }
@@ -15,6 +24,7 @@ function storeGet<T>(key: string): T | null {
 
 function storeSet(key: string, value: unknown) {
   localStorage.setItem(key, JSON.stringify(value))
+  markModified(key)
 }
 
 function autoSync() {
@@ -164,7 +174,7 @@ export const useStore = create<DashboardState>((set, get) => ({
     }
     if (Object.keys(remote).length > 0) {
       for (const [key, value] of Object.entries(remote)) {
-        if (key === "sleep_timer_start" && localStorage.getItem(key) === "null") continue
+        if (recentlyModified.has(key)) continue
         localStorage.setItem(key, JSON.stringify(value))
       }
     }
@@ -280,14 +290,14 @@ export const useStore = create<DashboardState>((set, get) => ({
 
   setSleep: (hours) => {
     set({ sleep: hours })
-    localStorage.setItem("last_sleep_hours", JSON.stringify(hours))
+    storeSet("last_sleep_hours", hours)
     autoSync()
   },
 
   startSleepTimer: () => {
     const now = Date.now()
     set({ sleepTimerStart: now, lastSleepNotif: now })
-    localStorage.setItem("sleep_timer_start", JSON.stringify(now))
+    storeSet("sleep_timer_start", now)
     storeSet("sleep_last_notif_v1", now)
     autoSync()
   },
@@ -295,7 +305,7 @@ export const useStore = create<DashboardState>((set, get) => ({
     const started = get().sleepTimerStart
     const elapsed = started ? Math.round((Date.now() - started) / 60000) : 0
     set({ sleepTimerStart: null })
-    localStorage.setItem("sleep_timer_start", JSON.stringify(null))
+    storeSet("sleep_timer_start", null)
     if (elapsed > 0) {
       const date = new Date().toISOString().slice(0, 10)
       const log = [...get().sleepLog]
