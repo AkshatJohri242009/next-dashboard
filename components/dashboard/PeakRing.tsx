@@ -38,7 +38,7 @@ export function PeakRing() {
 
   return (
     <div className="glass rounded-2xl p-5 flex items-center gap-6 flex-wrap">
-      <div className="relative w-[168px] h-[168px] shrink-0">
+      <div className="relative w-[140px] h-[140px] sm:w-[168px] sm:h-[168px] shrink-0">
         <svg viewBox="0 0 120 120" className="w-full h-full">
           <circle cx="60" cy="60" r={RING_RADIUS} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="8" />
           <motion.circle
@@ -69,7 +69,7 @@ export function PeakRing() {
         </div>
       </div>
 
-      <div className="flex-1 space-y-2 min-w-[200px]">
+      <div className="flex-1 space-y-2 min-w-0">
         <div className="flex items-center justify-between">
           <span className="text-sm font-bold text-white/80">{status}</span>
           <span className="text-[11px] font-mono text-white/30 tabular-nums">
@@ -83,20 +83,20 @@ export function PeakRing() {
             : `${Math.ceil((24 - hours) * 60)}m awake time left`}
         </div>
 
-        <div className="flex items-center gap-3 pt-3 border-t border-white/[0.06]">
-          <span className="text-[9.5px] font-mono font-extrabold tracking-widest text-white/30">SLEEP</span>
+        <div className="flex items-center gap-2 pt-3 border-t border-white/[0.06]">
+          <span className="text-[9.5px] font-mono font-extrabold tracking-widest text-white/30 shrink-0">SLEEP</span>
           <input
             type="range"
             min={0} max={16} step={0.5}
             value={sleep}
             onChange={e => useStore.getState().setSleep(parseFloat(e.target.value))}
-            className="flex-1 h-1.5 rounded-full appearance-none bg-white/[0.08] accent-brand-400 cursor-pointer
+            className="flex-1 min-w-0 h-1.5 rounded-full appearance-none bg-white/[0.08] accent-brand-400 cursor-pointer
               [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3.5 [&::-webkit-slider-thumb]:h-3.5
               [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-brand-400
               [&::-webkit-slider-thumb]:shadow-[0_0_8px_rgba(107,227,164,0.5)]"
           />
-          <span className="text-[11px] font-mono font-bold text-white/60 tabular-nums">{sleep}h</span>
-          <span className={`text-[11px] font-mono font-bold tabular-nums ${
+          <span className="text-[11px] font-mono font-bold text-white/60 tabular-nums shrink-0">{sleep}h</span>
+          <span className={`text-[11px] font-mono font-bold tabular-nums shrink-0 ${
             sleep >= 8 ? "text-brand-400" : sleep >= 6 ? "text-amber-400" : "text-red-400"
           }`}>
             {sleep >= 8 ? "0h debt" : `+${(8 - sleep).toFixed(1)}h debt`}

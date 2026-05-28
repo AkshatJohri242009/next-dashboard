@@ -29,12 +29,12 @@ export function WorkoutLog() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-1.5">
         {splits.map(s => (
           <button
             key={s}
             onClick={() => setSplit(s)}
-            className={`h-8 px-3 rounded-xl text-[11px] font-bold font-mono tracking-wider uppercase transition-colors ${
+            className={`h-8 px-2.5 rounded-xl text-[10px] sm:text-[11px] font-bold font-mono tracking-wider uppercase transition-colors ${
               gym.split === s
                 ? "bg-brand-500 text-black"
                 : "bg-white/[0.04] text-white/40 border border-white/[0.06] hover:text-white/70"
@@ -45,25 +45,25 @@ export function WorkoutLog() {
         ))}
       </div>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
         <select
           value={exercise}
           onChange={e => setExercise(e.target.value)}
-          className="h-10 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white outline-none"
+          className="col-span-2 sm:col-auto h-10 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white outline-none"
         >
           {exercises.map(e => <option key={e}>{e}</option>)}
         </select>
         <input type="number" min={1} max={10} value={sets} onChange={e => setSets(Number(e.target.value))}
-          className="h-10 w-16 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white outline-none text-center" />
+          className="h-10 w-full sm:w-16 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white outline-none text-center" />
         <input type="number" min={0} step={0.5} value={weight} onChange={e => setWeight(Number(e.target.value))}
-          className="h-10 w-20 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white outline-none text-center" />
+          className="h-10 w-full sm:w-20 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white outline-none text-center" />
         <input value={reps} onChange={e => setReps(e.target.value)}
-          className="h-10 w-24 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white outline-none text-center" />
+          className="h-10 w-full sm:w-24 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white outline-none text-center" />
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={handleAdd}
-          className="h-10 px-4 rounded-xl bg-brand-500 text-black text-sm font-bold flex items-center gap-1.5 shadow-lg shadow-brand-500/20"
+          className="col-span-2 sm:col-auto h-10 px-4 rounded-xl bg-brand-500 text-black text-sm font-bold flex items-center justify-center gap-1.5 shadow-lg shadow-brand-500/20"
         >
           <Plus className="w-4 h-4" />
           Add Set
@@ -82,10 +82,10 @@ export function WorkoutLog() {
                 exit={{ opacity: 0, x: -20 }}
                 className="flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-white/[0.02] border border-white/[0.06]"
               >
-                <div>
+                <div className="min-w-0">
                   <span className="text-sm font-bold text-white/80">{log.exercise}</span>
-                  <span className="text-xs text-white/40 ml-2 font-mono">
-                    {log.split} · {log.sets} sets · {log.weight}kg · reps {log.reps.join(",")}
+                  <span className="text-xs text-white/40 ml-2 font-mono whitespace-nowrap">
+                    {log.split} · {log.sets} sets · {log.weight}kg
                   </span>
                 </div>
                 <div className="flex items-center gap-2">

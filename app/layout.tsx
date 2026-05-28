@@ -24,6 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="icon" type="image/jpeg" href="/app-icon.jpg" />
         <link rel="apple-touch-icon" href="/app-icon.jpg" />

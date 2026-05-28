@@ -7,8 +7,12 @@
 @layer base {
   * { @apply border-white/[0.06]; }
   body {
-    @apply bg-[#050506] text-white antialiased;
+    @apply bg-[#050506] text-white antialiased overflow-x-hidden;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
   }
   ::selection { @apply bg-brand-500/30 text-white; }
   ::-webkit-scrollbar { width: 4px; }

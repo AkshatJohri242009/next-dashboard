@@ -206,26 +206,24 @@ export function TodoList() {
           onChange={e => setInput(e.target.value)}
           onKeyDown={e => { if (e.key === "Enter") handleAdd() }}
           placeholder="Add a goal for today..."
-          className="flex-1 h-10 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white outline-none placeholder:text-white/30 focus:border-white/20 transition-colors"
+          className="flex-1 min-w-0 h-10 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white outline-none placeholder:text-white/30 focus:border-white/20 transition-colors"
         />
-        <div className="flex items-center gap-1.5">
-          <input
-            type="number"
-            min={0}
-            max={1440}
-            value={timerMin}
-            onChange={e => setTimerMin(Number(e.target.value))}
-            placeholder="min"
-            className="w-16 h-10 px-2 rounded-xl bg-white/[0.04] border border-white/[0.06] text-xs text-white outline-none placeholder:text-white/30 text-center"
-          />
-          <button
-            onClick={handleAdd}
-            className="h-10 px-4 rounded-xl bg-brand-500 text-black text-sm font-bold hover:bg-brand-400 transition-colors flex items-center gap-1.5 shadow-lg shadow-brand-500/20"
-          >
-            <Plus className="w-4 h-4" />
-            Add
-          </button>
-        </div>
+        <input
+          type="number"
+          min={0}
+          max={1440}
+          value={timerMin}
+          onChange={e => setTimerMin(Number(e.target.value))}
+          placeholder="min"
+          className="w-14 sm:w-16 h-10 px-1.5 rounded-xl bg-white/[0.04] border border-white/[0.06] text-xs text-white outline-none placeholder:text-white/30 text-center"
+        />
+        <button
+          onClick={handleAdd}
+          className="h-10 px-3 sm:px-4 rounded-xl bg-brand-500 text-black text-sm font-bold hover:bg-brand-400 transition-colors flex items-center gap-1.5 shadow-lg shadow-brand-500/20 shrink-0"
+        >
+          <Plus className="w-4 h-4" />
+          <span className="hidden sm:inline">Add</span>
+        </button>
       </div>
     </div>
   )
