@@ -31,9 +31,12 @@ export function PeakRing() {
   const dayPct = hours >= WAKE_HOUR ? Math.max(0, Math.min(100, ((hours - WAKE_HOUR) / 16) * 100)) : 0
   const color = interpolateColor(peakPct)
 
-  let phase = "SLEEPING"
-  let status = "Still sleeping"
-  if (hours >= WAKE_HOUR) {
+  let phase = "AWAKE"
+  let status = "Awake"
+  if (sleepTimerStart) {
+    phase = "SLEEPING"
+    status = "Sleep timer running"
+  } else if (hours >= WAKE_HOUR) {
     if (peakPct >= 75) { phase = "PEAK"; status = "Peak window — perform" }
     else if (peakPct >= 50) { phase = "FOCUS"; status = "Good energy — stay productive" }
     else if (peakPct >= 25) { phase = "MODERATE"; status = "Moderate energy — keep going" }
@@ -65,7 +68,7 @@ export function PeakRing() {
               className="text-[32px] sm:text-[40px] font-extrabold leading-none tracking-tight tabular-nums"
               style={{ color }}
             >
-              {!time || hours < WAKE_HOUR ? "--" : `${Math.round(peakPct)}%`}
+              {!time || sleepTimerStart ? "--" : `${Math.round(peakPct)}%`}
             </motion.span>
             <span className="text-[9.5px] font-mono font-extrabold tracking-widest text-white/30 mt-1">{phase}</span>
             <span className="text-[10.5px] font-mono text-white/30 mt-1">
@@ -83,7 +86,7 @@ export function PeakRing() {
           </div>
           <div className="text-[12px] font-mono text-white/40">
             {!time ? ""
-              : hours < WAKE_HOUR
+              : sleepTimerStart && hours < WAKE_HOUR
               ? `${Math.ceil((WAKE_HOUR - hours) * 60)}m until wake-up`
               : `${Math.ceil((24 - hours) * 60)}m awake time left`}
           </div>
