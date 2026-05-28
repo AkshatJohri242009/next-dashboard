@@ -1,0 +1,67 @@
+"use client"
+
+import { motion } from "framer-motion"
+import { Search, Command, Menu, X } from "lucide-react"
+import { useEffect, useState } from "react"
+import { useStore } from "@/lib/store"
+import { NotificationPanel } from "./NotificationPanel"
+
+export function TopNav() {
+  const { setCommandPalette, setAIPanel, aiPanelOpen, mobileMenuOpen, setMobileMenu } = useStore()
+  const [dateStr, setDateStr] = useState("")
+
+  useEffect(() => {
+    setDateStr(new Date().toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" }).toUpperCase())
+  }, [])
+
+  return (
+    <header className="sticky top-0 z-20 h-14 flex items-center justify-between px-4 md:px-6 border-b border-white/[0.06] bg-[#050506]/80 backdrop-blur-xl">
+      <div className="flex items-center gap-3">
+        <button
+          onClick={() => setMobileMenu(!mobileMenuOpen)}
+          className="lg:hidden h-9 w-9 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-white/50 hover:bg-white/[0.08] hover:text-white/70 transition-colors"
+        >
+          {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+        </button>
+        <span className="text-xs text-white/30 font-mono">{dateStr}</span>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => setCommandPalette(true)}
+          className="flex items-center gap-2 h-9 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-white/40 text-xs hover:bg-white/[0.08] hover:text-white/60 transition-colors"
+        >
+          <Search className="w-3.5 h-3.5" />
+          <span className="hidden sm:inline">Search</span>
+          <span className="hidden sm:flex items-center gap-1 ml-2">
+            <kbd className="kbd">⌘</kbd>
+            <kbd className="kbd">K</kbd>
+          </span>
+        </motion.button>
+
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => setAIPanel(!aiPanelOpen)}
+          className="relative h-9 w-9 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center hover:bg-brand-500/20 transition-colors"
+        >
+          <Command className="w-4 h-4 text-brand-400" />
+        </motion.button>
+
+        <NotificationPanel />
+
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="h-9 w-9 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center overflow-hidden"
+        >
+          <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-accent-400 to-brand-400 flex items-center justify-center text-[10px] font-bold text-black">
+            U
+          </div>
+        </motion.button>
+      </div>
+    </header>
+  )
+}

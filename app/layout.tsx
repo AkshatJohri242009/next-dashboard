@@ -1,0 +1,54 @@
+"use client"
+
+import { useEffect } from "react"
+import { Sidebar } from "@/components/layout/Sidebar"
+import { TopNav } from "@/components/layout/TopNav"
+import { CommandPalette } from "@/components/layout/CommandPalette"
+import { AIPanel } from "@/components/layout/AIPanel"
+import { useStore } from "@/lib/store"
+import { useMediaQuery } from "@/lib/use-media-query"
+import "./globals.css"
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const { sidebarOpen, loadGoals, loadHealth, loadGym, syncWithSupabase } = useStore()
+  const isMobile = useMediaQuery("(max-width: 1023px)")
+
+  useEffect(() => {
+    loadGoals()
+    loadHealth()
+    loadGym()
+    syncWithSupabase()
+    document.title = "My Dashboard"
+  }, [loadGoals, loadHealth, loadGym, syncWithSupabase])
+
+  return (
+    <html lang="en">
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="apple-touch-icon" href="/favicon.svg" />
+        <meta name="theme-color" content="#050506" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+      </head>
+      <body>
+        <Sidebar />
+        <CommandPalette />
+        <AIPanel />
+
+        <div
+          style={{
+            marginLeft: isMobile ? 0 : (sidebarOpen ? 240 : 72),
+            transition: "margin-left 0.3s cubic-bezier(0.22, 1, 0.36, 1)",
+          }}
+          className="min-h-screen"
+        >
+          <TopNav />
+          <main className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto">
+            {children}
+          </main>
+        </div>
+      </body>
+    </html>
+  )
+}

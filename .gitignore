@@ -1,0 +1,24 @@
+# Local Netlify folder
+.netlify
+
+# dependencies
+node_modules/
+
+# next.js
+.next/
+
+# env
+.env
+.env.local
+.env*.local
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# debug
+npm-debug.log*
