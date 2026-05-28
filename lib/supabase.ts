@@ -9,15 +9,20 @@ export const supabase = supabaseUrl && supabaseAnonKey
   ? createClient(supabaseUrl, supabaseAnonKey)
   : null
 
-export async function pullFromSupabase(): Promise<Record<string, unknown> | null> {
+export interface SyncEntry {
+  value: unknown
+  updatedAt: string
+}
+
+export async function pullFromSupabase(): Promise<Record<string, SyncEntry> | null> {
   if (!supabase) return null
   const { data, error } = await supabase
     .from("dashboard_state")
-    .select("key, value")
+    .select("key, value, updated_at")
   if (error || !data) return null
-  const state: Record<string, unknown> = {}
+  const state: Record<string, SyncEntry> = {}
   for (const row of data) {
-    state[row.key] = row.value
+    state[row.key] = { value: row.value, updatedAt: row.updated_at }
   }
   return state
 }

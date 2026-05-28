@@ -6,7 +6,7 @@ import {
   getActiveDateString, getTomorrowDateString,
   keyFor, todayKey, tomorrowKey,
 } from "./utils"
-import { pullFromSupabase, pushToSupabase } from "./supabase"
+import { pullFromSupabase, pushToSupabase, type SyncEntry } from "./supabase"
 
 const recentlyModified = new Set<string>()
 let clearRecentlyModified: ReturnType<typeof setTimeout> | null = null
@@ -24,6 +24,7 @@ function storeGet<T>(key: string): T | null {
 
 function storeSet(key: string, value: unknown) {
   localStorage.setItem(key, JSON.stringify(value))
+  localStorage.setItem("_ts:" + key, new Date().toISOString())
   markModified(key)
 }
 
@@ -179,9 +180,12 @@ export const useStore = create<DashboardState>((set, get) => ({
       return
     }
     if (Object.keys(remote).length > 0) {
-      for (const [key, value] of Object.entries(remote)) {
+      for (const [key, entry] of Object.entries(remote)) {
         if (recentlyModified.has(key)) continue
-        localStorage.setItem(key, JSON.stringify(value))
+        const localTs = localStorage.getItem("_ts:" + key)
+        if (localTs && entry.updatedAt <= localTs) continue
+        localStorage.setItem(key, JSON.stringify(entry.value))
+        localStorage.setItem("_ts:" + key, entry.updatedAt)
       }
     }
     set({ supabaseReady: true, syncCount: get().syncCount + 1 })
