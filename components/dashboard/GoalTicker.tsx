@@ -36,7 +36,7 @@ export function GoalTicker() {
   const current = items[idx] || items[0]
 
   return (
-    <div className="flex items-center gap-3 px-4 h-11 rounded-2xl glass overflow-hidden relative">
+    <div className="flex items-center gap-2 sm:gap-3 px-2 sm:px-4 h-9 sm:h-11 rounded-xl sm:rounded-2xl glass overflow-hidden relative">
       <div className="w-2 h-2 rounded-full bg-brand-400 shadow-[0_0_8px_rgba(107,227,164,0.6)] shrink-0" />
       <span className="text-[10px] font-bold font-mono text-white/30 tracking-widest shrink-0">GOALS</span>
 

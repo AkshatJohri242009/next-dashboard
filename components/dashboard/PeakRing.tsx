@@ -41,8 +41,8 @@ export function PeakRing() {
   }
 
   return (
-    <div className="glass rounded-2xl p-5 flex items-start gap-6 flex-wrap">
-      <div className="relative w-[140px] h-[140px] sm:w-[168px] sm:h-[168px] shrink-0">
+    <div className="glass rounded-2xl p-3 sm:p-5 flex items-start gap-3 sm:gap-6 flex-wrap">
+      <div className="relative w-[120px] h-[120px] sm:w-[168px] sm:h-[168px] shrink-0">
         <svg viewBox="0 0 120 120" className="w-full h-full">
           <circle cx="60" cy="60" r={RING_RADIUS} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="8" />
           <motion.circle
@@ -61,7 +61,7 @@ export function PeakRing() {
             key={Math.round(peakPct)}
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="text-[40px] font-extrabold leading-none tracking-tight tabular-nums"
+            className="text-[32px] sm:text-[40px] font-extrabold leading-none tracking-tight tabular-nums"
             style={{ color }}
           >
             {!time || hours < WAKE_HOUR ? "--" : `${Math.round(peakPct)}%`}
