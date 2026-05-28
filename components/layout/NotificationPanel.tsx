@@ -1,34 +1,29 @@
 "use client"
 
-import { Bell, X, Droplets, Target, Dumbbell, ArrowRight } from "lucide-react"
+import { Bell, X, Droplets, Moon, Square } from "lucide-react"
 import { useStore } from "@/lib/store"
-import { useMediaQuery } from "@/lib/use-media-query"
-import { waterGoalMl } from "@/lib/utils"
-import { useEffect, useRef } from "react"
-import { useRouter } from "next/navigation"
+import { useEffect, useRef, useState } from "react"
+
+const WATER_INTERVAL = 45 * 60 * 1000
+const SLEEP_INTERVAL = 45 * 60 * 1000
 
 export function NotificationPanel() {
   const {
     notificationPanelOpen, setNotificationPanel,
-    goals, health, toggleGoal,
-    reminders,
+    sleepTimerStart, stopSleepTimer,
     waterTimerMin, lastWaterNotif, markWaterNotif,
   } = useStore()
-  const isMobile = useMediaQuery("(max-width: 1023px)")
-  const router = useRouter()
   const panelRef = useRef<HTMLDivElement>(null)
-
-  const pendingGoals = goals.filter(g => !g.done)
-  const goalMl = waterGoalMl(health)
-  const waterLeft = Math.max(0, goalMl - (health.waterMl || 0))
-
-  const activeReminders = reminders.filter(r => !r.completed && r.dueAt > Date.now())
-  const overdueReminders = reminders.filter(r => !r.completed && r.dueAt <= Date.now())
+  const sleepNotifRef = useRef(0)
 
   useEffect(() => {
     if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "default") {
       Notification.requestPermission()
     }
+    try {
+      const saved = localStorage.getItem("sleep_last_notif")
+      if (saved) sleepNotifRef.current = Number(saved)
+    } catch {}
   }, [])
 
   useEffect(() => {
@@ -45,87 +40,29 @@ export function NotificationPanel() {
   useEffect(() => {
     const interval = setInterval(() => {
       const now = Date.now()
-      reminders.forEach(r => {
-        if (!r.completed && r.dueAt <= now && "Notification" in window && Notification.permission === "granted") {
-          new Notification("Reminder", { body: r.text })
+      if (waterTimerMin > 0 && (now - lastWaterNotif) >= waterTimerMin * 60 * 1000) {
+        markWaterNotif()
+        if ("Notification" in window && Notification.permission === "granted") {
+          new Notification("Hydration time", { body: "Time to drink water." })
         }
-      })
-      if (waterTimerMin > 0) {
-        const elapsed = (now - lastWaterNotif) / 60000
-        if (elapsed >= waterTimerMin) {
-          markWaterNotif()
-          if ("Notification" in window && Notification.permission === "granted") {
-            new Notification("Hydration time", { body: `Drink ${Math.max(200, Math.round(waterLeft / (4)))}ml` })
-          }
+      }
+      if (sleepTimerStart && (now - sleepNotifRef.current) >= SLEEP_INTERVAL) {
+        sleepNotifRef.current = now
+        localStorage.setItem("sleep_last_notif", String(now))
+        if ("Notification" in window && Notification.permission === "granted") {
+          new Notification("Sleep timer", { body: "Still sleeping? Turn off the sleep timer." })
         }
       }
     }, 15000)
     return () => clearInterval(interval)
-  }, [reminders, waterTimerMin, lastWaterNotif, markWaterNotif, waterLeft])
+  }, [waterTimerMin, lastWaterNotif, markWaterNotif, sleepTimerStart])
 
-  const totalPending = pendingGoals.length + overdueReminders.length + activeReminders.length
-  const badgeCount = Math.min(totalPending, 99)
+  const now = Date.now()
+  const waterDue = waterTimerMin > 0 && (now - lastWaterNotif) >= waterTimerMin * 60 * 1000
+  const sleepDue = sleepTimerStart && (now - sleepNotifRef.current) >= SLEEP_INTERVAL
+  const badgeCount = Math.min((waterDue ? 1 : 0) + (sleepDue ? 1 : 0), 99)
 
-  const navigate = (path: string) => {
-    router.push(path)
-    setNotificationPanel(false)
-  }
-
-  const hydrateOverdue = waterTimerMin > 0 && Date.now() - lastWaterNotif >= waterTimerMin * 60000
-
-  const items: { icon: JSX.Element; label: string; sub: string; onClick: () => void; color: string }[] = []
-
-  if (hydrateOverdue) {
-    items.push({
-      icon: <Droplets className="w-4 h-4" />,
-      label: "Time to hydrate",
-      sub: `Drink ${Math.max(200, Math.round(waterLeft / (4)))}ml`,
-      onClick: () => navigate("/health"),
-      color: "text-brand-400",
-    })
-  }
-
-  pendingGoals.slice(0, 5).forEach(g => {
-    items.push({
-      icon: <Target className="w-4 h-4" />,
-      label: g.text,
-      sub: "Pending task",
-      onClick: () => navigate("/"),
-      color: "text-amber-400",
-    })
-  })
-
-  overdueReminders.slice(0, 3).forEach(r => {
-    const icon = r.type === "gym" ? <Dumbbell className="w-4 h-4" /> : r.type === "water" ? <Droplets className="w-4 h-4" /> : <Target className="w-4 h-4" />
-    items.push({
-      icon,
-      label: r.text,
-      sub: r.type === "gym" ? "Gym reminder" : r.type === "water" ? "Hydration" : "Overdue",
-      onClick: () => navigate(r.type === "gym" ? "/gym" : r.type === "water" ? "/health" : "/"),
-      color: "text-red-400",
-    })
-  })
-
-  activeReminders.slice(0, 3).forEach(r => {
-    const icon = r.type === "gym" ? <Dumbbell className="w-4 h-4" /> : r.type === "water" ? <Droplets className="w-4 h-4" /> : <Target className="w-4 h-4" />
-    items.push({
-      icon,
-      label: r.text,
-      sub: `${Math.ceil((r.dueAt - Date.now()) / 60000)}m`,
-      onClick: () => navigate(r.type === "gym" ? "/gym" : r.type === "water" ? "/health" : "/"),
-      color: "text-accent-400",
-    })
-  })
-
-  if (waterLeft > 0) {
-    items.push({
-      icon: <Droplets className="w-4 h-4" />,
-      label: `${Math.round(waterLeft / 100) / 10}L water left`,
-      sub: "Drink more",
-      onClick: () => navigate("/health"),
-      color: "text-accent-400",
-    })
-  }
+  const dismiss = () => setNotificationPanel(false)
 
   return (
     <div ref={panelRef} className="relative">
@@ -143,72 +80,59 @@ export function NotificationPanel() {
 
       {notificationPanelOpen && (
         <>
-          {isMobile && (
-            <div className="fixed inset-0 z-50 flex justify-end">
-              <div className="fixed inset-0 bg-black/60" onClick={() => setNotificationPanel(false)} />
-              <div className="relative z-10 w-3/4 max-w-sm h-full bg-[#0a0a0d] border-l border-white/[0.08] shadow-2xl flex flex-col">
-                <div className="flex items-center justify-between h-12 px-4 border-b border-white/[0.08] shrink-0">
-                  <span className="text-sm font-bold text-white">Notifications</span>
-                  <button onClick={() => setNotificationPanel(false)} className="h-8 w-8 rounded-lg flex items-center justify-center text-white/30 hover:text-white/60 transition-colors">
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-                <div className="flex-1 overflow-y-auto p-3 space-y-2">
-                  {items.length === 0 && (
-                    <div className="py-8 text-center text-sm text-white/30 italic">No notifications yet.</div>
-                  )}
-                  {items.map((item, i) => (
-                    <div
-                      key={i}
-                      onClick={item.onClick}
-                      className="flex items-center gap-3 px-3 py-3 rounded-xl bg-white/[0.03] border border-white/[0.06] cursor-pointer hover:bg-white/[0.06] transition-colors active:scale-[0.98]"
-                    >
-                      <div className={`w-8 h-8 rounded-lg bg-white/[0.04] flex items-center justify-center shrink-0 ${item.color}`}>
-                        {item.icon}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-sm text-white/80 truncate">{item.label}</div>
-                        <div className="text-[10px] text-white/30 font-mono">{item.sub}</div>
-                      </div>
-                      <ArrowRight className="w-4 h-4 text-white/20 shrink-0" />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {!isMobile && (
-            <div className="absolute right-0 top-full mt-2 z-50 w-[420px] bg-[#0a0a0d] border border-white/[0.08] rounded-2xl shadow-2xl overflow-hidden">
+          <div className="fixed inset-0 bg-black/60 z-50" onClick={dismiss} />
+          <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+            <div
+              ref={panelRef}
+              className="pointer-events-auto w-[360px] max-w-[90vw] bg-[#0a0a0d] border border-white/[0.08] rounded-2xl shadow-2xl overflow-hidden"
+            >
               <div className="flex items-center justify-between h-12 px-4 border-b border-white/[0.08]">
                 <span className="text-sm font-bold text-white">Notifications</span>
-                <button onClick={() => setNotificationPanel(false)} className="h-7 w-7 rounded-lg flex items-center justify-center text-white/30 hover:text-white/60 transition-colors">
-                  <X className="w-3.5 h-3.5" />
+                <button onClick={dismiss} className="h-8 w-8 rounded-lg flex items-center justify-center text-white/30 hover:text-white/60 transition-colors">
+                  <X className="w-4 h-4" />
                 </button>
               </div>
-              <div className="max-h-[70vh] overflow-y-auto p-3 space-y-2">
-                {items.length === 0 && (
-                  <div className="py-8 text-center text-sm text-white/30 italic">No notifications yet.</div>
-                )}
-                {items.map((item, i) => (
-                  <div
-                    key={i}
-                    onClick={item.onClick}
-                    className="flex items-center gap-3 px-3 py-3 rounded-xl bg-white/[0.03] border border-white/[0.06] cursor-pointer hover:bg-white/[0.06] transition-colors"
-                  >
-                    <div className={`w-8 h-8 rounded-lg bg-white/[0.04] flex items-center justify-center shrink-0 ${item.color}`}>
-                      {item.icon}
+
+              <div className="p-3 space-y-2">
+                {waterDue && (
+                  <div className="flex items-center gap-3 px-4 py-4 rounded-xl bg-brand-500/10 border border-brand-500/20">
+                    <div className="w-10 h-10 rounded-xl bg-brand-500/20 flex items-center justify-center shrink-0">
+                      <Droplets className="w-5 h-5 text-brand-400" />
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-sm text-white/80 truncate">{item.label}</div>
-                      <div className="text-[10px] text-white/30 font-mono">{item.sub}</div>
+                    <div className="flex-1">
+                      <div className="text-sm font-bold text-white/90">Time to hydrate</div>
+                      <div className="text-xs text-white/40 mt-0.5">Drink a glass of water</div>
                     </div>
-                    <ArrowRight className="w-4 h-4 text-white/20 shrink-0" />
+                    <button onClick={markWaterNotif} className="h-9 px-3 rounded-xl bg-brand-500 text-black text-xs font-bold hover:bg-brand-400 transition-colors shrink-0">
+                      Done
+                    </button>
                   </div>
-                ))}
+                )}
+
+                {sleepDue && sleepTimerStart && (
+                  <div className="flex items-center gap-3 px-4 py-4 rounded-xl bg-accent-500/10 border border-accent-500/20">
+                    <div className="w-10 h-10 rounded-xl bg-accent-500/20 flex items-center justify-center shrink-0">
+                      <Moon className="w-5 h-5 text-accent-400" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-sm font-bold text-white/90">Sleep timer running</div>
+                      <div className="text-xs text-white/40 mt-0.5">
+                        {Math.floor((now - sleepTimerStart) / 60000)} min elapsed
+                      </div>
+                    </div>
+                    <button onClick={() => { stopSleepTimer(); dismiss() }} className="h-9 px-3 rounded-xl bg-accent-500/20 text-accent-300 text-xs font-bold border border-accent-500/30 hover:bg-accent-500/30 transition-colors shrink-0 flex items-center gap-1.5">
+                      <Square className="w-3.5 h-3.5" />
+                      Stop
+                    </button>
+                  </div>
+                )}
+
+                {!waterDue && !sleepDue && (
+                  <div className="py-8 text-center text-sm text-white/30 italic">No notifications right now.</div>
+                )}
               </div>
             </div>
-          )}
+          </div>
         </>
       )}
     </div>

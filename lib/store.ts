@@ -92,6 +92,7 @@ interface DashboardState {
   deleteReminder: (id: string) => void
   waterTimerMin: number
   lastWaterNotif: number
+  lastSleepNotif: number
   setWaterTimerMin: (m: number) => void
   markWaterNotif: () => void
 
@@ -149,8 +150,9 @@ export const useStore = create<DashboardState>((set, get) => ({
   supabaseReady: false,
 
   reminders: [],
-  waterTimerMin: 30,
+  waterTimerMin: 45,
   lastWaterNotif: 0,
+  lastSleepNotif: 0,
 
   syncWithSupabase: async () => {
     const remote = await pullFromSupabase()
@@ -289,11 +291,8 @@ export const useStore = create<DashboardState>((set, get) => ({
 
   startSleepTimer: () => {
     const now = Date.now()
-    set({ sleepTimerStart: now })
+    set({ sleepTimerStart: now, lastSleepNotif: now })
     localStorage.setItem("sleep_timer_start", JSON.stringify(now))
-    get().addReminder("Turn off sleep timer?", "task", 30)
-    get().addReminder("Still sleeping? Turn off sleep timer", "task", 60)
-    get().addReminder("Sleep timer running for 90min — turn it off?", "task", 90)
     autoSync()
   },
   stopSleepTimer: () => {
@@ -319,9 +318,10 @@ export const useStore = create<DashboardState>((set, get) => ({
   },
   loadReminders: () => {
     const saved = storeGet<Reminder[]>("reminders_v1") || []
-    const waterMin = storeGet<number>("water_timer_min_v1") || 30
+    const waterMin = storeGet<number>("water_timer_min_v1") || 45
     const lastNotif = storeGet<number>("water_last_notif_v1") || 0
-    set({ reminders: saved, waterTimerMin: waterMin, lastWaterNotif: lastNotif })
+    const lastSleep = storeGet<number>("sleep_last_notif_v1") || 0
+    set({ reminders: saved, waterTimerMin: waterMin, lastWaterNotif: lastNotif, lastSleepNotif: lastSleep })
   },
 
   toggleSidebar: () => set(s => ({ sidebarOpen: !s.sidebarOpen })),
