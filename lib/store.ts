@@ -11,7 +11,7 @@ import { pullFromSupabase, pushToSupabase } from "./supabase"
 const recentlyModified = new Set<string>()
 let clearRecentlyModified: ReturnType<typeof setTimeout> | null = null
 
-function markModified(key: string) {
+export function markModified(key: string) {
   recentlyModified.add(key)
   if (clearRecentlyModified) clearTimeout(clearRecentlyModified)
   clearRecentlyModified = setTimeout(() => recentlyModified.clear(), 5000)

@@ -6,6 +6,7 @@ import { Plus, Trash2, TrendingUp, TrendingDown, Minus } from "lucide-react"
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area, Cell } from "recharts"
 import { toDateString } from "@/lib/utils"
 import { useMediaQuery } from "@/lib/use-media-query"
+import { markModified } from "@/lib/store"
 
 interface WeightEntry {
   date: string
@@ -29,6 +30,7 @@ export function WeightTracker() {
   const save = (next: WeightEntry[]) => {
     setEntries(next)
     localStorage.setItem("weight_entries_v1", JSON.stringify(next))
+    markModified("weight_entries_v1")
   }
 
   const add = () => {

@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { motion, AnimatePresence, Reorder } from "framer-motion"
 import { Plus, Sparkles, ArrowRight, GripVertical, Trash2, Zap, Timer } from "lucide-react"
-import { useStore } from "@/lib/store"
+import { useStore, markModified } from "@/lib/store"
 import { cn } from "@/lib/utils"
 
 export function TodoList() {
@@ -169,6 +169,7 @@ export function TodoList() {
                           if (updated[idx]) {
                             updated[idx] = { ...updated[idx], reminderMin: m }
                             localStorage.setItem("goals:" + key, JSON.stringify(updated))
+                            markModified("goals:" + key)
                           }
                         }
                       }}
