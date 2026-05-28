@@ -65,7 +65,7 @@ export function NotificationPanel() {
   const dismiss = () => setNotificationPanel(false)
 
   return (
-    <div ref={panelRef} className="relative">
+    <div className="relative">
       <button
         onClick={() => setNotificationPanel(!notificationPanelOpen)}
         className="relative h-9 w-9 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center hover:bg-white/[0.08] transition-colors"
