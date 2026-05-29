@@ -7,12 +7,13 @@ import { useEffect } from "react"
 import {
   LayoutDashboard, Activity, Dumbbell, Weight, FolderGit2, Moon,
   ChevronLeft, ChevronRight, Sparkles, X,
+  BookOpen, Calendar, FileText, Volume2, Clock,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useStore } from "@/lib/store"
 import { useMediaQuery } from "@/lib/use-media-query"
 
-const navItems = [
+const workNav = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/health", label: "Health", icon: Activity },
   { href: "/gym", label: "Gym", icon: Dumbbell },
@@ -21,10 +22,19 @@ const navItems = [
   { href: "/projects", label: "Projects", icon: FolderGit2 },
 ]
 
+const studyNav = [
+  { href: "/study", label: "Study", icon: BookOpen },
+  { href: "/study/tasks", label: "Tasks", icon: LayoutDashboard },
+  { href: "/study/exams", label: "Exams", icon: Calendar },
+  { href: "/study/files", label: "Files", icon: FileText },
+  { href: "/study/sounds", label: "Sounds", icon: Volume2 },
+  { href: "/study/commute", label: "Commute", icon: Clock },
+]
+
 export function Sidebar() {
   const pathname = usePathname()
   const isMobile = useMediaQuery("(max-width: 1023px)")
-  const { sidebarOpen, toggleSidebar, setAIPanel, aiPanelOpen, mobileMenuOpen, setMobileMenu } = useStore()
+  const { sidebarOpen, toggleSidebar, setAIPanel, aiPanelOpen, mobileMenuOpen, setMobileMenu, mode } = useStore()
 
   useEffect(() => {
     setMobileMenu(false)
@@ -41,6 +51,7 @@ export function Sidebar() {
 
   const sidebarWidth = 240
   const collapsedWidth = 72
+  const navItems = mode === "study" ? studyNav : workNav
 
   return (
     <>
@@ -74,12 +85,12 @@ export function Sidebar() {
                 exit={{ opacity: 0, width: 0 }}
                 className="text-sm font-bold text-gradient truncate"
               >
-                Dashboard
+                {mode === "study" ? "Study Mode" : "Dashboard"}
               </motion.span>
             )}
           </AnimatePresence>
           {isMobile && (
-            <span className="text-sm font-bold text-gradient truncate">Dashboard</span>
+            <span className="text-sm font-bold text-gradient truncate">{mode === "study" ? "Study Mode" : "Dashboard"}</span>
           )}
           {isMobile && (
             <button
@@ -121,7 +132,7 @@ export function Sidebar() {
         </nav>
 
         <div className="p-2 border-t border-white/[0.06] space-y-1">
-          {!isMobile && (
+          {!isMobile && mode === "work" && (
             <motion.button
               initial={{ opacity: 0 }}
               animate={{ opacity: sidebarOpen ? 1 : 0 }}

@@ -5,9 +5,10 @@ import { Search, Command, Menu, X, Github } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useStore } from "@/lib/store"
 import { NotificationPanel } from "./NotificationPanel"
+import { ModeToggle } from "./ModeToggle"
 
 export function TopNav() {
-  const { setCommandPalette, setAIPanel, aiPanelOpen, mobileMenuOpen, setMobileMenu } = useStore()
+  const { setCommandPalette, setAIPanel, aiPanelOpen, mobileMenuOpen, setMobileMenu, mode } = useStore()
   const [dateStr, setDateStr] = useState("")
 
   useEffect(() => {
@@ -27,6 +28,8 @@ export function TopNav() {
       </div>
 
       <div className="flex items-center gap-2">
+        <ModeToggle />
+
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -41,14 +44,16 @@ export function TopNav() {
           </span>
         </motion.button>
 
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setAIPanel(!aiPanelOpen)}
-          className="relative h-9 w-9 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center hover:bg-brand-500/20 transition-colors"
-        >
-          <Command className="w-4 h-4 text-brand-400" />
-        </motion.button>
+        {mode === "work" && (
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setAIPanel(!aiPanelOpen)}
+            className="relative h-9 w-9 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center hover:bg-brand-500/20 transition-colors"
+          >
+            <Command className="w-4 h-4 text-brand-400" />
+          </motion.button>
+        )}
 
         <NotificationPanel />
 

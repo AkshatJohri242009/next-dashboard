@@ -11,7 +11,7 @@ import { useMediaQuery } from "@/lib/use-media-query"
 import "./globals.css"
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const { sidebarOpen, loadGoals, loadHealth, loadGym, loadSleepLog, loadReminders, loadTrackedProjects, syncWithSupabase } = useStore()
+  const { sidebarOpen, loadGoals, loadHealth, loadGym, loadSleepLog, loadReminders, loadTrackedProjects, loadStudyData, syncWithSupabase } = useStore()
   const isMobile = useMediaQuery("(max-width: 1023px)")
 
   useEffect(() => {
@@ -20,6 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     loadGym()
     loadSleepLog()
     loadReminders()
+    loadStudyData()
     syncWithSupabase()
     document.title = "My Dashboard"
     const syncInterval = setInterval(() => {
@@ -30,9 +31,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       loadSleepLog()
       loadReminders()
       loadTrackedProjects()
+      loadStudyData()
     }, 30000)
     return () => clearInterval(syncInterval)
-  }, [loadGoals, loadHealth, loadGym, loadSleepLog, loadReminders, loadTrackedProjects, syncWithSupabase])
+  }, [loadGoals, loadHealth, loadGym, loadSleepLog, loadReminders, loadTrackedProjects, loadStudyData, syncWithSupabase])
 
   return (
     <html lang="en">

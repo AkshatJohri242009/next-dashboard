@@ -7,6 +7,7 @@ import {
   keyFor, todayKey, tomorrowKey,
 } from "./utils"
 import { pullFromSupabase, pushToSupabase, type SyncEntry } from "./supabase"
+import type { StudyTask } from "./study-types"
 
 const recentlyModified = new Set<string>()
 let clearRecentlyModified: ReturnType<typeof setTimeout> | null = null
@@ -140,6 +141,15 @@ interface DashboardState {
   setCurrentProject: (name: string | null) => void
   startTracking: () => void
   stopTracking: () => void
+
+  mode: "work" | "study"
+  setMode: (m: "work" | "study") => void
+  studyTasks: StudyTask[]
+  studyStreak: number
+  loadStudyData: () => void
+  addStudyTask: (text: string) => void
+  toggleStudyTask: (id: string) => void
+  deleteStudyTask: (id: string) => void
 }
 
 const defaultHealth: HealthState = {
@@ -385,7 +395,7 @@ export const useStore = create<DashboardState>((set, get) => ({
     set({ waterTimerMin: m, lastWaterNotif: Date.now() })
     storeSet("water_timer_min_v1", m)
     storeSet("water_last_notif_v1", Date.now())
-    pushToSupabase(allLocalState())
+    autoSync()
   },
   markWaterNotif: () => {
     set({ lastWaterNotif: Date.now() })
@@ -528,6 +538,59 @@ export const useStore = create<DashboardState>((set, get) => ({
     }
     set({ trackedProjects: tracked })
     storeSet("tracked_projects", tracked)
+    autoSync()
+  },
+
+  mode: "work",
+  setMode: (m) => set({ mode: m }),
+  studyTasks: [],
+  studyStreak: 0,
+  loadStudyData: () => {
+    const tasks = storeGet<StudyTask[]>("study_tasks_v1") || []
+    const streakData = storeGet<{ count: number }>("study_streak_v1")
+    set({ studyTasks: tasks, studyStreak: streakData?.count ?? 0 })
+  },
+  addStudyTask: (text) => {
+    const task: StudyTask = {
+      id: `st_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+      text, done: false, createdAt: Date.now(),
+    }
+    const tasks = [...get().studyTasks, task]
+    storeSet("study_tasks_v1", tasks)
+    set({ studyTasks: tasks })
+    autoSync()
+  },
+  toggleStudyTask: (id) => {
+    const tasks = get().studyTasks.map(t =>
+      t.id === id ? { ...t, done: !t.done } : t
+    )
+    storeSet("study_tasks_v1", tasks)
+    set({ studyTasks: tasks })
+    // Update streak when completing a task
+    const today = new Date().toISOString().slice(0, 10)
+    const doneToday = tasks.filter(t => t.done)
+    const streakKey = "study_streak_v1"
+    const streakData = storeGet<{ count: number; date: string }>(streakKey) || { count: 0, date: "" }
+    if (doneToday.length > 0) {
+      const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10)
+      if (streakData.date === today) {
+        // Already counted today
+      } else if (streakData.date === yesterday) {
+        streakData.count++
+        streakData.date = today
+      } else {
+        streakData.count = 1
+        streakData.date = today
+      }
+      storeSet(streakKey, streakData)
+      set({ studyStreak: streakData.count })
+    }
+    autoSync()
+  },
+  deleteStudyTask: (id) => {
+    const tasks = get().studyTasks.filter(t => t.id !== id)
+    storeSet("study_tasks_v1", tasks)
+    set({ studyTasks: tasks })
     autoSync()
   },
 }))

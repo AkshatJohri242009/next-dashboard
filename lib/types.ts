@@ -88,4 +88,4 @@ export interface TrackedProject {
   startTime: number | null
 }
 
-export type Page = 'main' | 'health' | 'gym' | 'weight' | 'projects'
+export type Page = 'main' | 'health' | 'gym' | 'weight' | 'projects' | 'study' | 'study-tasks' | 'study-exams' | 'study-files' | 'study-sounds' | 'study-commute'
