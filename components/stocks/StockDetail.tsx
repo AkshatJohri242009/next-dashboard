@@ -1,9 +1,11 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import { X } from "lucide-react"
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
+import { useStore } from "@/lib/store"
+import { currencySymbol } from "@/lib/utils"
 import type { StockHistoryPoint } from "@/lib/types"
 
 const RANGES = [
@@ -24,6 +26,8 @@ export function StockDetail({ symbol, onClose }: Props) {
   const [history, setHistory] = useState<StockHistoryPoint[]>([])
   const [range, setRange] = useState("1mo")
   const [loading, setLoading] = useState(false)
+  const { stockQuotes } = useStore()
+  const q = stockQuotes[symbol]
 
   useEffect(() => {
     setLoading(true)
@@ -72,7 +76,7 @@ export function StockDetail({ symbol, onClose }: Props) {
         <div className="flex items-baseline gap-2">
           {history.length > 0 && (
             <>
-              <span className="text-lg font-bold text-white/90">${history[history.length - 1].close.toFixed(2)}</span>
+              <span className="text-lg font-bold text-white/90">{currencySymbol(q?.currency)}{history[history.length - 1].close.toFixed(2)}</span>
               <span className={`text-xs font-mono ${change >= 0 ? "text-brand-400" : "text-red-400"}`}>
                 {change >= 0 ? "+" : ""}{change.toFixed(2)}%
               </span>
@@ -113,7 +117,7 @@ export function StockDetail({ symbol, onClose }: Props) {
                     fontSize: 12,
                   }}
                   labelFormatter={(label) => new Date(label).toLocaleDateString()}
-                  formatter={(value: number) => [`$${value.toFixed(2)}`, "Close"]}
+                  formatter={(value: number) => [`${currencySymbol(q?.currency)}${value.toFixed(2)}`, "Price"]}
                 />
                 <Area
                   type="monotone"

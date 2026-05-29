@@ -5,7 +5,7 @@ export async function GET(request: Request) {
   const symbols = searchParams.get("symbols")
   if (!symbols) return NextResponse.json({ error: "symbols required" }, { status: 400 })
 
-  const results: Record<string, { price: number; change: number; changePercent: number; name?: string }> = {}
+  const results: Record<string, { price: number; change: number; changePercent: number; name?: string; currency?: string }> = {}
 
   for (const symbol of symbols.split(",")) {
     try {
@@ -24,6 +24,7 @@ export async function GET(request: Request) {
           ? (((meta.regularMarketPrice ?? 0) - meta.chartPreviousClose) / meta.chartPreviousClose) * 100
           : 0,
         name: meta.shortName ?? meta.symbol,
+        currency: meta.currency || "USD",
       }
     } catch {
       continue

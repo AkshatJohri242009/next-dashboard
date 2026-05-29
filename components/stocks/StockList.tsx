@@ -1,9 +1,10 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { motion } from "framer-motion"
-import { Plus, Trash2, TrendingUp, TrendingDown, Search, X } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
+import { Plus, Trash2, TrendingUp, TrendingDown, Search, X, RefreshCw } from "lucide-react"
 import { useStore } from "@/lib/store"
+import { currencySymbol } from "@/lib/utils"
 import type { StockHolding } from "@/lib/types"
 
 interface SearchResult {
@@ -88,7 +89,11 @@ export function StockList() {
         </div>
         <div className="glass rounded-xl px-4 py-3">
           <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase">Value</span>
-          <p className="text-xl font-bold text-white/90 mt-1">${totalValue.toFixed(2)}</p>
+          <p className="text-xl font-bold text-white/90 mt-1">
+            {stockHoldings.length > 0
+              ? `${currencySymbol(stockQuotes[stockHoldings[0].symbol]?.currency)}${totalValue.toFixed(2)}`
+              : "$0.00"}
+          </p>
         </div>
         <div className="glass rounded-xl px-4 py-3">
           <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase">Return</span>
@@ -114,30 +119,42 @@ export function StockList() {
               </button>
             )}
           </div>
-          {showResults && results.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: -4 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="absolute left-0 right-0 top-full mt-1 z-10 glass-strong rounded-xl border border-white/[0.08] shadow-2xl max-h-48 overflow-y-auto"
-            >
-              {results.map(r => (
-                <button
-                  key={r.symbol}
-                  type="button"
-                  onClick={() => handleSelect(r)}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 text-left hover:bg-white/[0.04] transition-colors"
-                >
-                  <span className="text-sm font-bold text-white/80">{r.symbol}</span>
-                  <span className="text-[11px] text-white/30 flex-1 truncate">{r.name}</span>
-                  <span className="text-[10px] text-white/20 font-mono">{r.exchange}</span>
-                </button>
-              ))}
-            </motion.div>
-          )}
+          <AnimatePresence>
+            {showResults && results.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: -8, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -6, scale: 0.96 }}
+                transition={{ duration: 0.15, ease: "easeOut" }}
+                className="absolute left-0 right-0 top-full mt-1 z-10 bg-[#050506] rounded-xl border border-white/[0.08] shadow-2xl max-h-48 overflow-y-auto"
+              >
+                {results.map((r, i) => (
+                  <motion.button
+                    key={r.symbol}
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.025 }}
+                    type="button"
+                    onClick={() => handleSelect(r)}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 text-left hover:bg-white/[0.04] transition-colors"
+                  >
+                    <span className="text-sm font-bold text-white/80">{r.symbol}</span>
+                    <span className="text-[11px] text-white/30 flex-1 truncate">{r.name}</span>
+                    <span className="text-[10px] text-white/20 font-mono">{r.exchange}</span>
+                  </motion.button>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
           {searching && (
-            <div className="absolute right-3 top-1/2 -translate-y-1/2">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute right-3 top-1/2 -translate-y-1/2"
+            >
               <div className="w-3.5 h-3.5 border-2 border-brand-400/30 border-t-brand-400 rounded-full animate-spin" />
-            </div>
+            </motion.div>
           )}
         </div>
         <input
@@ -171,13 +188,16 @@ export function StockList() {
         {stockHoldings.length === 0 && (
           <p className="text-sm text-white/30 text-center py-8">No stocks tracked yet. Search and add a ticker above.</p>
         )}
-        <button
+        <motion.button
           onClick={fetchStockQuotes}
-          className="text-[11px] text-white/20 hover:text-white/40 transition-colors mb-1"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.95 }}
+          className="text-[11px] text-white/20 hover:text-white/40 transition-colors mb-1 flex items-center gap-1"
         >
-          Refresh quotes
-        </button>
-        {stockHoldings.map((h) => {
+          <RefreshCw className="w-3 h-3" /> Refresh quotes
+        </motion.button>
+        <AnimatePresence>
+          {stockHoldings.map((h) => {
           const q = stockQuotes[h.symbol]
           const expanded = stockExpandedSymbol === h.symbol
           const value = q ? q.price * h.shares : 0
@@ -185,21 +205,26 @@ export function StockList() {
           return (
             <motion.div
               key={h.symbol}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
+              layout
+              initial={{ opacity: 0, y: 12, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -8, scale: 0.95 }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
               className="glass rounded-xl overflow-hidden"
             >
-              <button
+              <motion.button
                 onClick={() => setStockExpanded(expanded ? null : h.symbol)}
-                className="w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 text-left hover:bg-white/[0.02] transition-colors"
+                whileHover={{ backgroundColor: "rgba(255,255,255,0.03)" }}
+                whileTap={{ scale: 0.995 }}
+                className="w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 text-left transition-colors"
               >
                 <div className="flex-1 min-w-0">
                   <span className="text-sm font-bold text-white/80">{h.symbol}</span>
                   {q?.name && <span className="hidden sm:inline text-[11px] text-white/30 ml-2 truncate">{q.name}</span>}
                 </div>
-                <div className="text-right">
+                <div className="text-right shrink-0">
                   <span className="text-sm font-bold text-white/90 block">
-                    {q ? `$${q.price.toFixed(2)}` : "—"}
+                    {q ? `${currencySymbol(q.currency)}${q.price.toFixed(2)}` : "—"}
                   </span>
                   {q && (
                     <span className={`text-[10px] sm:text-[11px] font-mono flex items-center gap-0.5 justify-end ${
@@ -212,7 +237,7 @@ export function StockList() {
                   )}
                 </div>
                 <span className="text-xs sm:text-sm font-bold text-white/70 min-w-[60px] sm:min-w-[80px] text-right">
-                  ${value.toFixed(2)}
+                  {q ? `${currencySymbol(q.currency)}${value.toFixed(2)}` : "—"}
                 </span>
                 {h.buyPrice && (
                   <span className={`hidden sm:block text-xs font-mono min-w-[60px] text-right ${
@@ -227,10 +252,11 @@ export function StockList() {
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
-              </button>
+              </motion.button>
             </motion.div>
           )
         })}
+        </AnimatePresence>
       </div>
     </div>
   )

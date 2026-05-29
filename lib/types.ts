@@ -103,6 +103,7 @@ export interface StockQuote {
   change: number
   changePercent: number
   name?: string
+  currency?: string
 }
 
 export interface StockHistoryPoint {

@@ -136,19 +136,19 @@ export function ThemePanel() {
               const handler = [handleBrandR, handleBrandG, handleBrandB][i]
               return (
                 <div key={channel} className="flex items-center gap-2">
-                  <span className="text-[11px] font-mono text-white/30 w-4">{channel}</span>
+                  <span className="text-[11px] font-mono text-white/40 w-4">{channel}</span>
                   <input
                     type="range"
                     min={0} max={255}
                     value={val}
                     onChange={e => handler(parseInt(e.target.value))}
-                    className="flex-1 h-6 rounded-full appearance-none bg-white/[0.06] accent-brand-400 cursor-pointer
-                      [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5
+                    className="flex-1 h-6 rounded-full appearance-none bg-white/[0.1] accent-brand-400 cursor-pointer
+                      [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6
                       [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white
-                      [&::-webkit-slider-thumb]:shadow-[0_0_10px_rgba(255,255,255,0.3)]
+                      [&::-webkit-slider-thumb]:shadow-[0_0_12px_rgba(255,255,255,0.4)]
                       [&::-webkit-slider-track]:h-full [&::-webkit-slider-track]:rounded-full"
                   />
-                  <span className="text-[11px] font-mono text-white/40 w-8 text-right">{val}</span>
+                  <span className="text-[11px] font-mono text-white/50 w-8 text-right tabular-nums">{val}</span>
                 </div>
               )
             })}
@@ -156,7 +156,7 @@ export function ThemePanel() {
               type="color"
               value={customBrand}
               onChange={e => apply(e.target.value, customAccent)}
-              className="w-full h-8 rounded-lg cursor-pointer bg-transparent border-0"
+              className="w-full h-9 rounded-xl cursor-pointer bg-transparent border border-white/[0.1] p-0.5"
             />
           </div>
         </div>
@@ -171,19 +171,19 @@ export function ThemePanel() {
               const handler = [handleAccentR, handleAccentG, handleAccentB][i]
               return (
                 <div key={channel} className="flex items-center gap-2">
-                  <span className="text-[11px] font-mono text-white/30 w-4">{channel}</span>
+                  <span className="text-[11px] font-mono text-white/40 w-4">{channel}</span>
                   <input
                     type="range"
                     min={0} max={255}
                     value={val}
                     onChange={e => handler(parseInt(e.target.value))}
-                    className="flex-1 h-6 rounded-full appearance-none bg-white/[0.06] accent-brand-400 cursor-pointer
-                      [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5
+                    className="flex-1 h-6 rounded-full appearance-none bg-white/[0.1] accent-brand-400 cursor-pointer
+                      [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6
                       [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white
-                      [&::-webkit-slider-thumb]:shadow-[0_0_10px_rgba(255,255,255,0.3)]
+                      [&::-webkit-slider-thumb]:shadow-[0_0_12px_rgba(255,255,255,0.4)]
                       [&::-webkit-slider-track]:h-full [&::-webkit-slider-track]:rounded-full"
                   />
-                  <span className="text-[11px] font-mono text-white/40 w-8 text-right">{val}</span>
+                  <span className="text-[11px] font-mono text-white/50 w-8 text-right tabular-nums">{val}</span>
                 </div>
               )
             })}
@@ -191,7 +191,7 @@ export function ThemePanel() {
               type="color"
               value={customAccent}
               onChange={e => apply(customBrand, e.target.value)}
-              className="w-full h-8 rounded-lg cursor-pointer bg-transparent border-0"
+              className="w-full h-9 rounded-xl cursor-pointer bg-transparent border border-white/[0.1] p-0.5"
             />
           </div>
         </div>

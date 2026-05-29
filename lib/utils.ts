@@ -107,3 +107,15 @@ export function computePeakWindow(sleep: number, waterPct: number): number {
   const peak = Math.round((sleepScore * 0.45 + waterPct * 0.25 + timeScore * 0.30) * 100)
   return Math.max(0, Math.min(100, peak))
 }
+
+const CURRENCY_MAP: Record<string, string> = {
+  INR: "₹", USD: "$", EUR: "€", GBP: "£", JPY: "¥", CNY: "¥",
+  HKD: "HK$", SGD: "S$", AUD: "A$", CAD: "C$", CHF: "CHF",
+  KRW: "₩", BRL: "R$", MXN: "MX$", RUB: "₽", ZAR: "R",
+  SEK: "kr", NOK: "kr", DKK: "kr", NZD: "NZ$", TWD: "NT$",
+  THB: "฿", IDR: "Rp", MYR: "RM", PHP: "₱", VND: "₫",
+}
+
+export function currencySymbol(currency?: string): string {
+  return CURRENCY_MAP[currency?.toUpperCase() || ""] || "$"
+}
