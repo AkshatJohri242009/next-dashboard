@@ -27,7 +27,7 @@ export function FocusSounds() {
       stopFn?.()
       const s = play()
       setActive(id)
-      setStopFn(() => s)
+      setStopFn(s)
     }
   }, [active, stopFn])
 
@@ -36,8 +36,12 @@ export function FocusSounds() {
   }, [volume, muted])
 
   useEffect(() => {
-    return () => { stopFn?.(); stopAllSounds() }
+    return () => { stopFn?.() }
   }, [stopFn])
+
+  useEffect(() => {
+    return () => { stopAllSounds() }
+  }, [])
 
   return (
     <div className="glass rounded-2xl p-4 sm:p-6 space-y-4">
