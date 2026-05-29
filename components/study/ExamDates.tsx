@@ -72,7 +72,7 @@ export function ExamDates() {
         </span>
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         <div className="glass rounded-xl p-3 text-center space-y-1">
           <Calendar className="w-4 h-4 text-brand-400 mx-auto" />
           <span className="block text-lg font-extrabold tabular-nums text-white/80">{total}</span>
@@ -106,7 +106,7 @@ export function ExamDates() {
           type="date"
           value={date}
           onChange={e => setDate(e.target.value)}
-          className="h-11 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white/80 outline-none focus:border-brand-500/40 focus:bg-white/[0.06] transition-colors [color-scheme:dark]"
+          className="h-11 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white/80 outline-none focus:border-brand-500/40 focus:bg-white/[0.06] transition-colors [color-scheme:dark] sm:w-[140px] min-w-0"
         />
         <button
           onClick={add}

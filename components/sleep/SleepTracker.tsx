@@ -95,7 +95,7 @@ export function SleepTracker() {
           </div>
           <button
             onClick={() => setAIPanel(true)}
-            className="text-sm text-white/60 hover:text-brand-400 transition-colors text-left"
+            className="text-sm text-white/60 hover:text-brand-400 transition-colors text-left py-2"
           >
             {avg < 420
               ? `Averaging ${timeFmt(avg)} — below the 7-9h range.`

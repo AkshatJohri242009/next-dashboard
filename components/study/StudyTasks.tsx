@@ -34,7 +34,7 @@ export function StudyTasks() {
         </span>
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         <div className="glass rounded-xl p-3 text-center space-y-1">
           <Target className="w-4 h-4 text-brand-400 mx-auto" />
           <span className="block text-lg font-extrabold tabular-nums text-white/80">{total}</span>

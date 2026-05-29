@@ -21,7 +21,7 @@ export function WaterTracker() {
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-2">
         {fields.map(f => (
           <label key={f.id} className="flex flex-col gap-1">
             <span className="text-[10px] font-mono font-extrabold tracking-wider text-white/30 uppercase">{f.label}</span>

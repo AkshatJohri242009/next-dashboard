@@ -137,7 +137,7 @@ export function TodoList() {
               <button
                 onClick={() => toggleQueued(idx)}
                 className={cn(
-                  "h-7 w-7 sm:h-7 sm:w-7 rounded-lg sm:rounded-lg flex items-center justify-center text-xs transition-colors",
+                  "h-8 w-8 sm:h-7 sm:w-7 rounded-lg flex items-center justify-center text-xs transition-colors",
                   goal.queued ? "text-amber-400 bg-amber-400/10" : "text-white/30 hover:text-white/60",
                 )}
               >
@@ -148,7 +148,7 @@ export function TodoList() {
                 <button
                   onClick={() => setRemindIdx(remindIdx === idx ? null : idx)}
                   className={cn(
-                    "h-7 w-7 sm:h-7 sm:w-7 rounded-lg sm:rounded-lg flex items-center justify-center text-xs transition-colors",
+                    "h-8 w-8 sm:h-7 sm:w-7 rounded-lg flex items-center justify-center text-xs transition-colors",
                     goal.reminderMin ? "text-brand-400 bg-brand-400/10" : "text-white/30 hover:text-brand-400/60",
                   )}
                 >
@@ -191,7 +191,7 @@ export function TodoList() {
 
               <button
                 onClick={() => deleteGoal(idx)}
-                className="h-7 w-7 sm:h-7 sm:w-7 rounded-lg sm:rounded-lg flex items-center justify-center text-white/30 hover:text-red-400 hover:bg-red-400/10 transition-colors"
+                className="h-8 w-8 sm:h-7 sm:w-7 rounded-lg flex items-center justify-center text-white/30 hover:text-red-400 hover:bg-red-400/10 transition-colors"
               >
                 <Trash2 className="w-3.5 h-3.5" />
               </button>

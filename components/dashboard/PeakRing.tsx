@@ -70,8 +70,8 @@ export function PeakRing() {
             >
               {!time || sleepTimerStart ? "--" : `${Math.round(peakPct)}%`}
             </motion.span>
-            <span className="text-[9.5px] font-mono font-extrabold tracking-widest text-white/30 mt-1">{phase}</span>
-            <span className="text-[10.5px] font-mono text-white/30 mt-1">
+            <span className="text-[10px] sm:text-[9.5px] font-mono font-extrabold tracking-widest text-white/30 mt-1">{phase}</span>
+            <span className="text-[11px] sm:text-[10.5px] font-mono text-white/30 mt-1">
               {time ? time.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" }) : ""}
             </span>
           </div>
