@@ -51,7 +51,8 @@ function allLocalState(): Record<string, unknown> {
         "goal_streak_v1", "health_dashboard_v1", "gym_dashboard_v1",
         "last_sleep_hours", "weight_entries_v1", "reminders_v1",
         "water_timer_min_v1", "water_last_notif_v1",
-        "sleep_last_notif_v1",
+        "sleep_last_notif_v1", "exam_dates_v1", "study_files_v1",
+        "study_tasks_v1", "study_streak_v1",
       ].includes(key)
     )) {
       try { state[key] = JSON.parse(localStorage.getItem(key)!) }

@@ -31,6 +31,7 @@ export function WeightTracker() {
   const save = (next: WeightEntry[]) => {
     setEntries(next)
     localStorage.setItem("weight_entries_v1", JSON.stringify(next))
+    localStorage.setItem("_ts:weight_entries_v1", new Date().toISOString())
     markModified("weight_entries_v1")
   }
 

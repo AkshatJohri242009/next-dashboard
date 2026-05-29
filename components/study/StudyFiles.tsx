@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { motion } from "framer-motion"
 import { Upload, Download, Trash2, FileText, HardDrive } from "lucide-react"
+import { markModified } from "@/lib/store"
 import type { StudyFile } from "@/lib/study-types"
 
 const STORAGE_KEY = "study_files_v1"
@@ -14,6 +15,8 @@ function storeGet<T>(key: string): T | null {
 }
 function storeSet(key: string, value: unknown) {
   localStorage.setItem(key, JSON.stringify(value))
+  localStorage.setItem("_ts:" + key, new Date().toISOString())
+  markModified(key)
 }
 
 export function StudyFiles() {

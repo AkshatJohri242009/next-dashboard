@@ -169,6 +169,7 @@ export function TodoList() {
                           if (updated[idx]) {
                             updated[idx] = { ...updated[idx], reminderMin: m }
                             localStorage.setItem("goals:" + key, JSON.stringify(updated))
+                            localStorage.setItem("_ts:goals:" + key, new Date().toISOString())
                             markModified("goals:" + key)
                           }
                         }
