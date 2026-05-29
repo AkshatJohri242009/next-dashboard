@@ -54,7 +54,7 @@ Single personal dashboard PWA (Next.js 14, Supabase, Zustand, Recharts). Deploye
 
 ### UI & Mobile Fixes
 - Layout padding: `p-3` → `p-4`
-- Stats grids: `grid-cols-3` → `grid-cols-2 sm:grid-cols-3` (StudyTasks, ExamDates)
+- Stats grids: `grid-cols-3` → `grid-cols-2 sm:grid-cols-3` (StudyTasks, ExamDates, StudyStats, StockList)
 - Touch targets: all hover-reveal delete/download buttons given `h-8 w-8` (≥28px), slider thumbs `w-9 h-9`, close buttons in AIPanel/Sidebar
 - PeakRing: phase `text-[10px] sm:text-[9.5px]`, time `text-[11px] sm:text-[10.5px]`
 - TodoList icon buttons `h-7` → `h-8 w-8 sm:h-7 sm:w-7`
@@ -62,6 +62,11 @@ Single personal dashboard PWA (Next.js 14, Supabase, Zustand, Recharts). Deploye
 - SleepTracker AI button: added `py-2`
 - Sidebar nav: removed `scrollbar-hide` so scrollbar is visible
 - Date inputs: `color-scheme` handled by `.light` CSS override
+- StockList: responsive card layout — `px-3 sm:px-4`, `py-2.5 sm:py-3`, company name + buy gain% hidden on mobile (`hidden sm:*`), change $ hidden on mobile, smaller text `text-[10px] sm:text-[11px]`; search input `w-full sm:flex-1`; shares/buy-price inputs `flex-1 min-w-[80px]` instead of fixed widths
+- StockDetail: range buttons `h-8 sm:h-7` for mobile touch targets
+- StudyStats: stacked input forms on mobile (`w-full sm:flex-1`), description hidden on mobile (`hidden sm:block`); score/total + Add wrapped in `flex` row, delete buttons `h-8 w-8 sm:h-7 sm:w-7`
+- StudyCalendar: nav buttons `h-8 w-8 sm:h-7 sm:w-7`, month label `min-w-[100px] sm:min-w-[140px]`
+- ThemePanel: opaque `bg-[#050506]` instead of `glass-strong` for RGB slider readability
 
 ### Sync Architecture
 - `autoSync()` — fire-and-forget push after mutations (non-critical paths)
