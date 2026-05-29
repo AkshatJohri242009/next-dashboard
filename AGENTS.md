@@ -25,12 +25,14 @@ Single personal dashboard PWA (Next.js 14, Supabase, Zustand, Recharts). Deploye
 - Persisted to `theme_v1` key in `allLocalState()` for Supabase sync
 
 ### Stocks Tab
-- **API routes**: `/api/stock/quote` (current prices), `/api/stock/history` (1D–5Y data), `/api/stock/search` (search by company name via Yahoo Finance)
+- **API routes**: `/api/stock/quote` (current prices + currency), `/api/stock/history` (1D–5Y data), `/api/stock/search` (search by company name via Yahoo Finance)
 - **Zustand store**: `stockHoldings`, `stockQuotes`, `stockExpandedSymbol`, `loadStocks`, `addStock`, `removeStock`, `setStockExpanded`, `fetchStockQuotes`
 - **Components**: `StockList` (search-by-name input with debounced dropdown, holdings cards, value/return stats, portfolio summary with Holdings/Value/Return cards), `StockDetail` (range selector 1D/5D/1M/3M/1Y/5Y, Recharts AreaChart with gradient)
 - **Sidebar**: position #2 in workNav (after Dashboard), `TrendingUp` icon
 - **Layout sync**: `loadStocks()` + `fetchStockQuotes()` called on mount and every 30s interval
 - **Gradient fix**: `stockGrad_${symbol}` unique ID per symbol to avoid SVG conflicts
+- **Currency**: Yahoo Finance `currency` field extracted in quote API → `StockQuote.currency`. `currencySymbol()` helper in utils.ts maps ~25 currency codes to symbols (`₹` for INR, `$` for USD, `€` for EUR, etc.)
+- **UX polish**: `AnimatePresence` around search dropdown with staggered entrance (25ms per result); portfolio cards use `layout` animation with smooth exit; hover/tap animations on cards, refresh button, and delete button
 - Persisted to `stocks_holdings_v1`, `stocks_quotes_v1` in `allLocalState()`
 
 ### Sound System (Web Audio API)
@@ -66,7 +68,7 @@ Single personal dashboard PWA (Next.js 14, Supabase, Zustand, Recharts). Deploye
 - StockDetail: range buttons `h-8 sm:h-7` for mobile touch targets
 - StudyStats: stacked input forms on mobile (`w-full sm:flex-1`), description hidden on mobile (`hidden sm:block`); score/total + Add wrapped in `flex` row, delete buttons `h-8 w-8 sm:h-7 sm:w-7`
 - StudyCalendar: nav buttons `h-8 w-8 sm:h-7 sm:w-7`, month label `min-w-[100px] sm:min-w-[140px]`
-- ThemePanel: opaque `bg-[#050506]` instead of `glass-strong` for RGB slider readability
+- ThemePanel: opaque `bg-[#050506]` instead of `glass-strong` for RGB slider readability; sliders improved with lighter track `bg-white/[0.1]`, bigger thumbs `w-6 h-6`, brighter shadow, `tabular-nums` value display; color inputs `rounded-xl` with border
 
 ### Sync Architecture
 - `autoSync()` — fire-and-forget push after mutations (non-critical paths)
@@ -89,7 +91,7 @@ Single personal dashboard PWA (Next.js 14, Supabase, Zustand, Recharts). Deploye
 | `lib/supabase.ts` | `pullFromSupabase` / `pushToSupabase` |
 | `lib/types.ts` | All TypeScript interfaces (Goal, Health, Gym, Stock, Theme, etc.) |
 | `lib/study-types.ts` | Study-specific types (StudyTask, ExamDate, StudyFile, StudyScore, StudyError) |
-| `lib/utils.ts` | cn(), date helpers, interpolateColor, waterGoalMl, computePeakWindow |
+| `lib/utils.ts` | cn(), date helpers, interpolateColor, waterGoalMl, computePeakWindow, currencySymbol (25+ currencies) |
 | `lib/sounds.ts` | Web Audio API noise generators (white, pink, brown, rain) — 3s buffers |
 | `app/globals.css` | CSS variables, glass classes, .light theme overrides, utilities |
 | `tailwind.config.ts` | Brand/accent/amber colors (400/500 use CSS vars), theme color namespace, animations |
@@ -169,3 +171,4 @@ Single personal dashboard PWA (Next.js 14, Supabase, Zustand, Recharts). Deploye
 - Default awake, not sleeping
 - Theme defaults: dark mode, brand #3bcb85, accent #748ffc
 - Mode persists across sessions via localStorage
+- Sleep timer auto-expires after 16h of inactivity (stale timestamps cleaned up)
