@@ -144,6 +144,10 @@ interface DashboardState {
 
   mode: "work" | "study"
   setMode: (m: "work" | "study") => void
+  lastWorkPath: string
+  lastStudyPath: string
+  setLastWorkPath: (path: string) => void
+  setLastStudyPath: (path: string) => void
   studyTasks: StudyTask[]
   studyStreak: number
   loadStudyData: () => void
@@ -543,6 +547,10 @@ export const useStore = create<DashboardState>((set, get) => ({
 
   mode: "work",
   setMode: (m) => set({ mode: m }),
+  lastWorkPath: "/",
+  lastStudyPath: "/study",
+  setLastWorkPath: (path) => set({ lastWorkPath: path }),
+  setLastStudyPath: (path) => set({ lastStudyPath: path }),
   studyTasks: [],
   studyStreak: 0,
   loadStudyData: () => {

@@ -5,7 +5,7 @@ import { motion } from "framer-motion"
 import { Volume2, VolumeX, Wind, Cloud, Waves, Droplets } from "lucide-react"
 import { playWhiteNoise, playPinkNoise, playBrownNoise, playRain, stopAllSounds, setMasterVolume } from "@/lib/sounds"
 
-const sounds = [
+const sounds: { id: string; label: string; icon: any; color: string; play: () => (() => void) | null }[] = [
   { id: "white", label: "White Noise", icon: Wind, color: "text-blue-400", play: playWhiteNoise },
   { id: "pink", label: "Pink Noise", icon: Cloud, color: "text-purple-400", play: playPinkNoise },
   { id: "brown", label: "Brown Noise", icon: Waves, color: "text-amber-400", play: playBrownNoise },
@@ -18,7 +18,7 @@ export function FocusSounds() {
   const [muted, setMuted] = useState(false)
   const [stopFn, setStopFn] = useState<(() => void) | null>(null)
 
-  const toggle = useCallback((id: string, play: () => () => void) => {
+  const toggle = useCallback((id: string, play: () => (() => void) | null) => {
     if (active === id) {
       stopFn?.()
       setActive(null)
@@ -26,8 +26,10 @@ export function FocusSounds() {
     } else {
       stopFn?.()
       const s = play()
-      setActive(id)
-      setStopFn(s)
+      if (s) {
+        setActive(id)
+        setStopFn(s)
+      }
     }
   }, [active, stopFn])
 
