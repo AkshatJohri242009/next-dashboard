@@ -5,9 +5,9 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useEffect } from "react"
 import {
-  LayoutDashboard, Activity, Dumbbell, Weight, FolderGit2, Moon,
+  LayoutDashboard, Activity, Dumbbell, Weight, FolderGit2, Moon, TrendingUp,
   ChevronLeft, ChevronRight, Sparkles, X,
-  BookOpen, Calendar, FileText, Volume2, Clock,
+  BookOpen, Calendar, FileText, Volume2, Clock, BarChart3,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useStore } from "@/lib/store"
@@ -15,6 +15,7 @@ import { useMediaQuery } from "@/lib/use-media-query"
 
 const workNav = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/stocks", label: "Stocks", icon: TrendingUp },
   { href: "/health", label: "Health", icon: Activity },
   { href: "/gym", label: "Gym", icon: Dumbbell },
   { href: "/weight", label: "Weight", icon: Weight },
@@ -24,6 +25,7 @@ const workNav = [
 
 const studyNav = [
   { href: "/study", label: "Study", icon: BookOpen },
+  { href: "/study/stats", label: "Stats", icon: BarChart3 },
   { href: "/study/tasks", label: "Tasks", icon: LayoutDashboard },
   { href: "/study/exams", label: "Exams", icon: Calendar },
   { href: "/study/files", label: "Files", icon: FileText },
@@ -95,14 +97,14 @@ export function Sidebar() {
           {isMobile && (
             <button
               onClick={() => setMobileMenu(false)}
-              className="ml-auto text-white/30 hover:text-white/60 transition-colors"
+              className="ml-auto h-8 w-8 flex items-center justify-center text-white/30 hover:text-white/60 transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
           )}
         </div>
 
-        <nav className="flex-1 p-2 space-y-1 overflow-y-auto scrollbar-hide">
+        <nav className="flex-1 p-2 space-y-1 overflow-y-auto">
           {navItems.map((item) => {
             const active = pathname === item.href
             return (

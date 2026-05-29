@@ -11,7 +11,7 @@ import { useMediaQuery } from "@/lib/use-media-query"
 import "./globals.css"
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const { sidebarOpen, loadGoals, loadHealth, loadGym, loadSleepLog, loadReminders, loadTrackedProjects, loadStudyData, syncWithSupabase } = useStore()
+  const { sidebarOpen, loadGoals, loadHealth, loadGym, loadSleepLog, loadReminders, loadTrackedProjects, loadStudyData, loadStocks, fetchStockQuotes, stockHoldings, syncWithSupabase, theme } = useStore()
   const isMobile = useMediaQuery("(max-width: 1023px)")
 
   useEffect(() => {
@@ -21,8 +21,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     loadSleepLog()
     loadReminders()
     loadStudyData()
+    loadStocks()
+    fetchStockQuotes()
     syncWithSupabase()
     document.title = "My Dashboard"
+    const root = document.documentElement
+    root.style.setProperty("--brand", theme.brandColor)
+    root.style.setProperty("--brand-500", theme.brandColor)
+    root.style.setProperty("--accent", theme.accentColor)
+    root.style.setProperty("--accent-500", theme.accentColor)
+    root.classList.toggle("light", theme.mode === "light")
     const syncInterval = setInterval(() => {
       syncWithSupabase()
       loadGoals()
@@ -32,9 +40,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       loadReminders()
       loadTrackedProjects()
       loadStudyData()
+      loadStocks()
+      fetchStockQuotes()
     }, 30000)
     return () => clearInterval(syncInterval)
-  }, [loadGoals, loadHealth, loadGym, loadSleepLog, loadReminders, loadTrackedProjects, loadStudyData, syncWithSupabase])
+  }, [loadGoals, loadHealth, loadGym, loadSleepLog, loadReminders, loadTrackedProjects, loadStudyData, loadStocks, fetchStockQuotes, syncWithSupabase, theme])
 
   return (
     <html lang="en">

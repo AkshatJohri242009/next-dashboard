@@ -89,3 +89,35 @@ export interface TrackedProject {
 }
 
 export type Page = 'main' | 'health' | 'gym' | 'weight' | 'projects' | 'study' | 'study-tasks' | 'study-exams' | 'study-files' | 'study-sounds' | 'study-commute'
+
+export interface StockHolding {
+  symbol: string
+  shares: number
+  buyPrice?: number
+  addedAt: number
+}
+
+export interface StockQuote {
+  symbol: string
+  price: number
+  change: number
+  changePercent: number
+  name?: string
+}
+
+export interface StockHistoryPoint {
+  date: string
+  close: number
+}
+
+export interface StockState {
+  holdings: StockHolding[]
+  quotes: Record<string, StockQuote>
+  expandedSymbol: string | null
+}
+
+export interface ThemeConfig {
+  mode: "dark" | "light"
+  brandColor: string
+  accentColor: string
+}

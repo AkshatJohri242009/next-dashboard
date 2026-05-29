@@ -29,3 +29,22 @@ export interface Airport {
   lat: number
   lon: number
 }
+
+export interface StudyScore {
+  id: string
+  type: "test" | "mock"
+  subject: string
+  score: number
+  total: number
+  date: string
+  createdAt: number
+}
+
+export interface StudyError {
+  id: string
+  subject: string
+  topic: string
+  description: string
+  date: string
+  createdAt: number
+}

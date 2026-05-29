@@ -139,7 +139,7 @@ export function ExamDates() {
             </div>
             <button
               onClick={() => remove(exam.id)}
-              className="opacity-0 group-hover:opacity-100 transition-opacity text-white/20 hover:text-red-400"
+              className="opacity-0 group-hover:opacity-100 transition-opacity text-white/20 hover:text-red-400 h-8 w-8 flex items-center justify-center"
             >
               <Trash2 className="w-3.5 h-3.5" />
             </button>
@@ -161,7 +161,7 @@ export function ExamDates() {
             </div>
             <button
               onClick={() => remove(exam.id)}
-              className="opacity-0 group-hover:opacity-100 transition-opacity text-white/20 hover:text-red-400"
+              className="opacity-0 group-hover:opacity-100 transition-opacity text-white/20 hover:text-red-400 h-8 w-8 flex items-center justify-center"
             >
               <Trash2 className="w-3.5 h-3.5" />
             </button>

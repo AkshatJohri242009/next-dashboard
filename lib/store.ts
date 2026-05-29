@@ -1,7 +1,7 @@
 "use client"
 
 import { create } from "zustand"
-import type { Goal, HealthState, GymState, Reminder, GitHubRepo, TrackedProject, SleepEntry } from "./types"
+import type { Goal, HealthState, GymState, Reminder, GitHubRepo, TrackedProject, SleepEntry, StockHolding, StockQuote, ThemeConfig } from "./types"
 import {
   getActiveDateString, getTomorrowDateString,
   keyFor, todayKey, tomorrowKey,
@@ -29,6 +29,15 @@ function storeSet(key: string, value: unknown) {
   markModified(key)
 }
 
+function applyTheme(theme: ThemeConfig) {
+  const root = document.documentElement
+  root.style.setProperty("--brand", theme.brandColor)
+  root.style.setProperty("--accent", theme.accentColor)
+  root.style.setProperty("--brand-500", theme.brandColor)
+  root.style.setProperty("--accent-500", theme.accentColor)
+  root.classList.toggle("light", theme.mode === "light")
+}
+
 function autoSync() {
   pushToSupabase(allLocalState())
 }
@@ -51,8 +60,11 @@ function allLocalState(): Record<string, unknown> {
         "goal_streak_v1", "health_dashboard_v1", "gym_dashboard_v1",
         "last_sleep_hours", "weight_entries_v1", "reminders_v1",
         "water_timer_min_v1", "water_last_notif_v1",
-        "sleep_last_notif_v1", "exam_dates_v1", "study_files_v1",
+        "exam_dates_v1", "study_files_v1",
         "study_tasks_v1", "study_streak_v1",
+        "study_scores_v1", "study_errors_v1",
+        "stocks_holdings_v1", "stocks_quotes_v1",
+        "theme_v1",
       ].includes(key)
     )) {
       try { state[key] = JSON.parse(localStorage.getItem(key)!) }
@@ -155,6 +167,18 @@ interface DashboardState {
   addStudyTask: (text: string) => void
   toggleStudyTask: (id: string) => void
   deleteStudyTask: (id: string) => void
+
+  stockHoldings: StockHolding[]
+  stockQuotes: Record<string, StockQuote>
+  stockExpandedSymbol: string | null
+  loadStocks: () => void
+  addStock: (symbol: string, shares: number, buyPrice?: number) => void
+  removeStock: (symbol: string) => void
+  setStockExpanded: (symbol: string | null) => void
+  fetchStockQuotes: () => Promise<void>
+
+  theme: ThemeConfig
+  setTheme: (theme: ThemeConfig) => void
 }
 
 const defaultHealth: HealthState = {
@@ -546,8 +570,24 @@ export const useStore = create<DashboardState>((set, get) => ({
     autoSync()
   },
 
-  mode: "work",
-  setMode: (m) => set({ mode: m }),
+  stockHoldings: [],
+  stockQuotes: {},
+  stockExpandedSymbol: null,
+
+  mode: (storeGet<"work" | "study">("dashboard_mode")) || "work",
+  theme: storeGet<ThemeConfig>("theme_v1") || { mode: "dark", brandColor: "#3bcb85", accentColor: "#748ffc" },
+
+  setMode: (m) => {
+    storeSet("dashboard_mode", m)
+    set({ mode: m })
+    autoSync()
+  },
+  setTheme: (theme) => {
+    storeSet("theme_v1", theme)
+    set({ theme })
+    applyTheme(theme)
+    autoSync()
+  },
   lastWorkPath: "/",
   lastStudyPath: "/study",
   setLastWorkPath: (path) => set({ lastWorkPath: path }),
@@ -601,5 +641,44 @@ export const useStore = create<DashboardState>((set, get) => ({
     storeSet("study_tasks_v1", tasks)
     set({ studyTasks: tasks })
     autoSync()
+  },
+
+  loadStocks: () => {
+    const holdings = storeGet<StockHolding[]>("stocks_holdings_v1") || []
+    const quotes = storeGet<Record<string, StockQuote>>("stocks_quotes_v1") || {}
+    set({ stockHoldings: holdings, stockQuotes: quotes })
+  },
+  addStock: (symbol, shares, buyPrice) => {
+    const holdings = [...get().stockHoldings]
+    const existing = holdings.find(h => h.symbol === symbol.toUpperCase())
+    if (existing) {
+      existing.shares += shares
+    } else {
+      holdings.push({ symbol: symbol.toUpperCase(), shares, buyPrice, addedAt: Date.now() })
+    }
+    storeSet("stocks_holdings_v1", holdings)
+    set({ stockHoldings: holdings })
+    autoSync()
+    get().fetchStockQuotes()
+  },
+  removeStock: (symbol) => {
+    const holdings = get().stockHoldings.filter(h => h.symbol !== symbol.toUpperCase())
+    storeSet("stocks_holdings_v1", holdings)
+    set({ stockHoldings: holdings })
+    autoSync()
+  },
+  setStockExpanded: (symbol) => set({ stockExpandedSymbol: symbol }),
+  fetchStockQuotes: async () => {
+    const holdings = get().stockHoldings
+    if (holdings.length === 0) return
+    const symbols = holdings.map(h => h.symbol).join(",")
+    try {
+      const res = await fetch(`/api/stock/quote?symbols=${symbols}`)
+      if (!res.ok) return
+      const data = await res.json()
+      const quotes = { ...get().stockQuotes, ...data }
+      storeSet("stocks_quotes_v1", quotes)
+      set({ stockQuotes: quotes })
+    } catch {}
   },
 }))

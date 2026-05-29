@@ -62,7 +62,7 @@ export function AIPanel() {
               </div>
               <span className="text-sm font-bold text-gradient">AI Assistant</span>
             </div>
-            <button onClick={() => setAIPanel(false)} className="text-white/30 hover:text-white/60 transition-colors">
+            <button onClick={() => setAIPanel(false)} className="h-8 w-8 flex items-center justify-center text-white/30 hover:text-white/60 transition-colors">
               <X className="w-4 h-4" />
             </button>
           </div>

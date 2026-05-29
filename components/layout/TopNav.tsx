@@ -1,19 +1,32 @@
 "use client"
 
-import { motion } from "framer-motion"
-import { Search, Command, Menu, X, Github } from "lucide-react"
-import { useEffect, useState } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import { Search, Command, Menu, X, Github, Palette } from "lucide-react"
+import { useEffect, useState, useRef } from "react"
 import { useStore } from "@/lib/store"
 import { NotificationPanel } from "./NotificationPanel"
 import { ModeToggle } from "./ModeToggle"
+import { ThemePanel } from "./ThemePanel"
 
 export function TopNav() {
   const { setCommandPalette, setAIPanel, aiPanelOpen, mobileMenuOpen, setMobileMenu, mode } = useStore()
   const [dateStr, setDateStr] = useState("")
+  const [themeOpen, setThemeOpen] = useState(false)
+  const themeRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     setDateStr(new Date().toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" }).toUpperCase())
   }, [])
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (themeRef.current && !themeRef.current.contains(e.target as Node)) {
+        setThemeOpen(false)
+      }
+    }
+    if (themeOpen) document.addEventListener("mousedown", handleClick)
+    return () => document.removeEventListener("mousedown", handleClick)
+  }, [themeOpen])
 
   return (
     <header className="sticky top-0 z-20 h-14 flex items-center justify-between px-4 md:px-6 border-b border-white/[0.06] bg-[#050506]/80 backdrop-blur-xl">
@@ -54,6 +67,20 @@ export function TopNav() {
             <Command className="w-4 h-4 text-brand-400" />
           </motion.button>
         )}
+
+        <div ref={themeRef} className="relative">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setThemeOpen(!themeOpen)}
+            className="h-9 w-9 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-white/40 hover:text-white/60 hover:bg-white/[0.08] transition-colors"
+          >
+            <Palette className="w-4 h-4" />
+          </motion.button>
+          <AnimatePresence>
+            {themeOpen && <ThemePanel />}
+          </AnimatePresence>
+        </div>
 
         <NotificationPanel />
 
