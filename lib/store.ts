@@ -242,12 +242,17 @@ export const useStore = create<DashboardState>((set, get) => ({
     const streakData = storeGet<{ count: number }>("goal_streak_v1")
     const sleepData = storeGet<number>("last_sleep_hours")
     const sleepTimerData = storeGet<number>("sleep_timer_start")
+    const validTimer = typeof sleepTimerData === "number" && (Date.now() - sleepTimerData) < 16 * 60 * 60 * 1000
+    if (sleepTimerData && !validTimer) {
+      localStorage.removeItem("sleep_timer_start")
+      localStorage.removeItem("_ts:sleep_timer_start")
+    }
     set({
       goals,
       tomorrowGoals,
       streak: streakData?.count ?? 0,
       sleep: typeof sleepData === "number" ? sleepData : 8,
-      sleepTimerStart: typeof sleepTimerData === "number" ? sleepTimerData : null,
+      sleepTimerStart: validTimer ? sleepTimerData : null,
     })
   },
 
