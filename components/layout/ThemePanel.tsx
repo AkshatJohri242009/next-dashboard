@@ -73,7 +73,7 @@ export function ThemePanel() {
       transition={{ duration: 0.15, ease: "easeOut" }}
       className="absolute top-full right-0 mt-2 w-[320px] z-50"
     >
-      <div className="glass-strong rounded-2xl p-5 space-y-4 border border-white/[0.08] shadow-2xl">
+      <div className="bg-[#050506] rounded-2xl p-5 space-y-4 border border-white/[0.08] shadow-2xl">
         <div className="flex items-center gap-2">
           <Palette className="w-4 h-4 text-white/50" />
           <span className="text-xs font-bold font-mono tracking-widest text-white/30 uppercase">Theme</span>

@@ -81,7 +81,7 @@ export function StockList() {
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         <div className="glass rounded-xl px-4 py-3">
           <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase">Holdings</span>
           <p className="text-xl font-bold text-white/90 mt-1">{stockHoldings.length}</p>
@@ -99,14 +99,14 @@ export function StockList() {
       </div>
 
       <form onSubmit={handleAdd} className="flex flex-wrap gap-2">
-        <div ref={searchRef} className="relative flex-1 min-w-[160px]">
+        <div ref={searchRef} className="relative w-full sm:flex-1 sm:min-w-[160px]">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/20" />
             <input
               value={query}
               onChange={e => { setQuery(e.target.value); setSelected(null) }}
-              placeholder="Search stocks by name or symbol..."
-              className="w-full h-10 pl-9 pr-8 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white/80 placeholder:text-white/20 outline-none focus:border-brand-500/40 transition-colors"
+            placeholder="Search stocks..."
+            className="w-full h-10 sm:h-10 pl-9 pr-8 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white/80 placeholder:text-white/20 outline-none focus:border-brand-500/40 transition-colors"
             />
             {query && (
               <button type="button" onClick={() => { setQuery(""); setSelected(null); setResults([]) }} className="absolute right-2 top-1/2 -translate-y-1/2 text-white/20 hover:text-white/40">
@@ -147,7 +147,7 @@ export function StockList() {
           type="number"
           step="any"
           min="0"
-          className="w-24 h-10 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white/80 placeholder:text-white/20 outline-none focus:border-brand-500/40 transition-colors"
+          className="flex-1 min-w-[80px] h-10 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white/80 placeholder:text-white/20 outline-none focus:border-brand-500/40 transition-colors"
         />
         <input
           value={buyPrice}
@@ -156,7 +156,7 @@ export function StockList() {
           type="number"
           step="any"
           min="0"
-          className="w-28 h-10 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white/80 placeholder:text-white/20 outline-none focus:border-brand-500/40 transition-colors"
+          className="flex-1 min-w-[80px] h-10 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white/80 placeholder:text-white/20 outline-none focus:border-brand-500/40 transition-colors"
         />
         <button
           type="submit"
@@ -191,30 +191,31 @@ export function StockList() {
             >
               <button
                 onClick={() => setStockExpanded(expanded ? null : h.symbol)}
-                className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-white/[0.02] transition-colors"
+                className="w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 text-left hover:bg-white/[0.02] transition-colors"
               >
                 <div className="flex-1 min-w-0">
                   <span className="text-sm font-bold text-white/80">{h.symbol}</span>
-                  {q?.name && <span className="text-[11px] text-white/30 ml-2 truncate">{q.name}</span>}
+                  {q?.name && <span className="hidden sm:inline text-[11px] text-white/30 ml-2 truncate">{q.name}</span>}
                 </div>
                 <div className="text-right">
                   <span className="text-sm font-bold text-white/90 block">
                     {q ? `$${q.price.toFixed(2)}` : "—"}
                   </span>
                   {q && (
-                    <span className={`text-[11px] font-mono flex items-center gap-0.5 justify-end ${
+                    <span className={`text-[10px] sm:text-[11px] font-mono flex items-center gap-0.5 justify-end ${
                       q.change >= 0 ? "text-brand-400" : "text-red-400"
                     }`}>
                       {q.change >= 0 ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                      {q.change >= 0 ? "+" : ""}{q.change.toFixed(2)} ({q.changePercent >= 0 ? "+" : ""}{q.changePercent.toFixed(2)}%)
+                      <span className="hidden sm:inline">{q.change >= 0 ? "+" : ""}{q.change.toFixed(2)} </span>
+                      ({q.changePercent >= 0 ? "+" : ""}{q.changePercent.toFixed(2)}%)
                     </span>
                   )}
                 </div>
-                <span className="text-sm font-bold text-white/70 min-w-[80px] text-right">
+                <span className="text-xs sm:text-sm font-bold text-white/70 min-w-[60px] sm:min-w-[80px] text-right">
                   ${value.toFixed(2)}
                 </span>
                 {h.buyPrice && (
-                  <span className={`text-xs font-mono min-w-[60px] text-right ${
+                  <span className={`hidden sm:block text-xs font-mono min-w-[60px] text-right ${
                     gain >= 0 ? "text-brand-400" : "text-red-400"
                   }`}>
                     {gain >= 0 ? "+" : ""}{gain.toFixed(1)}%

@@ -83,7 +83,7 @@ export function StudyStats() {
         <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase">Test & Mock Scores</span>
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         <div className="glass rounded-xl p-3 text-center space-y-1">
           <Target className="w-4 h-4 text-brand-400 mx-auto" />
           <span className="block text-lg font-extrabold tabular-nums text-white/80">{scores.length}</span>
@@ -109,11 +109,13 @@ export function StudyStats() {
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
-          <input value={subject} onChange={e => setSubject(e.target.value)} placeholder="Subject" className="flex-1 min-w-[100px] h-10 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white/80 placeholder:text-white/20 outline-none focus:border-brand-500/40 transition-colors" />
-          <input value={score} onChange={e => setScore(e.target.value)} placeholder="Score" type="number" className="w-20 h-10 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white/80 placeholder:text-white/20 outline-none focus:border-brand-500/40 transition-colors [appearance:textfield]" />
-          <span className="flex items-center text-white/30 text-sm">/</span>
-          <input value={total} onChange={e => setTotal(e.target.value)} placeholder="Total" type="number" className="w-20 h-10 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white/80 placeholder:text-white/20 outline-none focus:border-brand-500/40 transition-colors [appearance:textfield]" />
-          <button onClick={addScore} className="h-10 px-3 rounded-xl bg-brand-500/20 text-brand-300 text-xs font-bold border border-brand-500/30 hover:bg-brand-500/30 transition-colors flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> Add</button>
+          <input value={subject} onChange={e => setSubject(e.target.value)} placeholder="Subject" className="w-full sm:flex-1 sm:min-w-[100px] h-10 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white/80 placeholder:text-white/20 outline-none focus:border-brand-500/40 transition-colors" />
+          <div className="flex gap-2 w-full sm:w-auto">
+            <input value={score} onChange={e => setScore(e.target.value)} placeholder="Score" type="number" className="flex-1 sm:w-20 h-10 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white/80 placeholder:text-white/20 outline-none focus:border-brand-500/40 transition-colors [appearance:textfield]" />
+            <span className="flex items-center text-white/30 text-sm shrink-0">/</span>
+            <input value={total} onChange={e => setTotal(e.target.value)} placeholder="Total" type="number" className="flex-1 sm:w-20 h-10 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white/80 placeholder:text-white/20 outline-none focus:border-brand-500/40 transition-colors [appearance:textfield]" />
+            <button onClick={addScore} className="h-10 px-3 rounded-xl bg-brand-500/20 text-brand-300 text-xs font-bold border border-brand-500/30 hover:bg-brand-500/30 transition-colors flex items-center gap-1 shrink-0"><Plus className="w-3.5 h-3.5" /> Add</button>
+          </div>
         </div>
       </div>
 
@@ -128,7 +130,7 @@ export function StudyStats() {
             <span className={`text-xs font-mono ${(s.score / s.total) >= 0.7 ? "text-brand-400" : (s.score / s.total) >= 0.4 ? "text-amber-400" : "text-red-400"}`}>
               {((s.score / s.total) * 100).toFixed(0)}%
             </span>
-            <button onClick={() => deleteScore(s.id)} className="opacity-0 group-hover:opacity-100 h-7 w-7 flex items-center justify-center text-white/20 hover:text-red-400 transition-all"><Trash2 className="w-3 h-3" /></button>
+            <button onClick={() => deleteScore(s.id)} className="opacity-0 group-hover:opacity-100 h-8 w-8 sm:h-7 sm:w-7 flex items-center justify-center text-white/20 hover:text-red-400 transition-all"><Trash2 className="w-3.5 h-3.5 sm:w-3 sm:h-3" /></button>
           </motion.div>
         ))}
       </div>
@@ -139,10 +141,10 @@ export function StudyStats() {
           <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase">Error Log</span>
         </div>
         <div className="flex flex-wrap gap-2">
-          <input value={errorSubject} onChange={e => setErrorSubject(e.target.value)} placeholder="Subject" className="flex-1 min-w-[80px] h-10 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white/80 placeholder:text-white/20 outline-none focus:border-brand-500/40 transition-colors" />
+          <input value={errorSubject} onChange={e => setErrorSubject(e.target.value)} placeholder="Subject" className="w-full sm:flex-1 sm:min-w-[80px] h-10 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white/80 placeholder:text-white/20 outline-none focus:border-brand-500/40 transition-colors" />
           <input value={topic} onChange={e => setTopic(e.target.value)} placeholder="Topic" className="flex-1 min-w-[80px] h-10 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white/80 placeholder:text-white/20 outline-none focus:border-brand-500/40 transition-colors" />
-          <input value={description} onChange={e => setDescription(e.target.value)} placeholder="Notes (opt)" className="flex-1 min-w-[80px] h-10 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white/80 placeholder:text-white/20 outline-none focus:border-brand-500/40 transition-colors" />
-          <button onClick={addError} className="h-10 px-3 rounded-xl bg-red-500/20 text-red-300 text-xs font-bold border border-red-500/30 hover:bg-red-500/30 transition-colors flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> Log</button>
+          <input value={description} onChange={e => setDescription(e.target.value)} placeholder="Notes (opt)" className="hidden sm:block flex-1 min-w-[80px] h-10 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white/80 placeholder:text-white/20 outline-none focus:border-brand-500/40 transition-colors" />
+          <button onClick={addError} className="h-10 px-3 rounded-xl bg-red-500/20 text-red-300 text-xs font-bold border border-red-500/30 hover:bg-red-500/30 transition-colors flex items-center gap-1 shrink-0"><Plus className="w-3.5 h-3.5" /> Log</button>
         </div>
         <div className="max-h-[200px] overflow-y-auto space-y-1">
           {errors.length === 0 && <p className="text-sm text-white/20 text-center py-4">No errors logged yet</p>}
@@ -154,7 +156,7 @@ export function StudyStats() {
                 {e.description && <span className="text-[11px] text-white/30 block truncate">{e.description}</span>}
               </div>
               <span className="text-[10px] font-mono text-white/20">{e.date}</span>
-              <button onClick={() => deleteError(e.id)} className="opacity-0 group-hover:opacity-100 h-7 w-7 flex items-center justify-center text-white/20 hover:text-red-400 transition-all shrink-0"><Trash2 className="w-3 h-3" /></button>
+              <button onClick={() => deleteError(e.id)} className="opacity-0 group-hover:opacity-100 h-8 w-8 sm:h-7 sm:w-7 flex items-center justify-center text-white/20 hover:text-red-400 transition-all shrink-0"><Trash2 className="w-3.5 h-3.5 sm:w-3 sm:h-3" /></button>
             </motion.div>
           ))}
         </div>

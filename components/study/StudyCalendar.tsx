@@ -54,11 +54,11 @@ export function StudyCalendar() {
       <div className="flex items-center justify-between mb-4">
         <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase">Schedule</span>
         <div className="flex items-center gap-2">
-          <button onClick={prev} className="h-7 w-7 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-white/30 hover:text-white/60 transition-colors">
+          <button onClick={prev} className="h-8 w-8 sm:h-7 sm:w-7 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-white/30 hover:text-white/60 transition-colors">
             <ChevronLeft className="w-3.5 h-3.5" />
           </button>
-          <span className="text-sm font-bold text-white/80 min-w-[140px] text-center">{monthNames[month]} {year}</span>
-          <button onClick={next} className="h-7 w-7 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-white/30 hover:text-white/60 transition-colors">
+          <span className="text-sm font-bold text-white/80 min-w-[100px] sm:min-w-[140px] text-center">{monthNames[month]} {year}</span>
+          <button onClick={next} className="h-8 w-8 sm:h-7 sm:w-7 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-white/30 hover:text-white/60 transition-colors">
             <ChevronRight className="w-3.5 h-3.5" />
           </button>
         </div>

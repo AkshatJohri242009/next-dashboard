@@ -58,7 +58,7 @@ export function StockDetail({ symbol, onClose }: Props) {
             <button
               key={r.value}
               onClick={() => setRange(r.value)}
-              className={`h-7 px-2.5 rounded-lg text-[10px] font-bold font-mono tracking-wider transition-colors ${
+              className={`h-8 sm:h-7 px-2.5 rounded-lg text-[10px] font-bold font-mono tracking-wider transition-colors ${
                 range === r.value
                   ? "bg-brand-500/20 text-brand-300 border border-brand-500/30"
                   : "text-white/30 hover:text-white/60 border border-transparent"
