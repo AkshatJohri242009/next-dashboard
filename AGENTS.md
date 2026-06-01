@@ -79,6 +79,13 @@ Single personal dashboard PWA (Next.js 14, Supabase, Zustand, Recharts). Deploye
 - `_ts:` keys are excluded from push (only used for timestamp comparison)
 - `allLocalState()` collects all state keys for push
 
+### Odysseus AI Workspace
+- Route `/odyssey` with full-height iframe loading `NEXT_PUBLIC_ODYSSEY_URL` (default `http://127.0.0.1:7000`)
+- Loading spinner, error state with retry, connection indicator
+- Added to workNav sidebar at position #3 (after Stocks) with `Bot` icon
+- Works locally when Odysseus Flask server runs on port 7000
+- For production: set `NEXT_PUBLIC_ODYSSEY_URL` to a hosted instance (Railway, Render, Fly.io, etc.)
+
 ### Graph Components
 - **Sleep**: Recharts ComposedChart (bars + 7-day moving average dashed line). Consistency stat (good days %)
 - **Weight**: Recharts ComposedChart (area + 7-day moving average amber dashed line). Streak counter for consecutive days logged
@@ -130,6 +137,7 @@ Single personal dashboard PWA (Next.js 14, Supabase, Zustand, Recharts). Deploye
 | `app/api/stock/quote/route.ts` | Yahoo Finance quote proxy |
 | `app/api/stock/history/route.ts` | Yahoo Finance history proxy |
 | `app/api/stock/search/route.ts` | Yahoo Finance search proxy |
+| `app/odyssey/page.tsx` | Odysseus AI workspace iframe tab |
 
 ## Environment Variables (Vercel)
 - `NEXT_PUBLIC_SUPABASE_URL`
@@ -145,12 +153,14 @@ Single personal dashboard PWA (Next.js 14, Supabase, Zustand, Recharts). Deploye
 - Study data: `study_tasks_v1`, `exam_dates_v1`, `study_files_v1`, `study_streak_v1`, `study_scores_v1`, `study_errors_v1`
 - Stocks: `stocks_holdings_v1`, `stocks_quotes_v1`
 - Theme: `theme_v1`
+- Odysseus URL: `NEXT_PUBLIC_ODYSSEY_URL` env var (defaults to `http://127.0.0.1:7000`)
 
-## Routes (21 pages)
+## Routes (22 pages)
 | Route | Component |
 |-------|-----------|
 | `/` | Dashboard (PeakRing, TodoList, GoalTicker) |
 | `/stocks` | StockList + StockDetail |
+| `/odyssey` | Odysseus AI workspace (full-height iframe) |
 | `/health` | WaterTracker, SupplementScheduler |
 | `/gym` | WorkoutLog, GymCalendar, StrengthChart, ProgressPhotos |
 | `/weight` | WeightTracker |
