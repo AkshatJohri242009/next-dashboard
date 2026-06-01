@@ -7,7 +7,7 @@ import { useEffect } from "react"
 import {
   LayoutDashboard, Activity, Dumbbell, Weight, FolderGit2, Moon, TrendingUp,
   ChevronLeft, ChevronRight, Sparkles, X,
-  BookOpen, Calendar, FileText, Volume2, Clock, BarChart3,
+  BookOpen, Calendar, FileText, Volume2, Clock, BarChart3, Bot,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useStore } from "@/lib/store"
@@ -15,8 +15,9 @@ import { useMediaQuery } from "@/lib/use-media-query"
 
 const workNav = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/stocks", label: "Stocks", icon: TrendingUp },
-  { href: "/health", label: "Health", icon: Activity },
+  { href: "/stocks",   label: "Stocks",   icon: TrendingUp },
+  { href: "/odyssey",  label: "Odysseus", icon: Bot },
+  { href: "/health",   label: "Health",   icon: Activity },
   { href: "/gym", label: "Gym", icon: Dumbbell },
   { href: "/weight", label: "Weight", icon: Weight },
   { href: "/sleep", label: "Sleep", icon: Moon },
