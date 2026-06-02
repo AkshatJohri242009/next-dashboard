@@ -15,6 +15,7 @@ export function useFocusOverlay() {
 export function FocusOverlay({ show, onClose }: { show: boolean; onClose: () => void }) {
   const goals = useStore(s => s.goals)
   const toggleGoal = useStore(s => s.toggleGoal)
+  const loadGoals = useStore(s => s.loadGoals)
   const [timer, setTimer] = useState(25 * 60)
   const [running, setRunning] = useState(false)
 
@@ -22,8 +23,10 @@ export function FocusOverlay({ show, onClose }: { show: boolean; onClose: () => 
     if (!show) {
       setRunning(false)
       setTimer(25 * 60)
+      return
     }
-  }, [show])
+    loadGoals()
+  }, [show, loadGoals])
 
   useEffect(() => {
     if (!running || !show) return
