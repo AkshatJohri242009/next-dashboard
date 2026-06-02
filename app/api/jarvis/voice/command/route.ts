@@ -25,6 +25,8 @@ Valid actions:
 - addReminder: { "text": "reminder text" }
 - setSleep: { "hours": 8 }
 - toggleSupp: { "key": "vitamin_d|magnesium|omega3|zinc|b12|iron|creatine" }
+- addCustomExercise: { "name": "exercise name" }
+- deleteCustomExercise: { "name": "exercise name" }
 
 RULES:
 1. For questions ("how did I sleep?", "what are my goals?") — just answer conversationally using the context. NO action needed.

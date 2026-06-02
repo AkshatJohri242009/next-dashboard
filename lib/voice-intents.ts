@@ -42,6 +42,9 @@ function gatherLifeContext(): string {
       const sessions = new Set(g.logs.filter((l: any) => l.at >= weekAgo).map((l: any) => l.at.slice(0, 10))).size
       lines.push(`Gym: ${sessions} sessions this week`)
     }
+    if (g.customExercises?.length) {
+      lines.push(`Custom exercises: ${g.customExercises.join(", ")}`)
+    }
   } catch {}
 
   try {
@@ -158,6 +161,20 @@ function executeJarvisAction(action: { type: string; params: Record<string, any>
       const duration = action.params?.duration || 45
       store.addLog({ at: new Date().toISOString(), type: "other", exercises: [], notes: "", duration: Math.min(duration, 180) } as any)
       return { message: `Workout logged: ${Math.min(duration, 180)} min.`, route: ROUTES.GYM }
+    }
+
+    case "addCustomExercise": {
+      const name = action.params?.name || action.params?.exercise || ""
+      if (!name) return { message: "What exercise should I add?" }
+      store.addCustomExercise(name)
+      return { message: `Custom exercise added: ${name}` }
+    }
+
+    case "deleteCustomExercise": {
+      const name = action.params?.name || action.params?.exercise || ""
+      if (!name) return { message: "Which exercise should I remove?" }
+      store.deleteCustomExercise(name)
+      return { message: `Custom exercise removed: ${name}` }
     }
 
     case "startSleepTimer": {
