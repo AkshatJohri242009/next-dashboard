@@ -146,6 +146,8 @@ interface DashboardState {
   addLog: (log: GymState["logs"][0]) => void
   deleteLog: (idx: number) => void
   setPhoto: (id: string, data: string) => void
+  addCustomExercise: (name: string) => void
+  deleteCustomExercise: (name: string) => void
 
   repos: GitHubRepo[]
   featuredRepos: string[]
@@ -192,7 +194,10 @@ const defaultHealth: HealthState = {
 }
 
 const defaultGym: GymState = {
-  split: "Push Day", logs: [], photos: {},
+  split: "Push Day",
+  logs: [],
+  photos: {},
+  customExercises: [],
 }
 
 export const useStore = create<DashboardState>((set, get) => ({
@@ -524,6 +529,18 @@ export const useStore = create<DashboardState>((set, get) => ({
   },
   setPhoto: (id, data) => {
     const gym = { ...get().gym, photos: { ...get().gym.photos, [id]: data } }
+    storeSet("gym_dashboard_v1", gym)
+    set({ gym })
+    autoSync()
+  },
+  addCustomExercise: (name) => {
+    const gym = { ...get().gym, customExercises: [...get().gym.customExercises, name] }
+    storeSet("gym_dashboard_v1", gym)
+    set({ gym })
+    autoSync()
+  },
+  deleteCustomExercise: (name) => {
+    const gym = { ...get().gym, customExercises: get().gym.customExercises.filter(e => e !== name) }
     storeSet("gym_dashboard_v1", gym)
     set({ gym })
     autoSync()

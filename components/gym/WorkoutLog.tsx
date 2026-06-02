@@ -2,19 +2,23 @@
 
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Plus, Trash2, Target } from "lucide-react"
+import { Plus, Trash2, Target, X } from "lucide-react"
 import { useStore } from "@/lib/store"
 import { parseReps, targetHit } from "@/lib/utils"
 
-const exercises = ["Bench Press", "Squat", "Deadlift", "Overhead Press", "Lat Pulldown", "Row"]
+const presets = ["Bench Press", "Squat", "Deadlift", "Overhead Press", "Lat Pulldown", "Row"]
 const splits = ["Push Day", "Pull Day", "Leg Day", "Gym Home", "School Gym"]
 
 export function WorkoutLog() {
-  const { gym, setSplit, addLog, deleteLog } = useStore()
+  const { gym, setSplit, addLog, deleteLog, addCustomExercise, deleteCustomExercise } = useStore()
   const [exercise, setExercise] = useState("Bench Press")
   const [sets, setSets] = useState(3)
   const [weight, setWeight] = useState(40)
   const [reps, setReps] = useState("8,8,8")
+  const [newExercise, setNewExercise] = useState("")
+
+  const allExercises = [...presets, ...gym.customExercises.filter(e => !presets.includes(e))]
+  const exerciseOptions = [...new Set(allExercises)]
 
   const handleAdd = () => {
     addLog({
@@ -25,6 +29,14 @@ export function WorkoutLog() {
       reps: parseReps(reps),
       at: Date.now(),
     })
+  }
+
+  const handleAddCustom = () => {
+    const name = newExercise.trim()
+    if (!name || exerciseOptions.includes(name)) return
+    addCustomExercise(name)
+    setExercise(name)
+    setNewExercise("")
   }
 
   return (
@@ -45,28 +57,61 @@ export function WorkoutLog() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 sm:flex sm:flex-wrap gap-2">
-        <select
-          value={exercise}
-          onChange={e => setExercise(e.target.value)}
-          className="col-span-2 sm:col-auto h-10 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white outline-none"
-        >
-          {exercises.map(e => <option key={e}>{e}</option>)}
-        </select>
+      <div className="flex flex-wrap gap-2 items-end">
+        <div className="flex flex-col gap-1.5">
+          <select
+            value={exercise}
+            onChange={e => setExercise(e.target.value)}
+            className="h-10 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white outline-none min-w-[160px]"
+          >
+            {exerciseOptions.map(e => <option key={e}>{e}</option>)}
+          </select>
+          <div className="flex gap-1.5">
+            <input
+              value={newExercise}
+              onChange={e => setNewExercise(e.target.value)}
+              onKeyDown={e => { if (e.key === "Enter") handleAddCustom() }}
+              placeholder="New exercise..."
+              className="h-8 px-2.5 rounded-lg bg-white/[0.04] border border-white/[0.06] text-xs text-white outline-none w-28"
+            />
+            <button
+              onClick={handleAddCustom}
+              className="h-8 px-2.5 rounded-lg bg-white/5 border border-white/10 text-xs text-white/50 hover:text-white/70 transition-colors"
+            >
+              + Add
+            </button>
+          </div>
+        </div>
         <input type="number" min={1} max={10} value={sets} onChange={e => setSets(Number(e.target.value))}
-          className="h-10 w-full sm:w-16 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white outline-none text-center" />
+          className="h-10 w-16 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white outline-none text-center" />
+        <span className="text-xs text-white/30 hidden sm:inline">×</span>
         <input type="number" min={0} step={0.5} value={weight} onChange={e => setWeight(Number(e.target.value))}
-          className="h-10 w-full sm:w-20 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white outline-none text-center" />
+          className="h-10 w-20 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white outline-none text-center" />
+        <span className="text-xs text-white/30">kg</span>
         <input value={reps} onChange={e => setReps(e.target.value)}
-          className="h-10 w-full sm:w-24 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white outline-none text-center" />
+          className="h-10 w-24 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white outline-none text-center" />
         <button
           onClick={handleAdd}
-          className="col-span-2 sm:col-auto h-10 px-4 rounded-xl bg-brand-500 text-black text-sm font-bold flex items-center justify-center gap-1.5 shadow-lg shadow-brand-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
+          className="h-10 px-4 rounded-xl bg-brand-500 text-black text-sm font-bold flex items-center justify-center gap-1.5 shadow-lg shadow-brand-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
         >
           <Plus className="w-4 h-4" />
           Add Set
         </button>
       </div>
+
+      {gym.customExercises.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 items-center">
+          <span className="text-[10px] text-white/30 font-mono uppercase tracking-wider mr-1">Custom:</span>
+          {gym.customExercises.map(name => (
+            <span key={name} className="flex items-center gap-1 h-7 px-2 rounded-lg bg-white/[0.04] border border-white/[0.06] text-[11px] text-white/50">
+              {name}
+              <button onClick={() => deleteCustomExercise(name)} className="text-white/20 hover:text-red-400 transition-colors">
+                <X className="w-3 h-3" />
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
 
       <div className="space-y-1.5">
         <AnimatePresence mode="popLayout">

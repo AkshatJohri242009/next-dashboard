@@ -56,6 +56,7 @@ export interface GymState {
   split: string
   logs: WorkoutLog[]
   photos: Record<string, string>
+  customExercises: string[]
 }
 
 export interface WeightEntry {
