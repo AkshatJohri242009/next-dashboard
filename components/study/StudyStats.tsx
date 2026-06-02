@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { Plus, Trash2, Brain, Target, AlertTriangle } from "lucide-react"
-import { markModified } from "@/lib/store"
+import { markModified, autoSync } from "@/lib/store"
 import type { StudyScore, StudyError } from "@/lib/study-types"
 
 const SCORES_KEY = "study_scores_v1"
@@ -16,7 +16,7 @@ function storeGet<T>(key: string): T | null {
 function storeSet(key: string, value: unknown) {
   localStorage.setItem(key, JSON.stringify(value))
   localStorage.setItem("_ts:" + key, new Date().toISOString())
-  markModified(key)
+  markModified(key); autoSync()
 }
 
 export function StudyStats() {
@@ -130,7 +130,7 @@ export function StudyStats() {
             <span className={`text-xs font-mono ${(s.score / s.total) >= 0.7 ? "text-brand-400" : (s.score / s.total) >= 0.4 ? "text-amber-400" : "text-red-400"}`}>
               {((s.score / s.total) * 100).toFixed(0)}%
             </span>
-            <button onClick={() => deleteScore(s.id)} className="opacity-0 group-hover:opacity-100 h-8 w-8 sm:h-7 sm:w-7 flex items-center justify-center text-white/20 hover:text-red-400 transition-all"><Trash2 className="w-3.5 h-3.5 sm:w-3 sm:h-3" /></button>
+            <button onClick={() => deleteScore(s.id)} className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 h-8 w-8 sm:h-7 sm:w-7 flex items-center justify-center text-white/20 hover:text-red-400 transition-all"><Trash2 className="w-3.5 h-3.5 sm:w-3 sm:h-3" /></button>
           </motion.div>
         ))}
       </div>
@@ -143,7 +143,7 @@ export function StudyStats() {
         <div className="flex flex-wrap gap-2">
           <input value={errorSubject} onChange={e => setErrorSubject(e.target.value)} placeholder="Subject" className="w-full sm:flex-1 sm:min-w-[80px] h-10 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white/80 placeholder:text-white/20 outline-none focus:border-brand-500/40 transition-colors" />
           <input value={topic} onChange={e => setTopic(e.target.value)} placeholder="Topic" className="flex-1 min-w-[80px] h-10 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white/80 placeholder:text-white/20 outline-none focus:border-brand-500/40 transition-colors" />
-          <input value={description} onChange={e => setDescription(e.target.value)} placeholder="Notes (opt)" className="hidden sm:block flex-1 min-w-[80px] h-10 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white/80 placeholder:text-white/20 outline-none focus:border-brand-500/40 transition-colors" />
+          <input value={description} onChange={e => setDescription(e.target.value)} placeholder="Notes (opt)" className="flex-1 min-w-[80px] h-10 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white/80 placeholder:text-white/20 outline-none focus:border-brand-500/40 transition-colors max-sm:w-full" />
           <button onClick={addError} className="h-10 px-3 rounded-xl bg-red-500/20 text-red-300 text-xs font-bold border border-red-500/30 hover:bg-red-500/30 transition-colors flex items-center gap-1 shrink-0"><Plus className="w-3.5 h-3.5" /> Log</button>
         </div>
         <div className="max-h-[200px] overflow-y-auto space-y-1">
@@ -156,7 +156,7 @@ export function StudyStats() {
                 {e.description && <span className="text-[11px] text-white/30 block truncate">{e.description}</span>}
               </div>
               <span className="text-[10px] font-mono text-white/20">{e.date}</span>
-              <button onClick={() => deleteError(e.id)} className="opacity-0 group-hover:opacity-100 h-8 w-8 sm:h-7 sm:w-7 flex items-center justify-center text-white/20 hover:text-red-400 transition-all shrink-0"><Trash2 className="w-3.5 h-3.5 sm:w-3 sm:h-3" /></button>
+              <button onClick={() => deleteError(e.id)} className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 h-8 w-8 sm:h-7 sm:w-7 flex items-center justify-center text-white/20 hover:text-red-400 transition-all shrink-0"><Trash2 className="w-3.5 h-3.5 sm:w-3 sm:h-3" /></button>
             </motion.div>
           ))}
         </div>

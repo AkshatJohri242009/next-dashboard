@@ -119,3 +119,12 @@ const CURRENCY_MAP: Record<string, string> = {
 export function currencySymbol(currency?: string): string {
   return CURRENCY_MAP[currency?.toUpperCase() || ""] || "$"
 }
+
+export function loadJSON(key: string): any {
+  try { return JSON.parse(localStorage.getItem(key) || "null") }
+  catch { return null }
+}
+
+export function saveJSON(key: string, value: any) {
+  localStorage.setItem(key, JSON.stringify(value))
+}

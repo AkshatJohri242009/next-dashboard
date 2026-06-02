@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { motion } from "framer-motion"
 import { Plus, Trash2, Calendar, Clock, AlertTriangle, CheckCircle } from "lucide-react"
-import { markModified } from "@/lib/store"
+import { markModified, autoSync } from "@/lib/store"
 import type { ExamDate } from "@/lib/study-types"
 
 const STORAGE_KEY = "exam_dates_v1"
@@ -15,7 +15,7 @@ function storeGet<T>(key: string): T | null {
 function storeSet(key: string, value: unknown) {
   localStorage.setItem(key, JSON.stringify(value))
   localStorage.setItem("_ts:" + key, new Date().toISOString())
-  markModified(key)
+  markModified(key); autoSync()
 }
 
 export function ExamDates() {
@@ -109,7 +109,7 @@ export function ExamDates() {
           type="date"
           value={date}
           onChange={e => setDate(e.target.value)}
-          className="h-11 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white/80 outline-none focus:border-brand-500/40 focus:bg-white/[0.06] transition-colors [color-scheme:dark] sm:w-[140px] min-w-0"
+          className="h-11 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white/80 outline-none focus:border-brand-500/40 focus:bg-white/[0.06] transition-colors [color-scheme:dark] sm:w-[140px] min-w-0 max-w-[45%]"
         />
         <button
           onClick={add}
@@ -139,7 +139,7 @@ export function ExamDates() {
             </div>
             <button
               onClick={() => remove(exam.id)}
-              className="opacity-0 group-hover:opacity-100 transition-opacity text-white/20 hover:text-red-400 h-8 w-8 flex items-center justify-center"
+              className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity text-white/20 hover:text-red-400 h-8 w-8 flex items-center justify-center"
             >
               <Trash2 className="w-3.5 h-3.5" />
             </button>
@@ -161,7 +161,7 @@ export function ExamDates() {
             </div>
             <button
               onClick={() => remove(exam.id)}
-              className="opacity-0 group-hover:opacity-100 transition-opacity text-white/20 hover:text-red-400 h-8 w-8 flex items-center justify-center"
+              className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity text-white/20 hover:text-red-400 h-8 w-8 flex items-center justify-center"
             >
               <Trash2 className="w-3.5 h-3.5" />
             </button>

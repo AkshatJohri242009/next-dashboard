@@ -14,8 +14,8 @@ export function AIPanel() {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState("")
   const [loading, setLoading] = useState(false)
+  const [jarvisMode, setJarvisMode] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
-
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages, loading])
@@ -27,17 +27,20 @@ export function AIPanel() {
     setMessages(prev => [...prev, { role: "user", text }])
     setLoading(true)
     try {
+      let reply = ""
+      if (jarvisMode) {
+        window.location.href = "/odyssey"
+        setLoading(false)
+        return
+      }
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: text }),
       })
       const data = await res.json()
-      if (data.reply) {
-        setMessages(prev => [...prev, { role: "assistant", text: data.reply }])
-      } else {
-        setMessages(prev => [...prev, { role: "assistant", text: data.error || "No response" }])
-      }
+      reply = data.reply || data.error || "No response"
+      setMessages(prev => [...prev, { role: "assistant", text: reply }])
     } catch {
       setMessages(prev => [...prev, { role: "assistant", text: "Network error — check your connection." }])
     } finally {
@@ -57,14 +60,24 @@ export function AIPanel() {
         >
           <div className="flex items-center justify-between h-14 px-4 border-b border-white/[0.06] shrink-0">
             <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-brand-400 to-accent-500 flex items-center justify-center">
-                <Sparkles className="w-3.5 h-3.5 text-white" />
+              <div className={`w-6 h-6 rounded-lg flex items-center justify-center ${jarvisMode ? "bg-[#e06c75]/20" : "bg-gradient-to-br from-brand-400 to-accent-500"}`}>
+                {jarvisMode ? <Bot className="w-3.5 h-3.5 text-[#e06c75]" /> : <Sparkles className="w-3.5 h-3.5 text-white" />}
               </div>
-              <span className="text-sm font-bold text-gradient">AI Assistant</span>
+              <span className="text-sm font-bold text-gradient">{jarvisMode ? "J.A.R.V.I.S" : "AI Assistant"}</span>
             </div>
-            <button onClick={() => setAIPanel(false)} className="h-8 w-8 flex items-center justify-center text-white/30 hover:text-white/60 transition-colors">
-              <X className="w-4 h-4" />
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setJarvisMode(!jarvisMode)}
+                className={`h-7 px-2 rounded-lg text-[10px] font-mono font-bold border transition-colors ${
+                  jarvisMode ? "bg-[#e06c75]/20 text-[#e06c75] border-[#e06c75]/30" : "bg-white/[0.04] text-white/30 border-white/[0.06] hover:text-white/50"
+                }`}
+              >
+                {jarvisMode ? "JARVIS" : "Gemini"}
+              </button>
+              <button onClick={() => setAIPanel(false)} className="h-8 w-8 flex items-center justify-center text-white/30 hover:text-white/60 transition-colors">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
           </div>
 
           <div className="flex-1 overflow-y-auto p-4 space-y-3 scrollbar-hide">

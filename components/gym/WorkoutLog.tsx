@@ -45,7 +45,7 @@ export function WorkoutLog() {
         ))}
       </div>
 
-      <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
+      <div className="grid grid-cols-1 sm:flex sm:flex-wrap gap-2">
         <select
           value={exercise}
           onChange={e => setExercise(e.target.value)}

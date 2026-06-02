@@ -7,31 +7,103 @@ import { useEffect } from "react"
 import {
   LayoutDashboard, Activity, Dumbbell, Weight, FolderGit2, Moon, TrendingUp,
   ChevronLeft, ChevronRight, Sparkles, X,
-  BookOpen, Calendar, FileText, Volume2, Clock, BarChart3, Bot,
+  BookOpen, Calendar, FileText, Volume2, Clock, BarChart3, Bot, Code2,
+  PenSquare, Brain, GitBranch, Flag, TrendingUp as ForecastIcon, Zap, Flame, Timer,
+  Mic, Trophy, Activity as CorrIcon,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useStore } from "@/lib/store"
 import { useMediaQuery } from "@/lib/use-media-query"
 
-const workNav = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/stocks",   label: "Stocks",   icon: TrendingUp },
-  { href: "/odyssey",  label: "Odysseus", icon: Bot },
-  { href: "/health",   label: "Health",   icon: Activity },
-  { href: "/gym", label: "Gym", icon: Dumbbell },
-  { href: "/weight", label: "Weight", icon: Weight },
-  { href: "/sleep", label: "Sleep", icon: Moon },
-  { href: "/projects", label: "Projects", icon: FolderGit2 },
+interface NavSection {
+  label: string
+  items: { href: string; label: string; icon: any }[]
+}
+
+const workNav: NavSection[] = [
+  {
+    label: "Core",
+    items: [
+      { href: "/", label: "Home", icon: LayoutDashboard },
+      { href: "/journal",  label: "Journal", icon: PenSquare },
+    ],
+  },
+  {
+    label: "Life OS",
+    items: [
+      { href: "/habits",   label: "Habits",   icon: Flame },
+      { href: "/learning", label: "Learning", icon: Brain },
+      { href: "/missions", label: "Missions", icon: Flag },
+      { href: "/timeline", label: "Timeline", icon: Clock },
+      { href: "/decisions", label: "Decisions", icon: GitBranch },
+      { href: "/reviews",  label: "Reviews",  icon: ForecastIcon },
+    ],
+  },
+  {
+    label: "Health",
+    items: [
+      { href: "/health",   label: "Health",   icon: Activity },
+      { href: "/gym", label: "Gym", icon: Dumbbell },
+      { href: "/weight", label: "Weight", icon: Weight },
+      { href: "/sleep", label: "Sleep", icon: Moon },
+    ],
+  },
+  {
+    label: "Intelligence",
+    items: [
+      { href: "/odyssey",    label: "JARVIS",   icon: Bot },
+      { href: "/voice",      label: "Voice",    icon: Mic },
+      { href: "/briefings",  label: "Briefings", icon: Volume2 },
+      { href: "/brain",      label: "Brain",    icon: Zap },
+    ],
+  },
+  {
+    label: "Life Data",
+    items: [
+      { href: "/memory",       label: "Memory",    icon: Brain },
+      { href: "/correlations", label: "Patterns",  icon: CorrIcon },
+      { href: "/future",       label: "Future",    icon: ForecastIcon },
+      { href: "/report",       label: "Report",    icon: Trophy },
+      { href: "/stocks",       label: "Stocks",    icon: TrendingUp },
+    ],
+  },
+  {
+    label: "Dev",
+    items: [
+      { href: "/projects", label: "Projects", icon: FolderGit2 },
+      { href: "/opencode", label: "OpenCode", icon: Code2 },
+    ],
+  },
 ]
 
-const studyNav = [
-  { href: "/study", label: "Study", icon: BookOpen },
-  { href: "/study/stats", label: "Stats", icon: BarChart3 },
-  { href: "/study/tasks", label: "Tasks", icon: LayoutDashboard },
-  { href: "/study/exams", label: "Exams", icon: Calendar },
-  { href: "/study/files", label: "Files", icon: FileText },
-  { href: "/study/sounds", label: "Sounds", icon: Volume2 },
-  { href: "/study/commute", label: "Commute", icon: Clock },
+const studyNav: NavSection[] = [
+  {
+    label: "Dashboard",
+    items: [
+      { href: "/study", label: "Overview", icon: LayoutDashboard },
+      { href: "/study/stats", label: "Stats", icon: BarChart3 },
+    ],
+  },
+  {
+    label: "Tasks",
+    items: [
+      { href: "/study/tasks", label: "Tasks", icon: Timer },
+      { href: "/study/exams", label: "Exams", icon: Calendar },
+    ],
+  },
+  {
+    label: "Resources",
+    items: [
+      { href: "/study/files", label: "Files", icon: FileText },
+      { href: "/study/sounds", label: "Sounds", icon: Volume2 },
+    ],
+  },
+  {
+    label: "Tools",
+    items: [
+      { href: "/study/commute", label: "Commute", icon: Clock },
+    ],
+  },
 ]
 
 export function Sidebar() {
@@ -54,7 +126,7 @@ export function Sidebar() {
 
   const sidebarWidth = 240
   const collapsedWidth = 72
-  const navItems = mode === "study" ? studyNav : workNav
+  const sections = mode === "study" ? studyNav : workNav
 
   return (
     <>
@@ -88,12 +160,12 @@ export function Sidebar() {
                 exit={{ opacity: 0, width: 0 }}
                 className="text-sm font-bold text-gradient truncate"
               >
-                {mode === "study" ? "Study Mode" : "Dashboard"}
+                {mode === "study" ? "Study Mode" : "LifeOS"}
               </motion.span>
             )}
           </AnimatePresence>
           {isMobile && (
-            <span className="text-sm font-bold text-gradient truncate">{mode === "study" ? "Study Mode" : "Dashboard"}</span>
+            <span className="text-sm font-bold text-gradient truncate">{mode === "study" ? "Study Mode" : "LifeOS"}</span>
           )}
           {isMobile && (
             <button
@@ -105,33 +177,42 @@ export function Sidebar() {
           )}
         </div>
 
-        <nav className="flex-1 p-2 space-y-1 overflow-y-auto">
-          {navItems.map((item) => {
-            const active = pathname === item.href
-            return (
-              <Link key={item.href} href={item.href}>
-                <motion.div
-                  whileHover={{ x: 2 }}
-                  className={cn(
-                    "relative flex items-center gap-3 px-3 h-10 rounded-xl text-sm font-medium transition-colors",
-                    active
-                      ? "text-white bg-brand-500/10 border border-brand-500/20"
-                      : "text-white/50 hover:text-white/80 hover:bg-white/[0.04]",
-                  )}
-                >
-                  {active && (
-                    <motion.div
-                      layoutId="nav-active"
-                      className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-brand-400 rounded-full"
-                      transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                    />
-                  )}
-                  <item.icon className="w-4 h-4 shrink-0" />
-                  <span className="truncate">{item.label}</span>
-                </motion.div>
-              </Link>
-            )
-          })}
+        <nav className="flex-1 p-2 space-y-3 overflow-y-auto overflow-x-hidden">
+          {sections.map((section) => (
+            <div key={section.label}>
+              {sidebarOpen && (
+                <p className="px-3 pb-1 text-[9px] font-bold tracking-widest text-white/20 uppercase">{section.label}</p>
+              )}
+              <div className="space-y-0.5">
+                {section.items.map((item) => {
+                  const active = pathname === item.href
+                  return (
+                    <Link key={item.href} href={item.href}>
+                      <motion.div
+                        whileHover={{ x: 2 }}
+                        className={cn(
+                          "relative flex items-center gap-3 px-3 h-9 rounded-xl text-sm font-medium transition-colors",
+                          active
+                            ? "text-white bg-brand-500/10 border border-brand-500/20"
+                            : "text-white/50 hover:text-white/80 hover:bg-white/[0.04]",
+                        )}
+                      >
+                        {active && (
+                          <motion.div
+                            layoutId="nav-active"
+                            className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 bg-brand-400 rounded-full"
+                            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                          />
+                        )}
+                        <item.icon className="w-4 h-4 shrink-0" />
+                        {sidebarOpen && <span className="truncate">{item.label}</span>}
+                      </motion.div>
+                    </Link>
+                  )
+                })}
+              </div>
+            </div>
+          ))}
         </nav>
 
         <div className="p-2 border-t border-white/[0.06] space-y-1">
@@ -140,7 +221,7 @@ export function Sidebar() {
               initial={{ opacity: 0 }}
               animate={{ opacity: sidebarOpen ? 1 : 0 }}
               onClick={() => setAIPanel(!aiPanelOpen)}
-              className="flex items-center gap-3 px-3 h-10 w-full rounded-xl text-sm font-medium text-white/50 hover:text-white/80 hover:bg-white/[0.04] transition-colors"
+              className="flex items-center gap-3 px-3 h-9 w-full rounded-xl text-sm font-medium text-white/50 hover:text-white/80 hover:bg-white/[0.04] transition-colors"
             >
               <Sparkles className="w-4 h-4 shrink-0" />
               {sidebarOpen && <span>AI Assistant</span>}
@@ -149,7 +230,7 @@ export function Sidebar() {
           {!isMobile && (
             <button
               onClick={toggleSidebar}
-              className="flex items-center justify-center h-10 w-full rounded-xl text-white/30 hover:text-white/60 hover:bg-white/[0.04] transition-colors"
+              className="flex items-center justify-center h-9 w-full rounded-xl text-white/30 hover:text-white/60 hover:bg-white/[0.04] transition-colors"
             >
               {sidebarOpen ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
             </button>

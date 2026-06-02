@@ -1,18 +1,23 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 import { Sidebar } from "@/components/layout/Sidebar"
 import { TopNav } from "@/components/layout/TopNav"
 import { CommandPalette } from "@/components/layout/CommandPalette"
 import { AIPanel } from "@/components/layout/AIPanel"
 import { SwipeHandler } from "@/components/layout/SwipeHandler"
+import { ScrollToTop } from "@/components/layout/ScrollToTop"
+import { VoiceButton } from "@/components/jarvis/VoiceButton"
+import { JarvisPresence } from "@/components/jarvis/JarvisPresence"
 import { useStore } from "@/lib/store"
+import { autoExtractMemories } from "@/lib/memory-engine"
 import { useMediaQuery } from "@/lib/use-media-query"
 import "./globals.css"
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const { sidebarOpen, loadGoals, loadHealth, loadGym, loadSleepLog, loadReminders, loadTrackedProjects, loadStudyData, loadStocks, fetchStockQuotes, stockHoldings, syncWithSupabase, theme } = useStore()
+  const { sidebarOpen, loadGoals, loadHealth, loadGym, loadSleepLog, loadReminders, loadTrackedProjects, loadStudyData, loadStocks, fetchStockQuotes, stockHoldings, syncWithSupabase, theme, pushToTomorrow } = useStore()
   const isMobile = useMediaQuery("(max-width: 1023px)")
+  const lastDateRef = useRef(new Date().toISOString().slice(0, 10))
 
   useEffect(() => {
     loadGoals()
@@ -24,7 +29,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     loadStocks()
     fetchStockQuotes()
     syncWithSupabase()
-    document.title = "My Dashboard"
+    autoExtractMemories()
+    document.title = "LifeOS"
     const root = document.documentElement
     root.style.setProperty("--brand", theme.brandColor)
     root.style.setProperty("--brand-500", theme.brandColor)
@@ -42,9 +48,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       loadStudyData()
       loadStocks()
       fetchStockQuotes()
+      const today = new Date().toISOString().slice(0, 10)
+      if (today !== lastDateRef.current) {
+        lastDateRef.current = today
+        pushToTomorrow()
+      }
     }, 30000)
     return () => clearInterval(syncInterval)
-  }, [loadGoals, loadHealth, loadGym, loadSleepLog, loadReminders, loadTrackedProjects, loadStudyData, loadStocks, fetchStockQuotes, syncWithSupabase, theme])
+  }, [loadGoals, loadHealth, loadGym, loadSleepLog, loadReminders, loadTrackedProjects, loadStudyData, loadStocks, fetchStockQuotes, syncWithSupabase, theme, pushToTomorrow])
 
   return (
     <html lang="en">
@@ -62,6 +73,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <CommandPalette />
         <AIPanel />
         <SwipeHandler />
+        <ScrollToTop />
+        <VoiceButton />
+        <JarvisPresence />
 
         <div
           style={{
@@ -71,7 +85,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           className="min-h-screen"
         >
           <TopNav />
-          <main className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto">
+          <main className="p-4 md:p-6 lg:p-8 pb-[env(safe-area-inset-bottom)] max-w-7xl mx-auto">
             {children}
           </main>
         </div>

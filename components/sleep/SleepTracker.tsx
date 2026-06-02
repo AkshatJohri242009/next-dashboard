@@ -110,7 +110,7 @@ export function SleepTracker() {
         <div className="glass-strong rounded-xl p-4">
           <span className="text-[11px] font-mono font-bold text-white/30 mb-3 block uppercase">Sleep History</span>
           <ResponsiveContainer width="100%" height={isMobile ? 180 : 250}>
-            <ComposedChart data={chartData} margin={{ top: 4, right: 4, left: -16, bottom: 4 }}>
+            <ComposedChart data={chartData} margin={{ top: 4, right: 4, left: isMobile ? 4 : -16, bottom: 4 }}>
               <defs>
                 <linearGradient id="sleepAvgLine" x1="0" y1="0" x2="1" y2="0">
                   <stop offset="0%" stopColor="#6be3a4" stopOpacity={0.8} />

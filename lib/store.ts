@@ -4,7 +4,7 @@ import { create } from "zustand"
 import type { Goal, HealthState, GymState, Reminder, GitHubRepo, TrackedProject, SleepEntry, StockHolding, StockQuote, ThemeConfig } from "./types"
 import {
   getActiveDateString, getTomorrowDateString,
-  keyFor, todayKey, tomorrowKey,
+  keyFor, todayKey, tomorrowKey, toDateString,
 } from "./utils"
 import { pullFromSupabase, pushToSupabase, type SyncEntry } from "./supabase"
 import type { StudyTask } from "./study-types"
@@ -38,7 +38,7 @@ function applyTheme(theme: ThemeConfig) {
   root.classList.toggle("light", theme.mode === "light")
 }
 
-function autoSync() {
+export function autoSync() {
   pushToSupabase(allLocalState())
 }
 
@@ -46,7 +46,7 @@ async function waitSync() {
   try { await pushToSupabase(allLocalState()) } catch {}
 }
 
-function allLocalState(): Record<string, unknown> {
+export function allLocalState(): Record<string, unknown> {
   const state: Record<string, unknown> = {}
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i)
@@ -65,6 +65,7 @@ function allLocalState(): Record<string, unknown> {
         "study_scores_v1", "study_errors_v1",
         "stocks_holdings_v1", "stocks_quotes_v1",
         "theme_v1",
+        "lifeos_journal", "lifeos_chapters", "lifeos_missions", "lifeos_decisions", "lifeos_brain", "lifeos_timeline", "lifeos_habits",
       ].includes(key)
     )) {
       try { state[key] = JSON.parse(localStorage.getItem(key)!) }
@@ -237,7 +238,20 @@ export const useStore = create<DashboardState>((set, get) => ({
   },
 
   loadGoals: () => {
-    const goals = getGoals(todayKey())
+    let goals = getGoals(todayKey())
+    const today = getActiveDateString()
+    const yesterday = new Date(today + "T12:00:00")
+    for (let i = 1; i <= 7; i++) {
+      const d = new Date(yesterday.getTime() - i * 86400000)
+      const dateStr = toDateString(d)
+      if (dateStr === today) continue
+      const dayGoals = getGoals(keyFor(dateStr))
+      dayGoals.forEach(g => {
+        if (!g.done && !goals.some(e => e.text === g.text)) {
+          goals.push({ ...g, pushedCount: (g.pushedCount || 0) + 1 })
+        }
+      })
+    }
     const tomorrowGoals = getGoals(tomorrowKey())
     const streakData = storeGet<{ count: number }>("goal_streak_v1")
     const sleepData = storeGet<number>("last_sleep_hours")

@@ -115,7 +115,7 @@ export function GymCalendar() {
       </div>
 
       <div className="rounded-xl p-4 bg-white/[0.02] border border-white/[0.06] overflow-x-auto">
-        <div className="flex items-end gap-[3px]" style={{ minWidth: 560 }}>
+        <div className="flex items-end gap-[3px]" style={{ minWidth: 248 }}>
           <div className="flex flex-col gap-[3px] mr-1 pt-5">
             {DAYS.map((d, i) => (
               <div key={i} className="h-[14px] text-[10px] text-white/30 font-mono leading-[14px]">{d}</div>

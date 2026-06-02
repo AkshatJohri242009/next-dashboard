@@ -4,6 +4,7 @@ import { useEffect } from "react"
 import { motion } from "framer-motion"
 import { StockList } from "@/components/stocks/StockList"
 import { StockDetail } from "@/components/stocks/StockDetail"
+import { JarvisInsightBar } from "@/components/life/JarvisInsightBar"
 import { GlassPanel } from "@/components/ui/GlassPanel"
 import { useStore } from "@/lib/store"
 
@@ -24,6 +25,8 @@ export default function StocksPage() {
         <h1 className="text-2xl md:text-3xl font-bold text-gradient">Stock Portfolio</h1>
         <p className="text-sm text-white/40 mt-1">Track your stock holdings and monitor performance.</p>
       </div>
+
+      <JarvisInsightBar />
 
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
         <GlassPanel variant="strong" glow="green">

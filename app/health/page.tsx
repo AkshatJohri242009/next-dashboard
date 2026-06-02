@@ -5,6 +5,7 @@ import { motion } from "framer-motion"
 import { SupplementScheduler } from "@/components/health/SupplementScheduler"
 import { WaterTracker } from "@/components/health/WaterTracker"
 import { GlassPanel } from "@/components/ui/GlassPanel"
+import { JarvisInsightBar } from "@/components/life/JarvisInsightBar"
 import { useStore } from "@/lib/store"
 
 const container = {
@@ -30,6 +31,8 @@ export default function HealthPage() {
           Supplement timing, running-low flags, and a dynamic water target that reacts to your day.
         </p>
       </div>
+
+      <JarvisInsightBar />
 
       <motion.div variants={item}>
         <GlassPanel variant="strong" glow="green">

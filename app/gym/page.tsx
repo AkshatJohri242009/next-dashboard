@@ -7,6 +7,7 @@ import { StrengthChart } from "@/components/gym/StrengthChart"
 import { ProgressPhotos } from "@/components/gym/ProgressPhotos"
 import { GymCalendar } from "@/components/gym/GymCalendar"
 import { GlassPanel } from "@/components/ui/GlassPanel"
+import { JarvisInsightBar } from "@/components/life/JarvisInsightBar"
 import { useStore } from "@/lib/store"
 
 const container = {
@@ -32,6 +33,8 @@ export default function GymPage() {
           Log lifts, track split context, get progressive overload nudges, and compare progress photos.
         </p>
       </div>
+
+      <JarvisInsightBar />
 
       <motion.div variants={item}>
         <GlassPanel variant="strong" glow="accent">

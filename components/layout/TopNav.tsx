@@ -1,12 +1,14 @@
 "use client"
 
 import { motion, AnimatePresence } from "framer-motion"
+import Link from "next/link"
 import { Search, Command, Menu, X, Github, Palette } from "lucide-react"
 import { useEffect, useState, useRef } from "react"
 import { useStore } from "@/lib/store"
 import { NotificationPanel } from "./NotificationPanel"
 import { ModeToggle } from "./ModeToggle"
 import { ThemePanel } from "./ThemePanel"
+import { FocusMode } from "@/components/life/FocusMode"
 
 export function TopNav() {
   const { setCommandPalette, setAIPanel, aiPanelOpen, mobileMenuOpen, setMobileMenu, mode } = useStore()
@@ -37,11 +39,13 @@ export function TopNav() {
         >
           {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
         </button>
+        <Link href="/" className="text-sm font-bold text-gradient hidden sm:block mr-2">LifeOS</Link>
         <span className="text-xs text-white/30 font-mono">{dateStr}</span>
       </div>
 
       <div className="flex items-center gap-2">
         <ModeToggle />
+        <FocusMode />
 
         <motion.button
           whileHover={{ scale: 1.05 }}
@@ -51,49 +55,46 @@ export function TopNav() {
         >
           <Search className="w-3.5 h-3.5" />
           <span className="hidden sm:inline">Search</span>
-          <span className="hidden sm:flex items-center gap-1 ml-2">
-            <kbd className="kbd">⌘</kbd>
-            <kbd className="kbd">K</kbd>
-          </span>
+          <div className="hidden sm:flex items-center gap-0.5">
+            <kbd className="kbd text-[9px]">⌘</kbd>
+            <kbd className="kbd text-[9px]">K</kbd>
+          </div>
         </motion.button>
 
-        {mode === "work" && (
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setAIPanel(!aiPanelOpen)}
-            className="relative h-9 w-9 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center hover:bg-brand-500/20 transition-colors"
-          >
-            <Command className="w-4 h-4 text-brand-400" />
-          </motion.button>
-        )}
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => setAIPanel(!aiPanelOpen)}
+          className="h-9 w-9 rounded-xl bg-brand-500/20 border border-brand-500/30 flex items-center justify-center text-brand-400 hover:bg-brand-500/30 transition-colors"
+        >
+          <Command className="w-4 h-4" />
+        </motion.button>
 
         <div ref={themeRef} className="relative">
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setThemeOpen(!themeOpen)}
-            className="h-9 w-9 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-white/40 hover:text-white/60 hover:bg-white/[0.08] transition-colors"
+            className="h-9 w-9 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-white/40 hover:bg-white/[0.08] hover:text-white/60 transition-colors"
           >
             <Palette className="w-4 h-4" />
           </motion.button>
           <AnimatePresence>
-            {themeOpen && <ThemePanel />}
+            {themeOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                transition={{ duration: 0.15, ease: [0.22, 1, 0.36, 1] }}
+                className="absolute right-0 top-full mt-2"
+              >
+                <ThemePanel />
+              </motion.div>
+            )}
           </AnimatePresence>
         </div>
 
         <NotificationPanel />
-
-        <motion.a
-          href="https://github.com/AkshatJohri242009"
-          target="_blank"
-          rel="noopener noreferrer"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="h-9 w-9 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center overflow-hidden"
-        >
-          <Github className="w-4 h-4 text-white/50" />
-        </motion.a>
       </div>
     </header>
   )
