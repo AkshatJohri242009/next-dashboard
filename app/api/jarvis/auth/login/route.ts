@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { getUserByUsername, createUser } from "@/lib/jarvis-db"
+import { getUserByUsername } from "@/lib/jarvis-db"
 import { createSessionToken } from "@/lib/jarvis-auth"
 import bcrypt from "bcryptjs"
 
@@ -15,32 +15,22 @@ export async function POST(req: Request) {
 
     const trimmed = username.trim().toLowerCase()
 
-    let user = await getUserByUsername(trimmed)
-
     if (trimmed === HARDCODED_USER && password === HARDCODED_PASS) {
-      if (!user) {
-        const passwordHash = await bcrypt.hash(HARDCODED_PASS, 10)
-        const newUser = await createUser(HARDCODED_USER, passwordHash)
-        if (newUser) {
-          user = newUser as any
-        }
-      }
-      if (user) {
-        const token = await createSessionToken(user.id)
-        const res = NextResponse.json({
-          user: { id: user.id, username: user.username, is_admin: (user as any).is_admin },
-        })
-        res.cookies.set("jarvis_token", token, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "lax",
-          maxAge: 60 * 60 * 24 * 7,
-          path: "/",
-        })
-        return res
-      }
+      const token = await createSessionToken("aki_hardcoded_user_id")
+      const res = NextResponse.json({
+        user: { id: "aki_hardcoded_user_id", username: HARDCODED_USER, is_admin: true },
+      })
+      res.cookies.set("jarvis_token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 60 * 60 * 24 * 7,
+        path: "/",
+      })
+      return res
     }
 
+    const user = await getUserByUsername(trimmed)
     if (!user) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 })
     }
