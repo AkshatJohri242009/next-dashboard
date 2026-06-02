@@ -4,12 +4,6 @@ import { useState, useEffect, useCallback } from "react"
 import { createPortal } from "react-dom"
 import { Target, X, Play, Pause, RotateCcw } from "lucide-react"
 
-type Mission = {
-  title: string
-  status: string
-  milestones?: { title: string; done: boolean }[]
-}
-
 export function useFocusOverlay() {
   const [show, setShow] = useState(false)
   const open = useCallback(() => setShow(true), [])
@@ -20,7 +14,7 @@ export function useFocusOverlay() {
 export function FocusOverlay({ show, onClose }: { show: boolean; onClose: () => void }) {
   const [timer, setTimer] = useState(25 * 60)
   const [running, setRunning] = useState(false)
-  const [missions, setMissions] = useState<Mission[]>([])
+  const [goals, setGoals] = useState<{ text: string; done: boolean }[]>([])
 
   useEffect(() => {
     if (!show) {
@@ -29,8 +23,9 @@ export function FocusOverlay({ show, onClose }: { show: boolean; onClose: () => 
       return
     }
     try {
-      const ms: Mission[] = JSON.parse(localStorage.getItem("lifeos_missions") || "[]")
-      setMissions(ms.filter(x => x.status === "active").slice(0, 6))
+      const today = new Date().toISOString().slice(0, 10)
+      const gs: { text: string; done: boolean }[] = JSON.parse(localStorage.getItem("goals:" + today) || "[]")
+      setGoals(gs)
     } catch {}
   }, [show])
 
@@ -184,37 +179,22 @@ export function FocusOverlay({ show, onClose }: { show: boolean; onClose: () => 
 
         <div style={{ width: 384, padding: "24px 32px", overflow: "auto" }}>
           <div style={{ fontSize: 12, fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.05em", opacity: 0.4, marginBottom: 16 }}>
-            Active Missions <span style={{ opacity: 0.5 }}>({missions.length})</span>
+            Today&apos;s Tasks <span style={{ opacity: 0.5 }}>({goals.length})</span>
           </div>
-          {missions.length === 0 ? (
+          {goals.length === 0 ? (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "64px 0", textAlign: "center" }}>
               <Target size={32} style={{ opacity: 0.1, marginBottom: 12 }} />
-              <p style={{ fontSize: 14, opacity: 0.2 }}>No active missions</p>
-              <p style={{ fontSize: 12, opacity: 0.1, marginTop: 4 }}>Create missions in Life OS to track them here</p>
+              <p style={{ fontSize: 14, opacity: 0.2 }}>No tasks for today</p>
+              <p style={{ fontSize: 12, opacity: 0.1, marginTop: 4 }}>Add goals in the dashboard to focus on them here</p>
             </div>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              {missions.map((m, idx) => (
-                <div key={idx} style={{ borderRadius: 16, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", padding: 16 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-                    <div style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--brand)", opacity: 0.6 }} />
-                    <span style={{ fontSize: 14, fontWeight: 500, opacity: 0.8 }}>{m.title}</span>
-                  </div>
-                  {m.milestones && m.milestones.length > 0 && (
-                    <div style={{ marginLeft: 16, display: "flex", flexDirection: "column", gap: 6 }}>
-                      {m.milestones.map((ms, mi) => (
-                        <div key={mi} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                          <div style={{ width: 6, height: 6, borderRadius: "50%", flexShrink: 0, background: ms.done ? "var(--brand)" : "rgba(255,255,255,0.15)" }} />
-                          <span style={{ fontSize: 12, opacity: ms.done ? 0.25 : 0.45, textDecoration: ms.done ? "line-through" : "none" }}>
-                            {ms.title}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  <div style={{ marginTop: 10, height: 4, borderRadius: 4, background: "rgba(255,255,255,0.06)", overflow: "hidden" }}>
-                    <div style={{ height: "100%", borderRadius: 4, background: "var(--brand)", opacity: 0.4, transition: "width 0.3s", width: `${m.milestones ? Math.round(m.milestones.filter(x => x.done).length / Math.max(m.milestones.length, 1) * 100) : 0}%` }} />
-                  </div>
+              {goals.map((g, idx) => (
+                <div key={idx} style={{ borderRadius: 16, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", padding: 16, display: "flex", alignItems: "center", gap: 12 }}>
+                  <div style={{ width: 8, height: 8, borderRadius: "50%", flexShrink: 0, background: g.done ? "var(--brand)" : "rgba(255,255,255,0.15)" }} />
+                  <span style={{ fontSize: 14, fontWeight: 500, opacity: g.done ? 0.3 : 0.8, textDecoration: g.done ? "line-through" : "none" }}>
+                    {g.text}
+                  </span>
                 </div>
               ))}
             </div>
