@@ -62,17 +62,18 @@ export function FocusOverlay({ show, onClose }: { show: boolean; onClose: () => 
   if (!show) return null
 
   return createPortal(
-    <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        zIndex: 99999,
-        backgroundColor: "#050506",
-        display: "flex",
-        flexDirection: "column",
-        color: "#fff",
-      }}
-    >
+      <div
+        style={{
+          position: "fixed",
+          inset: 0,
+          zIndex: 99999,
+          backgroundColor: "#050506",
+          display: "flex",
+          flexDirection: "column",
+          color: "#fff",
+          touchAction: "manipulation",
+        }}
+      >
       <div
         style={{
           display: "flex",
@@ -149,14 +150,16 @@ export function FocusOverlay({ show, onClose }: { show: boolean; onClose: () => 
                 const isActive = activeGoal === idx
                 const pct = g.progress || 0
                 return (
-                  <div key={idx} style={{
+                  <div key={idx}
+                    onClick={() => setActiveGoal(isActive ? null : idx)}
+                    style={{
                     borderRadius: 16,
                     background: isActive ? "rgba(107,227,164,0.06)" : "rgba(255,255,255,0.02)",
                     border: isActive ? "1px solid rgba(107,227,164,0.25)" : "1px solid rgba(255,255,255,0.06)",
                     cursor: "pointer",
                     transition: "all 0.15s",
                   }}>
-                    <div style={{ padding: "12px 16px", display: "flex", alignItems: "center", gap: 10 }} onClick={() => setActiveGoal(isActive ? null : idx)}>
+                    <div style={{ padding: "12px 16px", display: "flex", alignItems: "center", gap: 10 }}>
                       <div style={{ width: 10, height: 10, borderRadius: "50%", flexShrink: 0, background: g.done ? "var(--brand)" : isActive ? "#6be3a4" : "rgba(255,255,255,0.15)" }} />
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <span style={{ fontSize: 14, fontWeight: isActive ? 600 : 500, opacity: g.done ? 0.3 : 0.8, textDecoration: g.done ? "line-through" : "none", display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
