@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Sparkles } from "lucide-react"
+import { Bot } from "lucide-react"
 
 const INSIGHTS = [
   "Scanning your day...",
@@ -37,14 +37,14 @@ export function JarvisPresence() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
-          className="fixed bottom-4 left-4 z-40 flex items-center gap-2 px-3 py-1.5 rounded-full glass-sm"
+          className="fixed bottom-4 left-4 z-40 flex items-center gap-2.5 px-3.5 py-2 rounded-full border border-brand/20 bg-black/60 backdrop-blur-xl shadow-lg shadow-brand/5"
         >
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-500" />
-          </span>
-          <Sparkles className="w-3 h-3 text-brand-400" />
-          <span className="text-[10px] text-white/30 font-medium">{message}</span>
+          <div className="relative flex h-2.5 w-2.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-75" />
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-brand" />
+          </div>
+          <Bot className="w-3.5 h-3.5 text-brand" />
+          <span className="text-[11px] font-medium text-white/40 tracking-wide">{message}</span>
         </motion.div>
       )}
     </AnimatePresence>

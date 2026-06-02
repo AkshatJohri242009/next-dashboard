@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Mic, MicOff, Sparkles, X, Volume2, Loader2, HelpCircle, ChevronUp } from "lucide-react"
+import { Mic, MicOff, Bot, X, Volume2, Loader2, HelpCircle, ChevronUp } from "lucide-react"
 import { startListening, speakText, stopSpeaking, isSpeechSupported, isSynthesisSupported } from "@/lib/voice"
 import { processVoiceCommand, getIntentDescriptions } from "@/lib/voice-intents"
 import { useRouter } from "next/navigation"
@@ -86,9 +86,11 @@ export function VoiceButton() {
           >
             <div className="glass-strong rounded-2xl border border-white/[0.08] overflow-hidden shadow-2xl">
               <div className="flex items-center justify-between p-4 border-b border-white/[0.06]">
-                <div className="flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-brand-400" />
-                  <span className="text-sm font-semibold text-white/90">JARVIS Voice</span>
+                <div className="flex items-center gap-2.5">
+                  <div className="w-7 h-7 rounded-lg bg-brand/20 flex items-center justify-center">
+                    <Bot className="w-3.5 h-3.5 text-brand" />
+                  </div>
+                  <span className="text-sm font-bold text-gradient">J.A.R.V.I.S</span>
                 </div>
                 <button onClick={() => setShowHelp(!showHelp)} className="h-8 w-8 rounded flex items-center justify-center text-white/30 hover:text-white/60">
                   <HelpCircle className="w-4 h-4" />
