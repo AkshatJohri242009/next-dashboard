@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react"
 import { createPortal } from "react-dom"
 import { Target, X, Play, Pause, RotateCcw } from "lucide-react"
+import { useStore } from "@/lib/store"
 
 export function useFocusOverlay() {
   const [show, setShow] = useState(false)
@@ -12,21 +13,16 @@ export function useFocusOverlay() {
 }
 
 export function FocusOverlay({ show, onClose }: { show: boolean; onClose: () => void }) {
+  const goals = useStore(s => s.goals)
+  const toggleGoal = useStore(s => s.toggleGoal)
   const [timer, setTimer] = useState(25 * 60)
   const [running, setRunning] = useState(false)
-  const [goals, setGoals] = useState<{ text: string; done: boolean }[]>([])
 
   useEffect(() => {
     if (!show) {
       setRunning(false)
       setTimer(25 * 60)
-      return
     }
-    try {
-      const today = new Date().toISOString().slice(0, 10)
-      const gs: { text: string; done: boolean }[] = JSON.parse(localStorage.getItem("goals:" + today) || "[]")
-      setGoals(gs)
-    } catch {}
   }, [show])
 
   useEffect(() => {
@@ -190,8 +186,8 @@ export function FocusOverlay({ show, onClose }: { show: boolean; onClose: () => 
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               {goals.map((g, idx) => (
-                <div key={idx} style={{ borderRadius: 16, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", padding: 16, display: "flex", alignItems: "center", gap: 12 }}>
-                  <div style={{ width: 8, height: 8, borderRadius: "50%", flexShrink: 0, background: g.done ? "var(--brand)" : "rgba(255,255,255,0.15)" }} />
+                <div key={idx} style={{ borderRadius: 16, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", padding: 16, display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }} onClick={() => toggleGoal(idx)}>
+                  <div style={{ width: 10, height: 10, borderRadius: "50%", flexShrink: 0, background: g.done ? "var(--brand)" : "rgba(255,255,255,0.15)" }} />
                   <span style={{ fontSize: 14, fontWeight: 500, opacity: g.done ? 0.3 : 0.8, textDecoration: g.done ? "line-through" : "none" }}>
                     {g.text}
                   </span>
