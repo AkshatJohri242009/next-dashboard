@@ -5,6 +5,7 @@ export interface Goal {
   pushedCount?: number
   doneAt?: number
   reminderMin?: number
+  progress?: number
 }
 
 export interface Reminder {

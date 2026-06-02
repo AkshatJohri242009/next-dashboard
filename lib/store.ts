@@ -106,6 +106,7 @@ interface DashboardState {
   editGoal: (idx: number, text: string) => void
   toggleQueued: (idx: number) => void
   reorderGoals: (goals: Goal[]) => void
+  setGoalProgress: (idx: number, progress: number) => void
   pushToTomorrow: () => void
   setSleep: (hours: number) => void
   toggleSidebar: () => void
@@ -339,6 +340,16 @@ export const useStore = create<DashboardState>((set, get) => ({
     storeSet(key, newOrder)
     set({ goals: newOrder })
     autoSync()
+  },
+  setGoalProgress: (idx, progress) => {
+    const key = todayKey()
+    const goals = getGoals(key)
+    if (goals[idx]) {
+      goals[idx].progress = Math.min(100, Math.max(0, progress))
+      storeSet(key, goals)
+      set({ goals: [...goals] })
+      autoSync()
+    }
   },
 
   pushToTomorrow: () => {
