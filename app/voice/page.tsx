@@ -24,7 +24,7 @@ export default function VoicePage() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="space-y-4">
-          <div className="glass-strong rounded-2xl border border-white/[0.08] p-4">
+          <div className="glass-strong rounded-2xl border border-white/[0.08] p-4 sm:p-6">
             <h2 className="text-sm font-semibold text-white/70 mb-3">Quick Commands</h2>
             <div className="grid grid-cols-2 gap-2">
               {[
@@ -42,11 +42,11 @@ export default function VoicePage() {
               ))}
             </div>
           </div>
-          <div className="glass-strong rounded-2xl border border-white/[0.08] p-4">
+          <div className="glass-strong rounded-2xl border border-white/[0.08] p-4 sm:p-6">
             <VoiceJournalModal />
           </div>
         </div>
-        <div className="glass-strong rounded-2xl border border-white/[0.08] p-4">
+        <div className="glass-strong rounded-2xl border border-white/[0.08] p-4 sm:p-6">
           <h2 className="text-sm font-semibold text-white/70 mb-3">Briefings</h2>
           <VoiceBriefingPanel />
         </div>

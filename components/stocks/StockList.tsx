@@ -188,14 +188,12 @@ export function StockList() {
         {stockHoldings.length === 0 && (
           <p className="text-sm text-white/30 text-center py-8">No stocks tracked yet. Search and add a ticker above.</p>
         )}
-        <motion.button
+        <button
           onClick={fetchStockQuotes}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.95 }}
-          className="text-[11px] text-white/20 hover:text-white/40 transition-colors mb-1 flex items-center gap-1"
+          className="text-[11px] text-white/20 hover:text-white/40 hover:scale-[1.02] active:scale-[0.95] transition-all mb-1 flex items-center gap-1"
         >
           <RefreshCw className="w-3 h-3" /> Refresh quotes
-        </motion.button>
+        </button>
         <AnimatePresence>
           {stockHoldings.map((h) => {
           const q = stockQuotes[h.symbol]
@@ -212,11 +210,9 @@ export function StockList() {
               transition={{ duration: 0.25, ease: "easeOut" }}
               className="glass rounded-xl overflow-hidden"
             >
-              <motion.button
+              <button
                 onClick={() => setStockExpanded(expanded ? null : h.symbol)}
-                whileHover={{ backgroundColor: "rgba(255,255,255,0.03)" }}
-                whileTap={{ scale: 0.995 }}
-                className="w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 text-left transition-colors"
+                className="w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 text-left hover:bg-white/[0.03] active:scale-[0.995] transition-all"
               >
                 <div className="flex-1 min-w-0">
                   <span className="text-sm font-bold text-white/80">{h.symbol}</span>
@@ -252,7 +248,7 @@ export function StockList() {
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
-              </motion.button>
+              </button>
             </motion.div>
           )
         })}

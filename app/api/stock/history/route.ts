@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { applyRateLimit } from "@/lib/rate-limit"
 
 const RANGES: Record<string, { range: string; interval: string }> = {
   "1d": { range: "1d", interval: "1m" },
@@ -10,6 +11,9 @@ const RANGES: Record<string, { range: string; interval: string }> = {
 }
 
 export async function GET(request: Request) {
+  const rateLimitResponse = applyRateLimit(request, { maxRequests: 60, windowMs: 60000 })
+  if (rateLimitResponse) return rateLimitResponse
+
   const { searchParams } = new URL(request.url)
   const symbol = searchParams.get("symbol")
   const range = searchParams.get("range") || "1mo"

@@ -2,16 +2,17 @@
 
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
-import { Search, Command, Menu, X, Github, Palette } from "lucide-react"
+import { Search, Command, Menu, X, Github, Palette, Target } from "lucide-react"
 import { useEffect, useState, useRef } from "react"
 import { useStore } from "@/lib/store"
 import { NotificationPanel } from "./NotificationPanel"
 import { ModeToggle } from "./ModeToggle"
 import { ThemePanel } from "./ThemePanel"
-import { FocusMode } from "@/components/life/FocusMode"
+import { FocusOverlay, useFocusOverlay } from "@/components/life/FocusOverlay"
 
 export function TopNav() {
   const { setCommandPalette, setAIPanel, aiPanelOpen, mobileMenuOpen, setMobileMenu, mode } = useStore()
+  const focus = useFocusOverlay()
   const [dateStr, setDateStr] = useState("")
   const [themeOpen, setThemeOpen] = useState(false)
   const themeRef = useRef<HTMLDivElement>(null)
@@ -45,13 +46,17 @@ export function TopNav() {
 
       <div className="flex items-center gap-2">
         <ModeToggle />
-        <FocusMode />
+        <button onClick={() => focus.open()}
+          className="h-9 px-3 rounded-xl bg-white/5 border border-white/10 flex items-center gap-2 text-xs text-white/50 hover:text-white/70 hover:bg-white/10 transition-all active:scale-95"
+        >
+          <Target className="w-3.5 h-3.5" />
+          Focus
+        </button>
+        <FocusOverlay show={focus.show} onClose={focus.close} />
 
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+        <button
           onClick={() => setCommandPalette(true)}
-          className="flex items-center gap-2 h-9 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-white/40 text-xs hover:bg-white/[0.08] hover:text-white/60 transition-colors"
+          className="flex items-center gap-2 h-9 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-white/40 text-xs hover:bg-white/[0.08] hover:text-white/60 hover:scale-105 active:scale-95 transition-all"
         >
           <Search className="w-3.5 h-3.5" />
           <span className="hidden sm:inline">Search</span>
@@ -59,26 +64,22 @@ export function TopNav() {
             <kbd className="kbd text-[9px]">⌘</kbd>
             <kbd className="kbd text-[9px]">K</kbd>
           </div>
-        </motion.button>
+        </button>
 
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+        <button
           onClick={() => setAIPanel(!aiPanelOpen)}
-          className="h-9 w-9 rounded-xl bg-brand-500/20 border border-brand-500/30 flex items-center justify-center text-brand-400 hover:bg-brand-500/30 transition-colors"
+          className="h-9 w-9 rounded-xl bg-brand-500/20 border border-brand-500/30 flex items-center justify-center text-brand-400 hover:bg-brand-500/30 hover:scale-105 active:scale-95 transition-all"
         >
           <Command className="w-4 h-4" />
-        </motion.button>
+        </button>
 
         <div ref={themeRef} className="relative">
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+          <button
             onClick={() => setThemeOpen(!themeOpen)}
-            className="h-9 w-9 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-white/40 hover:bg-white/[0.08] hover:text-white/60 transition-colors"
+            className="h-9 w-9 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-white/40 hover:bg-white/[0.08] hover:text-white/60 hover:scale-105 active:scale-95 transition-all"
           >
             <Palette className="w-4 h-4" />
-          </motion.button>
+          </button>
           <AnimatePresence>
             {themeOpen && (
               <motion.div

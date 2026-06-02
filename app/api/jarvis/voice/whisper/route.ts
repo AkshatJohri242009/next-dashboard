@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server"
+import { applyRateLimit } from "@/lib/rate-limit"
 
 export async function POST(req: Request) {
+  const rateLimitResponse = applyRateLimit(req, { maxRequests: 20, windowMs: 60000 })
+  if (rateLimitResponse) return rateLimitResponse
+
   try {
     const formData = await req.formData()
     const audio = formData.get("audio") as Blob | null

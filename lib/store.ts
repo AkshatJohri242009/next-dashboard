@@ -1,6 +1,7 @@
 "use client"
 
 import { create } from "zustand"
+import { ROUTES } from "./routes"
 import type { Goal, HealthState, GymState, Reminder, GitHubRepo, TrackedProject, SleepEntry, StockHolding, StockQuote, ThemeConfig } from "./types"
 import {
   getActiveDateString, getTomorrowDateString,
@@ -86,6 +87,7 @@ interface DashboardState {
   streak: number
   sleep: number
   sidebarOpen: boolean
+  focusOpen: boolean
   commandPaletteOpen: boolean
   aiPanelOpen: boolean
   notificationPanelOpen: boolean
@@ -107,6 +109,7 @@ interface DashboardState {
   pushToTomorrow: () => void
   setSleep: (hours: number) => void
   toggleSidebar: () => void
+  setFocusOpen: (open: boolean) => void
   setCommandPalette: (open: boolean) => void
   setAIPanel: (open: boolean) => void
   setNotificationPanel: (open: boolean) => void
@@ -200,6 +203,7 @@ export const useStore = create<DashboardState>((set, get) => ({
   sleepTimerStart: null,
   sleepLog: [],
   sidebarOpen: true,
+  focusOpen: false,
   commandPaletteOpen: false,
   aiPanelOpen: false,
   notificationPanelOpen: false,
@@ -403,6 +407,7 @@ export const useStore = create<DashboardState>((set, get) => ({
   },
 
   toggleSidebar: () => set(s => ({ sidebarOpen: !s.sidebarOpen })),
+  setFocusOpen: (open) => set({ focusOpen: open }),
   setCommandPalette: (open) => set({ commandPaletteOpen: open }),
   setAIPanel: (open) => set({ aiPanelOpen: open }),
   setNotificationPanel: (open) => set({ notificationPanelOpen: open }),
@@ -607,8 +612,8 @@ export const useStore = create<DashboardState>((set, get) => ({
     applyTheme(theme)
     autoSync()
   },
-  lastWorkPath: "/",
-  lastStudyPath: "/study",
+  lastWorkPath: ROUTES.HOME,
+  lastStudyPath: ROUTES.STUDY,
   setLastWorkPath: (path) => set({ lastWorkPath: path }),
   setLastStudyPath: (path) => set({ lastStudyPath: path }),
   studyTasks: [],

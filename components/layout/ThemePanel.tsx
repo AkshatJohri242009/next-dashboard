@@ -142,8 +142,8 @@ export function ThemePanel() {
                     min={0} max={255}
                     value={val}
                     onChange={e => handler(parseInt(e.target.value))}
-                    className="flex-1 h-6 rounded-full appearance-none bg-white/[0.1] accent-brand-400 cursor-pointer
-                      [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6
+                    className="flex-1 h-7 rounded-full appearance-none bg-white/[0.1] accent-brand-400 cursor-pointer
+                      [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-7 [&::-webkit-slider-thumb]:h-7
                       [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white
                       [&::-webkit-slider-thumb]:shadow-[0_0_12px_rgba(255,255,255,0.4)]
                       [&::-webkit-slider-track]:h-full [&::-webkit-slider-track]:rounded-full"
@@ -177,8 +177,8 @@ export function ThemePanel() {
                     min={0} max={255}
                     value={val}
                     onChange={e => handler(parseInt(e.target.value))}
-                    className="flex-1 h-6 rounded-full appearance-none bg-white/[0.1] accent-brand-400 cursor-pointer
-                      [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6
+                    className="flex-1 h-7 rounded-full appearance-none bg-white/[0.1] accent-brand-400 cursor-pointer
+                      [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-7 [&::-webkit-slider-thumb]:h-7
                       [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white
                       [&::-webkit-slider-thumb]:shadow-[0_0_12px_rgba(255,255,255,0.4)]
                       [&::-webkit-slider-track]:h-full [&::-webkit-slider-track]:rounded-full"
@@ -187,12 +187,6 @@ export function ThemePanel() {
                 </div>
               )
             })}
-            <input
-              type="color"
-              value={customAccent}
-              onChange={e => apply(customBrand, e.target.value)}
-              className="w-full h-9 rounded-xl cursor-pointer bg-transparent border border-white/[0.1] p-0.5"
-            />
           </div>
         </div>
       </div>

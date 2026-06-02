@@ -23,10 +23,7 @@ export interface FutureSelfReport {
   generatedAt: number
 }
 
-function loadJSON(key: string): any {
-  try { return JSON.parse(localStorage.getItem(key) || "null") }
-  catch { return null }
-}
+import { loadJSON } from "./utils"
 
 export function generateProjections(): FutureSelfReport {
   const now = Date.now()

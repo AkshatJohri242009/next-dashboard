@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
-import { motion } from "framer-motion"
 import {
   Sparkles, Trophy, Dumbbell, BookOpen, Flame,
   Brain, GitBranch, Target, Moon, Activity,
@@ -84,17 +83,16 @@ export function LifeReportCard() {
           const grad = STAT_COLORS[stat.label] || "from-white/50 to-white/30"
           const bg = STAT_BG[stat.label] || "bg-white/[0.02] border-white/[0.06]"
           return (
-            <motion.button
+            <button
               key={idx}
-              whileHover={{ scale: 1.02 }}
               onClick={() => setSelectedStat(selectedStat === idx ? null : idx)}
-              className={cn("p-3 rounded-xl border text-left transition-all", bg)}
+              className={cn("p-3 rounded-xl border text-left hover:scale-[1.02] transition-all", bg)}
             >
               <Icon className={`w-4 h-4 mb-1 bg-gradient-to-br ${grad} bg-clip-text text-transparent`} />
               <p className="text-lg font-bold text-white/80">{stat.value}</p>
               <p className="text-[10px] text-white/30">{stat.label}</p>
               {selectedStat === idx && <p className="text-[9px] text-white/20 mt-1">{stat.subtitle}</p>}
-            </motion.button>
+            </button>
           )
         })}
       </div>

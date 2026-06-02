@@ -59,15 +59,13 @@ export function WorkoutLog() {
           className="h-10 w-full sm:w-20 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white outline-none text-center" />
         <input value={reps} onChange={e => setReps(e.target.value)}
           className="h-10 w-full sm:w-24 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white outline-none text-center" />
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
+        <button
           onClick={handleAdd}
-          className="col-span-2 sm:col-auto h-10 px-4 rounded-xl bg-brand-500 text-black text-sm font-bold flex items-center justify-center gap-1.5 shadow-lg shadow-brand-500/20"
+          className="col-span-2 sm:col-auto h-10 px-4 rounded-xl bg-brand-500 text-black text-sm font-bold flex items-center justify-center gap-1.5 shadow-lg shadow-brand-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
         >
           <Plus className="w-4 h-4" />
           Add Set
-        </motion.button>
+        </button>
       </div>
 
       <div className="space-y-1.5">

@@ -63,12 +63,10 @@ export function FocusSounds() {
         {sounds.map((s) => {
           const isActive = active === s.id
           return (
-            <motion.button
+            <button
               key={s.id}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
               onClick={() => toggle(s.id, s.play)}
-              className={`relative flex flex-col items-center gap-2 py-4 px-3 rounded-xl border transition-colors ${
+              className={`relative flex flex-col items-center gap-2 py-4 px-3 rounded-xl border hover:scale-[1.02] active:scale-[0.98] transition-all ${
                 isActive
                   ? "bg-brand-500/10 border-brand-500/30"
                   : "bg-white/[0.02] border-white/[0.06] hover:bg-white/[0.04]"
@@ -85,7 +83,7 @@ export function FocusSounds() {
                   className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-brand-400 shadow-[0_0_8px_rgba(107,227,164,0.6)]"
                 />
               )}
-            </motion.button>
+            </button>
           )
         })}
       </div>

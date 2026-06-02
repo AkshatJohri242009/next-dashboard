@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server"
+import { applyRateLimit } from "@/lib/rate-limit"
 
 export async function GET(request: Request) {
+  const rateLimitResponse = applyRateLimit(request, { maxRequests: 60, windowMs: 60000 })
+  if (rateLimitResponse) return rateLimitResponse
+
   const { searchParams } = new URL(request.url)
   const q = searchParams.get("q")
   if (!q || q.length < 1) return NextResponse.json({ results: [] })

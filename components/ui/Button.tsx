@@ -1,7 +1,6 @@
 "use client"
 
 import { forwardRef, type ReactNode } from "react"
-import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"
 
 interface ButtonProps {
@@ -17,10 +16,8 @@ interface ButtonProps {
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = "secondary", size = "md", icon, children, ...props }, ref) => (
-    <motion.button
+    <button
       ref={ref}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
       className={cn(
         "inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-colors",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400/50",
@@ -38,7 +35,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     >
       {icon && <span className="shrink-0">{icon}</span>}
       {children}
-    </motion.button>
+    </button>
   ),
 )
 Button.displayName = "Button"

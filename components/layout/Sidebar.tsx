@@ -9,11 +9,12 @@ import {
   ChevronLeft, ChevronRight, Sparkles, X,
   BookOpen, Calendar, FileText, Volume2, Clock, BarChart3, Bot, Code2,
   PenSquare, Brain, GitBranch, Flag, TrendingUp as ForecastIcon, Zap, Flame, Timer,
-  Mic, Trophy, Activity as CorrIcon,
+  Mic, Trophy, Activity as CorrIcon, Settings,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useStore } from "@/lib/store"
 import { useMediaQuery } from "@/lib/use-media-query"
+import { ROUTES } from "@/lib/routes"
 
 interface NavSection {
   label: string
@@ -24,54 +25,58 @@ const workNav: NavSection[] = [
   {
     label: "Core",
     items: [
-      { href: "/", label: "Home", icon: LayoutDashboard },
-      { href: "/journal",  label: "Journal", icon: PenSquare },
+      { href: ROUTES.HOME, label: "Home", icon: LayoutDashboard },
+      { href: ROUTES.JOURNAL,  label: "Journal", icon: PenSquare },
+      { href: ROUTES.FOCUS,  label: "Focus", icon: Zap },
     ],
   },
   {
     label: "Life OS",
     items: [
-      { href: "/habits",   label: "Habits",   icon: Flame },
-      { href: "/learning", label: "Learning", icon: Brain },
-      { href: "/missions", label: "Missions", icon: Flag },
-      { href: "/timeline", label: "Timeline", icon: Clock },
-      { href: "/decisions", label: "Decisions", icon: GitBranch },
-      { href: "/reviews",  label: "Reviews",  icon: ForecastIcon },
+      { href: ROUTES.HABITS,   label: "Habits",   icon: Flame },
+      { href: ROUTES.LEARNING, label: "Learning", icon: Brain },
+      { href: ROUTES.MISSIONS, label: "Missions", icon: Flag },
+      { href: ROUTES.TIMELINE, label: "Timeline", icon: Clock },
+      { href: ROUTES.DECISIONS, label: "Decisions", icon: GitBranch },
+      { href: ROUTES.REVIEWS,  label: "Reviews",  icon: ForecastIcon },
     ],
   },
   {
     label: "Health",
     items: [
-      { href: "/health",   label: "Health",   icon: Activity },
-      { href: "/gym", label: "Gym", icon: Dumbbell },
-      { href: "/weight", label: "Weight", icon: Weight },
-      { href: "/sleep", label: "Sleep", icon: Moon },
+      { href: ROUTES.HEALTH,   label: "Health",   icon: Activity },
+      { href: ROUTES.GYM, label: "Gym", icon: Dumbbell },
+      { href: ROUTES.WEIGHT, label: "Weight", icon: Weight },
+      { href: ROUTES.SLEEP, label: "Sleep", icon: Moon },
     ],
   },
   {
     label: "Intelligence",
     items: [
-      { href: "/odyssey",    label: "JARVIS",   icon: Bot },
-      { href: "/voice",      label: "Voice",    icon: Mic },
-      { href: "/briefings",  label: "Briefings", icon: Volume2 },
-      { href: "/brain",      label: "Brain",    icon: Zap },
+      { href: ROUTES.ODYSSEY,    label: "JARVIS",   icon: Bot },
+      { href: ROUTES.VOICE,      label: "Voice",    icon: Mic },
+      { href: ROUTES.BRIEFINGS,  label: "Briefings", icon: Volume2 },
+      { href: ROUTES.BRAIN,      label: "Brain",    icon: Zap },
     ],
   },
   {
     label: "Life Data",
     items: [
-      { href: "/memory",       label: "Memory",    icon: Brain },
-      { href: "/correlations", label: "Patterns",  icon: CorrIcon },
-      { href: "/future",       label: "Future",    icon: ForecastIcon },
-      { href: "/report",       label: "Report",    icon: Trophy },
-      { href: "/stocks",       label: "Stocks",    icon: TrendingUp },
+      { href: ROUTES.MEMORY,       label: "Memory",    icon: Brain },
+      { href: ROUTES.CORRELATIONS, label: "Patterns",  icon: CorrIcon },
+      { href: ROUTES.FUTURE,       label: "Future",    icon: ForecastIcon },
+      { href: ROUTES.REPORT,       label: "Report",    icon: Trophy },
+      { href: ROUTES.STOCKS,       label: "Stocks",    icon: TrendingUp },
     ],
   },
   {
     label: "Dev",
     items: [
-      { href: "/projects", label: "Projects", icon: FolderGit2 },
-      { href: "/opencode", label: "OpenCode", icon: Code2 },
+      { href: ROUTES.PROJECTS, label: "Projects", icon: FolderGit2 },
+      { href: ROUTES.OPENCODE, label: "OpenCode", icon: Code2 },
+      { href: ROUTES.SETTINGS, label: "Settings", icon: Settings },
+      { href: ROUTES.TIMER, label: "Timer", icon: Timer },
+      { href: ROUTES.POMODORO, label: "Pomodoro", icon: Timer },
     ],
   },
 ]
@@ -80,28 +85,28 @@ const studyNav: NavSection[] = [
   {
     label: "Dashboard",
     items: [
-      { href: "/study", label: "Overview", icon: LayoutDashboard },
-      { href: "/study/stats", label: "Stats", icon: BarChart3 },
+      { href: ROUTES.STUDY, label: "Overview", icon: LayoutDashboard },
+      { href: ROUTES.STUDY_STATS, label: "Stats", icon: BarChart3 },
     ],
   },
   {
     label: "Tasks",
     items: [
-      { href: "/study/tasks", label: "Tasks", icon: Timer },
-      { href: "/study/exams", label: "Exams", icon: Calendar },
+      { href: ROUTES.STUDY_TASKS, label: "Tasks", icon: Timer },
+      { href: ROUTES.STUDY_EXAMS, label: "Exams", icon: Calendar },
     ],
   },
   {
     label: "Resources",
     items: [
-      { href: "/study/files", label: "Files", icon: FileText },
-      { href: "/study/sounds", label: "Sounds", icon: Volume2 },
+      { href: ROUTES.STUDY_FILES, label: "Files", icon: FileText },
+      { href: ROUTES.STUDY_SOUNDS, label: "Sounds", icon: Volume2 },
     ],
   },
   {
     label: "Tools",
     items: [
-      { href: "/study/commute", label: "Commute", icon: Clock },
+      { href: ROUTES.STUDY_COMMUTE, label: "Commute", icon: Clock },
     ],
   },
 ]
@@ -188,13 +193,12 @@ export function Sidebar() {
                   const active = pathname === item.href
                   return (
                     <Link key={item.href} href={item.href}>
-                      <motion.div
-                        whileHover={{ x: 2 }}
+                        <motion.div
                         className={cn(
                           "relative flex items-center gap-3 px-3 h-9 rounded-xl text-sm font-medium transition-colors",
                           active
                             ? "text-white bg-brand-500/10 border border-brand-500/20"
-                            : "text-white/50 hover:text-white/80 hover:bg-white/[0.04]",
+                            : "text-white/50 hover:text-white/80 hover:bg-white/[0.04] hover:translate-x-0.5",
                         )}
                       >
                         {active && (

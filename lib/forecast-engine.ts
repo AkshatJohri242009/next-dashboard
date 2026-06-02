@@ -1,3 +1,5 @@
+import { loadJSON } from "./utils"
+
 export interface Forecast {
   habitProjections: { name: string; currentStreak: number; projected7Day: number; projected30Day: number }[]
   sleepTrend: { avgHours: number; direction: "improving" | "declining" | "stable" }
@@ -67,9 +69,4 @@ export function generateForecast(): Forecast {
   if (recommendations.length === 0) recommendations.push("All metrics look stable. Focus on small daily improvements.")
 
   return { habitProjections, sleepTrend: { avgHours, direction: sleepDirection }, gymTrend: { weeklyAvg, direction: gymDirection }, moodTrend: { dominant, positivityRate }, recommendations }
-}
-
-function loadJSON(key: string): any {
-  try { return JSON.parse(localStorage.getItem(key) || "null") }
-  catch { return null }
 }

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect, useMemo, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   Brain, Search, Clock, Target, GitBranch, BookOpen,
@@ -36,12 +36,12 @@ export function MemoryAmplifier() {
   const [newTags, setNewTags] = useState("")
   const [extracting, setExtracting] = useState(false)
 
-  const loadMemories = () => {
+  const loadMemories = useCallback(() => {
     const all = searchQuery ? searchMemories(searchQuery) : getAllMemories()
     setMemories(selectedCategory === "all" ? all : all.filter(m => m.category === selectedCategory))
-  }
+  }, [searchQuery, selectedCategory])
 
-  useEffect(() => { loadMemories() }, [searchQuery, selectedCategory, loadMemories])
+  useEffect(() => { loadMemories() }, [loadMemories])
 
   const stats = useMemo(() => getMemoryStats(), [])
 

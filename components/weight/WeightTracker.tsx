@@ -136,15 +136,13 @@ export function WeightTracker() {
             placeholder="Optional..."
             className="h-10 w-full sm:w-40 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white outline-none placeholder:text-white/30 focus:border-white/20 transition-colors" />
         </label>
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
+        <button
           onClick={add}
-          className="col-span-2 sm:col-auto h-10 px-4 rounded-xl bg-brand-500 text-black text-sm font-bold flex items-center justify-center gap-1.5 shadow-lg shadow-brand-500/20"
+          className="col-span-2 sm:col-auto h-10 px-4 rounded-xl bg-brand-500 text-black text-sm font-bold flex items-center justify-center gap-1.5 shadow-lg shadow-brand-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
         >
           <Plus className="w-4 h-4" />
           Log
-        </motion.button>
+        </button>
       </div>
 
       {entries.length > 1 && (

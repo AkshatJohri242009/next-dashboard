@@ -133,7 +133,7 @@ export function MissionsModule() {
           return (
             <motion.div key={m.id} layout className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] transition-colors">
               <div className="flex items-start gap-3">
-                <button onClick={() => setExpanded(expanded === m.id ? null : m.id)} className="mt-0.5 flex-shrink-0 h-6 w-6 flex items-center justify-center" aria-label="Toggle expand">
+                <button onClick={() => setExpanded(expanded === m.id ? null : m.id)} className="mt-0.5 flex-shrink-0 h-8 w-8 flex items-center justify-center" aria-label="Toggle expand">
                   <ChevronRight className={`w-3.5 h-3.5 text-white/30 transition-transform ${expanded === m.id ? "rotate-90" : ""}`} />
                 </button>
                 <div className="flex-1 min-w-0">

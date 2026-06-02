@@ -29,10 +29,7 @@ interface DaySnapshot {
   studyTasks: number
 }
 
-function loadJSON(key: string): any {
-  try { return JSON.parse(localStorage.getItem(key) || "null") }
-  catch { return null }
-}
+import { loadJSON } from "./utils"
 
 function getLastNDays(n: number): DaySnapshot[] {
   const now = Date.now()

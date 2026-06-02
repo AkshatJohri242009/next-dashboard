@@ -2,46 +2,51 @@
 
 import { useEffect, useState, useCallback, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Search, LayoutDashboard, Activity, Dumbbell, Weight, Sparkles, X, TrendingUp, Bot, Moon, BookOpen, Target, Zap, Plus, Timer, Brain, Flame, PenSquare, GitBranch, Flag, TrendingUp as ForecastIcon, Clock, Mic, BarChart3, GitFork, Eye, FileText, Calendar } from "lucide-react"
+import { Search, LayoutDashboard, Activity, Dumbbell, Weight, Sparkles, X, TrendingUp, Bot, Moon, BookOpen, Target, Zap, Plus, Timer, Brain, Flame, PenSquare, GitBranch, Flag, TrendingUp as ForecastIcon, Clock, Mic, BarChart3, GitFork, Eye, FileText, Calendar, Settings } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useStore } from "@/lib/store"
 import { cn } from "@/lib/utils"
+import { ROUTES } from "@/lib/routes"
 
 const commands = [
-  { id: "go-home", label: "Go to Home", icon: LayoutDashboard, href: "/" },
-  { id: "go-stocks", label: "Go to Stocks", icon: TrendingUp, href: "/stocks" },
-  { id: "go-jarvis", label: "Open JARVIS", icon: Bot, href: "/odyssey" },
-  { id: "go-health", label: "Go to Health", icon: Activity, href: "/health" },
-  { id: "go-gym", label: "Go to Gym", icon: Dumbbell, href: "/gym" },
-  { id: "go-weight", label: "Go to Weight", icon: Weight, href: "/weight" },
-  { id: "go-sleep", label: "Go to Sleep", icon: Moon, href: "/sleep" },
-  { id: "go-study", label: "Go to Study", icon: BookOpen, href: "/study" },
-  { id: "go-projects", label: "Go to Projects", icon: Target, href: "/projects" },
-  { id: "go-journal", label: "Go to Journal", icon: PenSquare, href: "/journal" },
-  { id: "go-learning", label: "Go to Learning OS", icon: Brain, href: "/learning" },
-  { id: "go-missions", label: "Go to Missions", icon: Flag, href: "/missions" },
-  { id: "go-decisions", label: "Go to Decisions", icon: GitBranch, href: "/decisions" },
-  { id: "go-reviews", label: "Go to Reviews", icon: ForecastIcon, href: "/reviews" },
-  { id: "go-brain", label: "Go to Second Brain", icon: Brain, href: "/brain" },
-  { id: "go-timeline", label: "Go to Timeline", icon: Clock, href: "/timeline" },
-  { id: "go-habits", label: "Go to Habits", icon: Flame, href: "/habits" },
-  { id: "go-voice", label: "Go to Voice", icon: Mic, href: "/voice" },
-  { id: "go-briefings", label: "Go to Briefings", icon: BarChart3, href: "/briefings" },
-  { id: "go-memory", label: "Go to Memory Engine", icon: Search, href: "/memory" },
-  { id: "go-correlations", label: "Go to Patterns & Correlations", icon: GitFork, href: "/correlations" },
-  { id: "go-future", label: "Go to Future Self", icon: Eye, href: "/future" },
-  { id: "go-report", label: "Go to Life Report", icon: FileText, href: "/report" },
+  { id: "go-home", label: "Go to Home", icon: LayoutDashboard, href: ROUTES.HOME },
+  { id: "go-stocks", label: "Go to Stocks", icon: TrendingUp, href: ROUTES.STOCKS },
+  { id: "go-jarvis", label: "Open JARVIS", icon: Bot, href: ROUTES.ODYSSEY },
+  { id: "go-focus", label: "Go to Focus Mode", icon: Timer, href: ROUTES.FOCUS },
+  { id: "go-health", label: "Go to Health", icon: Activity, href: ROUTES.HEALTH },
+  { id: "go-gym", label: "Go to Gym", icon: Dumbbell, href: ROUTES.GYM },
+  { id: "go-weight", label: "Go to Weight", icon: Weight, href: ROUTES.WEIGHT },
+  { id: "go-sleep", label: "Go to Sleep", icon: Moon, href: ROUTES.SLEEP },
+  { id: "go-study", label: "Go to Study", icon: BookOpen, href: ROUTES.STUDY },
+  { id: "go-projects", label: "Go to Projects", icon: Target, href: ROUTES.PROJECTS },
+  { id: "go-journal", label: "Go to Journal", icon: PenSquare, href: ROUTES.JOURNAL },
+  { id: "go-learning", label: "Go to Learning OS", icon: Brain, href: ROUTES.LEARNING },
+  { id: "go-missions", label: "Go to Missions", icon: Flag, href: ROUTES.MISSIONS },
+  { id: "go-decisions", label: "Go to Decisions", icon: GitBranch, href: ROUTES.DECISIONS },
+  { id: "go-reviews", label: "Go to Reviews", icon: ForecastIcon, href: ROUTES.REVIEWS },
+  { id: "go-brain", label: "Go to Second Brain", icon: Brain, href: ROUTES.BRAIN },
+  { id: "go-timeline", label: "Go to Timeline", icon: Clock, href: ROUTES.TIMELINE },
+  { id: "go-habits", label: "Go to Habits", icon: Flame, href: ROUTES.HABITS },
+  { id: "go-voice", label: "Go to Voice", icon: Mic, href: ROUTES.VOICE },
+  { id: "go-briefings", label: "Go to Briefings", icon: BarChart3, href: ROUTES.BRIEFINGS },
+  { id: "go-memory", label: "Go to Memory Engine", icon: Search, href: ROUTES.MEMORY },
+  { id: "go-correlations", label: "Go to Patterns & Correlations", icon: GitFork, href: ROUTES.CORRELATIONS },
+  { id: "go-future", label: "Go to Future Self", icon: Eye, href: ROUTES.FUTURE },
+  { id: "go-report", label: "Go to Life Report", icon: FileText, href: ROUTES.REPORT },
+  { id: "go-settings", label: "Go to Settings", icon: Settings, href: ROUTES.SETTINGS },
+  { id: "go-timer", label: "Go to Timer", icon: Timer, href: ROUTES.TIMER },
+  { id: "go-pomodoro", label: "Go to Pomodoro", icon: Timer, href: ROUTES.POMODORO },
   { id: "ai-summary", label: "Ask JARVIS", icon: Sparkles, action: "ai-summary" },
   { id: "add-goal", label: "Add Goal", icon: Plus, action: "add-goal" },
   { id: "focus-mode", label: "Start Focus Session", icon: Timer, action: "focus" },
-  { id: "log-workout", label: "Log Workout", icon: Dumbbell, href: "/gym" },
+  { id: "log-workout", label: "Log Workout", icon: Dumbbell, href: ROUTES.GYM },
   { id: "add-habit", label: "Add Habit", icon: Flame, action: "add-habit" },
   { id: "journal", label: "Write Journal Entry", icon: PenSquare, action: "journal" },
-  { id: "generate-study-plan", label: "Generate Study Plan", icon: BookOpen, action: "study-plan", href: "/reviews" },
-  { id: "generate-workout-routine", label: "Generate Workout Routine", icon: Dumbbell, action: "workout-routine", href: "/reviews" },
-  { id: "create-daily-schedule", label: "Create Daily Schedule", icon: Calendar, action: "daily-schedule", href: "/reviews" },
-  { id: "run-weekly-review", label: "Run Weekly Review", icon: ForecastIcon, action: "weekly-review", href: "/reviews" },
-  { id: "recommend-priorities", label: "Recommend Priorities", icon: Target, action: "priorities", href: "/reviews" },
+  { id: "generate-study-plan", label: "Generate Study Plan", icon: BookOpen, action: "study-plan", href: ROUTES.REVIEWS },
+  { id: "generate-workout-routine", label: "Generate Workout Routine", icon: Dumbbell, action: "workout-routine", href: ROUTES.REVIEWS },
+  { id: "create-daily-schedule", label: "Create Daily Schedule", icon: Calendar, action: "daily-schedule", href: ROUTES.REVIEWS },
+  { id: "run-weekly-review", label: "Run Weekly Review", icon: ForecastIcon, action: "weekly-review", href: ROUTES.REVIEWS },
+  { id: "recommend-priorities", label: "Recommend Priorities", icon: Target, action: "priorities", href: ROUTES.REVIEWS },
 ]
 
 export function CommandPalette() {
@@ -60,10 +65,10 @@ export function CommandPalette() {
     setQuery("")
     if ("href" in command && command.href) router.push(command.href)
     else if (command.action === "ai-summary") useStore.getState().setAIPanel(true)
-    else if (command.action === "add-goal") router.push("/")
-    else if (command.action === "focus") router.push("/")
-    else if (command.action === "add-habit") router.push("/")
-    else if (command.action === "journal") router.push("/journal")
+    else if (command.action === "add-goal") router.push(ROUTES.HOME)
+    else if (command.action === "focus") router.push(ROUTES.FOCUS)
+    else if (command.action === "add-habit") router.push(ROUTES.HOME)
+    else if (command.action === "journal") router.push(ROUTES.JOURNAL)
   }, [router, setCommandPalette])
 
   useEffect(() => {

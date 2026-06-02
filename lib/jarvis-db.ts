@@ -44,7 +44,9 @@ export async function createUser(username: string, passwordHash: string): Promis
         username, password_hash: passwordHash, is_admin: false, privileges: {},
       }).select().single()
       if (data) return data as JarvisUser | null
-    } catch {}
+    } catch (e) {
+      console.error("[jarvis-db] createUser supabase error:", e)
+    }
   }
   
   localStore.users.set(username, user)
@@ -57,7 +59,9 @@ export async function getUserByUsername(username: string): Promise<(JarvisUser &
     try {
       const { data } = await jarvisDb.from("jarvis_users").select("*").eq("username", username).maybeSingle()
       if (data) return data as any
-    } catch {}
+    } catch (e) {
+      console.error("[jarvis-db] getUserByUsername supabase error:", e)
+    }
   }
   
   const user = localStore.users.get(username)
@@ -70,7 +74,9 @@ export async function getUserById(id: string): Promise<JarvisUser | null> {
     try {
       const { data } = await jarvisDb.from("jarvis_users").select("*").eq("id", id).maybeSingle()
       if (data) return data as JarvisUser | null
-    } catch {}
+    } catch (e) {
+      console.error("[jarvis-db] getUserById supabase error:", e)
+    }
   }
   
   const user = localStore.users.get(id)
@@ -82,7 +88,9 @@ export async function updateUserPassword(id: string, passwordHash: string): Prom
   if (jarvisDb) {
     try {
       await jarvisDb.from("jarvis_users").update({ password_hash: passwordHash, updated_at: new Date().toISOString() }).eq("id", id)
-    } catch {}
+    } catch (e) {
+      console.error("[jarvis-db] updateUserPassword supabase error:", e)
+    }
   }
 }
 
@@ -91,7 +99,9 @@ export async function countUsers(): Promise<number> {
     try {
       const { count } = await jarvisDb.from("jarvis_users").select("*", { count: "exact", head: true })
       if (count !== null) return count
-    } catch {}
+    } catch (e) {
+      console.error("[jarvis-db] countUsers supabase error:", e)
+    }
   }
   return localStore.users.size / 2 || 0
 }
@@ -101,7 +111,9 @@ export async function getFirstUser(): Promise<JarvisUser | null> {
     try {
       const { data } = await jarvisDb.from("jarvis_users").select("*").order("created_at").limit(1).maybeSingle()
       if (data) return data as JarvisUser | null
-    } catch {}
+    } catch (e) {
+      console.error("[jarvis-db] getFirstUser supabase error:", e)
+    }
   }
   const first = Array.from(localStore.users.values()).find(u => !u.password_hash)
   if (first) return { id: first.id, username: first.username, is_admin: first.is_admin, privileges: first.privileges, created_at: first.created_at }

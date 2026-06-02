@@ -2,6 +2,7 @@
 
 import { startListening, speakText } from "./voice"
 import { useStore } from "./store"
+import { ROUTES } from "./routes"
 
 export interface IntentMatch {
   intent: string
@@ -156,7 +157,7 @@ function executeJarvisAction(action: { type: string; params: Record<string, any>
     case "logWorkout": {
       const duration = action.params?.duration || 45
       store.addLog({ at: new Date().toISOString(), type: "other", exercises: [], notes: "", duration: Math.min(duration, 180) } as any)
-      return { message: `Workout logged: ${Math.min(duration, 180)} min.`, route: "/gym" }
+      return { message: `Workout logged: ${Math.min(duration, 180)} min.`, route: ROUTES.GYM }
     }
 
     case "startSleepTimer": {
@@ -205,16 +206,16 @@ function executeJarvisAction(action: { type: string; params: Record<string, any>
 
     case "navigate": {
       const pages: Record<string, string> = {
-        home: "/", dashboard: "/", gym: "/gym", sleep: "/sleep", journal: "/journal",
-        habits: "/habits", stocks: "/stocks", health: "/health", study: "/study",
-        learning: "/learning", missions: "/missions", decisions: "/decisions",
-        timeline: "/timeline", brain: "/brain", reviews: "/reviews",
-        projects: "/projects", weight: "/weight", voice: "/voice",
-        briefings: "/briefings", memory: "/memory", correlations: "/correlations",
-        future: "/future", report: "/report", jarvis: "/odyssey",
+        home: ROUTES.HOME, dashboard: ROUTES.HOME, gym: ROUTES.GYM, sleep: ROUTES.SLEEP, journal: ROUTES.JOURNAL,
+        habits: ROUTES.HABITS, stocks: ROUTES.STOCKS, health: ROUTES.HEALTH, study: ROUTES.STUDY,
+        learning: ROUTES.LEARNING, missions: ROUTES.MISSIONS, decisions: ROUTES.DECISIONS,
+        timeline: ROUTES.TIMELINE, brain: ROUTES.BRAIN, reviews: ROUTES.REVIEWS,
+        projects: ROUTES.PROJECTS, weight: ROUTES.WEIGHT, voice: ROUTES.VOICE,
+        briefings: ROUTES.BRIEFINGS, memory: ROUTES.MEMORY, correlations: ROUTES.CORRELATIONS,
+        future: ROUTES.FUTURE, report: ROUTES.REPORT, jarvis: ROUTES.ODYSSEY,
       }
       const page = (action.params?.page || "").toLowerCase()
-      const route = pages[page] || (page ? `/${page}` : "/")
+      const route = pages[page] || (page ? `/${page}` : ROUTES.HOME)
       return { message: `Opening ${page}...`, route }
     }
 

@@ -1,5 +1,7 @@
 "use client"
 
+import { loadJSON } from "./utils"
+
 export type MemoryCategory = "goal" | "milestone" | "decision" | "project" | "journal" | "habit" | "workout" | "learning" | "achievement" | "failure" | "lesson" | "preference" | "fact"
 
 export interface LifeMemory {
@@ -186,7 +188,4 @@ export function autoExtractMemories() {
   return added
 }
 
-function loadJSON(key: string): any {
-  try { return JSON.parse(localStorage.getItem(key) || "null") }
-  catch { return null }
-}
+

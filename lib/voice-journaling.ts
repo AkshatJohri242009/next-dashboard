@@ -1,5 +1,7 @@
 "use client"
 
+import { loadJSON } from "./utils"
+
 const MOOD_KEYWORDS: Record<string, string[]> = {
   great: ["amazing", "fantastic", "wonderful", "excellent", "incredible", "thrilled", "ecstatic", "perfect", "best", "beautiful", "awesome", "love", "joy", "accomplished", "proud", "energized"],
   good: ["good", "nice", "fine", "happy", "glad", "positive", "productive", "solid", "decent", "satisfied", "calm", "peaceful", "focused", "motivated", "grateful", "content"],
@@ -87,9 +89,4 @@ export function saveVoiceJournalEntry(parsed: ParsedJournalEntry) {
     markModified(key)
   } catch {}
   return entry
-}
-
-function loadJSON(key: string): any {
-  try { return JSON.parse(localStorage.getItem(key) || "null") }
-  catch { return null }
 }

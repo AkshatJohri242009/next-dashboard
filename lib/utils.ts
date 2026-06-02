@@ -120,11 +120,11 @@ export function currencySymbol(currency?: string): string {
   return CURRENCY_MAP[currency?.toUpperCase() || ""] || "$"
 }
 
-export function loadJSON(key: string): any {
-  try { return JSON.parse(localStorage.getItem(key) || "null") }
+export function loadJSON<T = any>(key: string): T | null {
+  try { return JSON.parse(localStorage.getItem(key) || "null") as T }
   catch { return null }
 }
 
-export function saveJSON(key: string, value: any) {
+export function saveJSON<T = any>(key: string, value: T) {
   localStorage.setItem(key, JSON.stringify(value))
 }

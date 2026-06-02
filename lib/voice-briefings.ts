@@ -32,10 +32,7 @@ export interface MonthlyBriefing {
   overallScore: number
 }
 
-function loadJSON(key: string): any {
-  try { return JSON.parse(localStorage.getItem(key) || "null") }
-  catch { return null }
-}
+import { loadJSON } from "./utils"
 
 function getTimeOfDay(): "morning" | "afternoon" | "evening" {
   const h = new Date().getHours()

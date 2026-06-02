@@ -58,15 +58,13 @@ export function WaterTracker() {
                 : `${Math.max(0, Math.ceil((goalMl - done) / 300))} cups to reach the healthy zone.`}
             </span>
           </div>
-          <motion.button
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
+          <button
             onClick={() => addWater(300)}
-            className="h-11 px-5 rounded-xl bg-brand-500 text-black text-sm font-bold flex items-center gap-2 shadow-lg shadow-brand-500/20 hover:bg-brand-400 transition-colors"
+            className="h-11 px-5 rounded-xl bg-brand-500 text-black text-sm font-bold flex items-center gap-2 shadow-lg shadow-brand-500/20 hover:bg-brand-400 hover:scale-[1.03] active:scale-[0.97] transition-all"
           >
             <Plus className="w-4 h-4" />
             300ml
-          </motion.button>
+          </button>
         </div>
 
         <div className="mt-3 h-2 rounded-full bg-white/[0.06] overflow-hidden">

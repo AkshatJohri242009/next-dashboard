@@ -29,7 +29,8 @@ export function StudyFiles() {
   }, [])
 
   useEffect(() => {
-    storeSet(STORAGE_KEY, files)
+    const t = setTimeout(() => storeSet(STORAGE_KEY, files), 300)
+    return () => clearTimeout(t)
   }, [files])
 
   function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {

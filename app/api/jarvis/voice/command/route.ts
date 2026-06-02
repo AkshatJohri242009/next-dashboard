@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { applyRateLimit } from "@/lib/rate-limit"
 
 const SYSTEM_PROMPT = `You are J.A.R.V.I.S., the AI intelligence layer for LifeOS. You understand natural language and execute operations on the user's LifeOS.
 
@@ -36,6 +37,9 @@ CURRENT USER CONTEXT:
 {lifeContext}`
 
 export async function POST(req: Request) {
+  const rateLimitResponse = applyRateLimit(req, { maxRequests: 30, windowMs: 60000 })
+  if (rateLimitResponse) return rateLimitResponse
+
   try {
     const { text, lifeContext } = await req.json()
     if (!text) {

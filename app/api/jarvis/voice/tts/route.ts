@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server"
+import { applyRateLimit } from "@/lib/rate-limit"
 
 export async function POST(req: Request) {
+  const rateLimitResponse = applyRateLimit(req, { maxRequests: 30, windowMs: 60000 })
+  if (rateLimitResponse) return rateLimitResponse
+
   try {
     const { text, provider, voice } = await req.json()
     if (!text) return NextResponse.json({ error: "Text required" }, { status: 400 })

@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion"
 import { Sparkles, X, Zap, Brain, Target, Lightbulb, Loader2, Bot } from "lucide-react"
 import { useStore } from "@/lib/store"
+import { ROUTES } from "@/lib/routes"
 import { useMediaQuery } from "@/lib/use-media-query"
 import { useState, useRef, useEffect } from "react"
 
@@ -29,7 +30,7 @@ export function AIPanel() {
     try {
       let reply = ""
       if (jarvisMode) {
-        window.location.href = "/odyssey"
+        window.location.href = ROUTES.ODYSSEY
         setLoading(false)
         return
       }

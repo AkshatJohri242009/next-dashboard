@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server"
+import { applyRateLimit } from "@/lib/rate-limit"
 
 export async function GET(request: Request) {
+  const rateLimitResponse = applyRateLimit(request, { maxRequests: 60, windowMs: 60000 })
+  if (rateLimitResponse) return rateLimitResponse
+
   const { searchParams } = new URL(request.url)
   const symbols = searchParams.get("symbols")
   if (!symbols) return NextResponse.json({ error: "symbols required" }, { status: 400 })

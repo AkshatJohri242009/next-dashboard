@@ -30,7 +30,8 @@ export function ExamDates() {
   }, [])
 
   useEffect(() => {
-    storeSet(STORAGE_KEY, exams)
+    const t = setTimeout(() => storeSet(STORAGE_KEY, exams), 300)
+    return () => clearTimeout(t)
   }, [exams])
 
   function add() {

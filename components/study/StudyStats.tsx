@@ -35,8 +35,8 @@ export function StudyStats() {
     setErrors(storeGet<StudyError[]>(ERRORS_KEY) || [])
   }, [])
 
-  useEffect(() => { storeSet(SCORES_KEY, scores) }, [scores])
-  useEffect(() => { storeSet(ERRORS_KEY, errors) }, [errors])
+  useEffect(() => { const t = setTimeout(() => storeSet(SCORES_KEY, scores), 300); return () => clearTimeout(t) }, [scores])
+  useEffect(() => { const t = setTimeout(() => storeSet(ERRORS_KEY, errors), 300); return () => clearTimeout(t) }, [errors])
 
   function addScore() {
     if (!subject.trim() || !score || !total) return

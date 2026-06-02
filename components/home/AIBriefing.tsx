@@ -6,6 +6,7 @@ import { Sparkles, TrendingUp, TrendingDown, Minus, Target, Lightbulb, Zap, Arro
 import { generateBriefing, type DailyBriefing } from "@/lib/life-engine"
 import { recommendPriorities } from "@/lib/automation-engine"
 import Link from "next/link"
+import { ROUTES } from "@/lib/routes"
 
 export function AIBriefing() {
   const [briefing, setBriefing] = useState<DailyBriefing | null>(null)
@@ -95,10 +96,10 @@ export function AIBriefing() {
             </div>
 
             <div className="flex flex-wrap gap-3 mt-6">
-              <Link href="/briefings" className="h-9 px-4 rounded-lg bg-brand/20 hover:bg-brand/30 text-brand text-xs font-medium transition-all flex items-center gap-1.5">
+              <Link href={ROUTES.BRIEFINGS} className="h-9 px-4 rounded-lg bg-brand/20 hover:bg-brand/30 text-brand text-xs font-medium transition-all flex items-center gap-1.5">
                 Full Briefing <ArrowRight className="w-3 h-3" />
               </Link>
-              <Link href="/voice" className="h-9 px-4 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white/80 text-xs font-medium transition-all flex items-center gap-1.5">
+              <Link href={ROUTES.VOICE} className="h-9 px-4 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white/80 text-xs font-medium transition-all flex items-center gap-1.5">
                 Voice Command <Zap className="w-3 h-3" />
               </Link>
             </div>

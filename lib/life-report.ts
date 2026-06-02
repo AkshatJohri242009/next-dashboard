@@ -28,10 +28,7 @@ export interface LifeReportStat {
   subtitle: string
 }
 
-function loadJSON(key: string): any {
-  try { return JSON.parse(localStorage.getItem(key) || "null") }
-  catch { return null }
-}
+import { loadJSON } from "./utils"
 
 export function generateLifeReport(year?: number): LifeReport {
   const targetYear = year || new Date().getFullYear()
