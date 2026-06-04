@@ -30,12 +30,12 @@ export function AIRecommendations() {
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
       <h3 className="section-heading mb-3">AI Recommendations</h3>
       {loading ? (
-        <div className="flex items-center gap-2 text-white/40 py-4">
+        <div className="flex items-center gap-2 text-text-tertiary py-4">
           <Loader2 size={14} className="animate-spin" />
           <span className="text-xs">Analyzing your data...</span>
         </div>
       ) : items.length === 0 ? (
-        <div className="text-xs text-white/30 py-4 text-center">
+        <div className="text-xs text-text-tertiary py-4 text-center">
           Not enough data yet — track habits, goals, and health to get recommendations
         </div>
       ) : (
@@ -46,9 +46,9 @@ export function AIRecommendations() {
               <div key={idx} className={`${typeClass} flex items-center justify-between group cursor-pointer`}>
                 <div className="flex items-center gap-2.5">
                   <Lightbulb className="w-3.5 h-3.5 flex-shrink-0" style={{ color: rec.type === "danger" ? "var(--danger)" : rec.type === "warning" ? "var(--warning)" : "var(--accent)" }} />
-                  <p className="text-xs text-white/70">{rec.text}</p>
+                  <p className="text-xs text-text-secondary">{rec.text}</p>
                 </div>
-                <ArrowRight className="w-3.5 h-3.5 text-white/20 group-hover:text-white/60 transition-colors flex-shrink-0" />
+                <ArrowRight className="w-3.5 h-3.5 text-text-muted group-hover:text-text-secondary transition-colors flex-shrink-0" />
               </div>
             )
           })}

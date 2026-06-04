@@ -60,12 +60,12 @@ export function LifeReportCard() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <button onClick={prevYear} className="h-8 px-3 rounded-lg text-xs text-white/40 hover:text-white/60 bg-white/[0.04] border border-white/[0.06]">
+        <button onClick={prevYear} className="h-8 px-3 rounded-lg text-xs text-text-tertiary hover:text-text-secondary bg-white/[0.04] border border-white/[0.06]">
           ← {year - 1}
         </button>
         <h2 className="text-lg font-bold text-gradient">{year} Life Report</h2>
         <button onClick={nextYear} disabled={isCurrentYear}
-          className="h-8 px-3 rounded-lg text-xs text-white/40 hover:text-white/60 bg-white/[0.04] border border-white/[0.06] disabled:opacity-30"
+          className="h-8 px-3 rounded-lg text-xs text-text-tertiary hover:text-text-secondary bg-white/[0.04] border border-white/[0.06] disabled:opacity-30"
         >
           {year + 1} →
         </button>
@@ -74,7 +74,7 @@ export function LifeReportCard() {
       <div className="p-6 rounded-2xl bg-gradient-to-br from-brand-500/10 via-accent-500/5 to-transparent border border-white/[0.08] text-center">
         <Sparkles className="w-8 h-8 text-brand-400 mx-auto mb-2" />
         <p className="text-2xl font-bold text-gradient">{report.totalGoals + report.gymSessions + report.journalEntries}</p>
-        <p className="text-xs text-white/30">Total Actions Tracked</p>
+        <p className="text-xs text-text-tertiary">Total Actions Tracked</p>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -89,9 +89,9 @@ export function LifeReportCard() {
               className={cn("p-3 rounded-xl border text-left hover:scale-[1.02] transition-all", bg)}
             >
               <Icon className={`w-4 h-4 mb-1 bg-gradient-to-br ${grad} bg-clip-text text-transparent`} />
-              <p className="text-lg font-bold text-white/80">{stat.value}</p>
-              <p className="text-xs text-white/30">{stat.label}</p>
-              {selectedStat === idx && <p className="text-[11px] text-white/20 mt-1">{stat.subtitle}</p>}
+              <p className="text-lg font-bold text-text-primary">{stat.value}</p>
+              <p className="text-xs text-text-tertiary">{stat.label}</p>
+              {selectedStat === idx && <p className="text-[11px] text-text-muted mt-1">{stat.subtitle}</p>}
             </button>
           )
         })}
@@ -107,7 +107,7 @@ export function LifeReportCard() {
             {report.topAchievements.map((a, i) => (
               <li key={i} className="flex items-start gap-2">
                 <Star className="w-3 h-3 text-warning shrink-0 mt-0.5" />
-                <span className="text-sm text-white/70">{a}</span>
+                <span className="text-sm text-text-secondary">{a}</span>
               </li>
             ))}
           </ul>
@@ -124,7 +124,7 @@ export function LifeReportCard() {
             {report.growthAreas.map((g, i) => (
               <li key={i} className="flex items-start gap-2">
                 <ChevronRight className="w-3 h-3 text-brand-400 shrink-0 mt-0.5" />
-                <span className="text-sm text-white/70">{g}</span>
+                <span className="text-sm text-text-secondary">{g}</span>
               </li>
             ))}
           </ul>
@@ -132,8 +132,8 @@ export function LifeReportCard() {
       )}
 
       <div className="p-4 rounded-xl border border-white/[0.06] bg-white/[0.02] text-center">
-        <Quote className="w-4 h-4 text-white/20 mx-auto mb-2" />
-        <p className="text-sm italic text-white/50">{'\u201C'}{report.quote}{'\u201D'}</p>
+        <Quote className="w-4 h-4 text-text-muted mx-auto mb-2" />
+        <p className="text-sm italic text-text-tertiary">{'\u201C'}{report.quote}{'\u201D'}</p>
       </div>
     </div>
   )

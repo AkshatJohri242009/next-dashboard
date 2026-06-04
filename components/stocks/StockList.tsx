@@ -106,15 +106,15 @@ export function StockList() {
       <form onSubmit={handleAdd} className="flex flex-wrap gap-2">
         <div ref={searchRef} className="relative w-full sm:flex-1 sm:min-w-[160px]">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/20" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-text-muted" />
             <input
               value={query}
               onChange={e => { setQuery(e.target.value); setSelected(null) }}
             placeholder="Search stocks..."
-            className="w-full h-10 sm:h-10 pl-9 pr-8 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white/80 placeholder:text-white/20 outline-none focus:border-brand-500/40 transition-colors"
+            className="w-full h-10 sm:h-10 pl-9 pr-8 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-brand-500/40 transition-colors"
             />
             {query && (
-              <button type="button" onClick={() => { setQuery(""); setSelected(null); setResults([]) }} className="absolute right-2 top-1/2 -translate-y-1/2 text-white/20 hover:text-white/40">
+              <button type="button" onClick={() => { setQuery(""); setSelected(null); setResults([]) }} className="absolute right-2 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-tertiary">
                 <X className="w-3.5 h-3.5" />
               </button>
             )}
@@ -138,9 +138,9 @@ export function StockList() {
                     onClick={() => handleSelect(r)}
                     className="w-full flex items-center gap-3 px-3 py-2.5 text-left hover:bg-white/[0.04] transition-colors"
                   >
-                    <span className="text-sm font-bold text-white/80">{r.symbol}</span>
-                    <span className="text-[11px] text-white/30 flex-1 truncate">{r.name}</span>
-                    <span className="text-xs text-white/20 font-mono">{r.exchange}</span>
+                    <span className="text-sm font-bold text-text-primary">{r.symbol}</span>
+                    <span className="text-[11px] text-text-tertiary flex-1 truncate">{r.name}</span>
+                    <span className="text-xs text-text-muted font-mono">{r.exchange}</span>
                   </motion.button>
                 ))}
               </motion.div>
@@ -164,7 +164,7 @@ export function StockList() {
           type="number"
           step="any"
           min="0"
-          className="flex-1 min-w-[80px] h-10 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white/80 placeholder:text-white/20 outline-none focus:border-brand-500/40 transition-colors"
+          className="flex-1 min-w-[80px] h-10 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-brand-500/40 transition-colors"
         />
         <input
           value={buyPrice}
@@ -173,7 +173,7 @@ export function StockList() {
           type="number"
           step="any"
           min="0"
-          className="flex-1 min-w-[80px] h-10 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white/80 placeholder:text-white/20 outline-none focus:border-brand-500/40 transition-colors"
+          className="flex-1 min-w-[80px] h-10 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-brand-500/40 transition-colors"
         />
         <button
           type="submit"
@@ -186,11 +186,11 @@ export function StockList() {
 
       <div className="space-y-1.5">
         {stockHoldings.length === 0 && (
-          <p className="text-sm text-white/30 text-center py-8">No stocks tracked yet. Search and add a ticker above.</p>
+          <p className="text-sm text-text-tertiary text-center py-8">No stocks tracked yet. Search and add a ticker above.</p>
         )}
         <button
           onClick={fetchStockQuotes}
-          className="text-[11px] text-white/20 hover:text-white/40 hover:scale-[1.02] active:scale-[0.95] transition-all mb-1 flex items-center gap-1"
+          className="text-[11px] text-text-muted hover:text-text-tertiary hover:scale-[1.02] active:scale-[0.95] transition-all mb-1 flex items-center gap-1"
         >
           <RefreshCw className="w-3 h-3" /> Refresh quotes
         </button>
@@ -215,8 +215,8 @@ export function StockList() {
                 className="w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 text-left hover:bg-white/[0.03] active:scale-[0.995] transition-all"
               >
                 <div className="flex-1 min-w-0">
-                  <span className="text-sm font-bold text-white/80">{h.symbol}</span>
-                  {q?.name && <span className="hidden sm:inline text-[11px] text-white/30 ml-2 truncate">{q.name}</span>}
+                  <span className="text-sm font-bold text-text-primary">{h.symbol}</span>
+                  {q?.name && <span className="hidden sm:inline text-[11px] text-text-tertiary ml-2 truncate">{q.name}</span>}
                 </div>
                 <div className="text-right shrink-0">
                   <span className="text-sm font-bold text-white/90 block">
@@ -232,7 +232,7 @@ export function StockList() {
                     </span>
                   )}
                 </div>
-                <span className="text-xs sm:text-sm font-bold text-white/70 min-w-[60px] sm:min-w-[80px] text-right">
+                <span className="text-xs sm:text-sm font-bold text-text-secondary min-w-[60px] sm:min-w-[80px] text-right">
                   {q ? `${currencySymbol(q.currency)}${value.toFixed(2)}` : "—"}
                 </span>
                 {h.buyPrice && (
@@ -244,7 +244,7 @@ export function StockList() {
                 )}
                 <button
                   onClick={(e) => { e.stopPropagation(); removeStock(h.symbol) }}
-                  className="h-8 w-8 flex items-center justify-center text-white/20 hover:text-red-400 transition-colors shrink-0"
+                  className="h-8 w-8 flex items-center justify-center text-text-muted hover:text-red-400 transition-colors shrink-0"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>

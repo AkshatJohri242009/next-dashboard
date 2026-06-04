@@ -121,16 +121,16 @@ export function LearningOSModule() {
 
       <div className="flex flex-wrap items-center gap-3 mb-4 p-3 rounded-xl bg-white/5">
         <div className="flex items-center gap-2">
-          <Target className="w-3.5 h-3.5 text-white/40" />
-          <span className="text-xs text-white/60">Progress</span>
-          <span className="text-sm font-bold text-white/80">{completed}/{total}</span>
+          <Target className="w-3.5 h-3.5 text-text-tertiary" />
+          <span className="text-xs text-text-secondary">Progress</span>
+          <span className="text-sm font-bold text-text-primary">{completed}/{total}</span>
         </div>
         {average !== null && (
           <>
             <div className="hidden sm:block w-px h-4 bg-white/10" />
             <div className="flex items-center gap-2">
-              <Brain className="w-3.5 h-3.5 text-white/40" />
-              <span className="text-xs text-white/60">Avg Score</span>
+              <Brain className="w-3.5 h-3.5 text-text-tertiary" />
+              <span className="text-xs text-text-secondary">Avg Score</span>
               <span className="text-sm font-bold" style={{ color: average >= 80 ? "var(--success)" : average >= 60 ? "var(--warning)" : "var(--danger)" }}>
                 {average}%
               </span>
@@ -148,8 +148,8 @@ export function LearningOSModule() {
             <>
               <div className="hidden sm:block w-px h-4 bg-white/10" />
               <div className="flex items-center gap-2">
-                <Target className="w-3.5 h-3.5 text-white/40" />
-                <span className="text-xs text-white/60">Revision</span>
+                <Target className="w-3.5 h-3.5 text-text-tertiary" />
+                <span className="text-xs text-text-secondary">Revision</span>
                 <span className="text-sm font-bold" style={{ color: cycleColor }}>{cycle}</span>
               </div>
             </>
@@ -168,8 +168,8 @@ export function LearningOSModule() {
             <>
               <div className="hidden sm:block w-px h-4 bg-white/10" />
               <div className="flex items-center gap-2">
-                <Brain className="w-3.5 h-3.5 text-white/40" />
-                <span className="text-xs text-white/60">Weak</span>
+                <Brain className="w-3.5 h-3.5 text-text-tertiary" />
+                <span className="text-xs text-text-secondary">Weak</span>
                 {weak.map(w => (
                   <span key={w.name} className="text-xs font-bold px-1.5 py-0.5 rounded"
                     style={{ backgroundColor: `${w.color}20`, color: w.color }}
@@ -190,7 +190,7 @@ export function LearningOSModule() {
               <input value={newName} onChange={e => setNewName(e.target.value)}
                 onKeyDown={e => e.key === "Enter" && addChapter()}
                 placeholder="Chapter name..."
-                className="flex-1 min-w-0 h-8 px-3 rounded-lg bg-white/5 border border-white/10 text-xs text-white outline-none placeholder:text-white/30"
+                className="flex-1 min-w-0 h-8 px-3 rounded-lg bg-white/5 border border-white/10 text-xs text-white outline-none placeholder:text-text-tertiary"
               />
               <button onClick={addChapter} disabled={!newName.trim()}
                 className="h-8 px-4 rounded-lg bg-brand/20 hover:bg-brand/30 text-brand text-xs font-medium disabled:opacity-30 transition-colors"
@@ -206,7 +206,7 @@ export function LearningOSModule() {
         {filteredChapters.length === 0 && (
           <div className="text-center py-8">
             <BookOpen className="w-6 h-6 text-white/10 mx-auto mb-2" />
-            <p className="text-xs text-white/30">No chapters yet. Add your first {selectedSubject} chapter.</p>
+            <p className="text-xs text-text-tertiary">No chapters yet. Add your first {selectedSubject} chapter.</p>
           </div>
         )}
         {filteredChapters.map((chapter) => {
@@ -219,10 +219,10 @@ export function LearningOSModule() {
               <button onClick={() => toggleChapter(chapter.id)} className="flex-shrink-0" aria-label="Toggle chapter">
                 {chapter.completed
                   ? <CheckCircle2 className="w-4 h-4" style={{ color }} />
-                  : <Circle className="w-4 h-4 text-white/20 group-hover:text-white/40 transition-colors" />
+                  : <Circle className="w-4 h-4 text-text-muted group-hover:text-text-tertiary transition-colors" />
                 }
               </button>
-              <span className={`text-sm flex-1 min-w-0 truncate ${chapter.completed ? "line-through text-white/30" : "text-white/80"}`}>
+              <span className={`text-sm flex-1 min-w-0 truncate ${chapter.completed ? "line-through text-text-tertiary" : "text-text-primary"}`}>
                 {chapter.name}
               </span>
 
@@ -242,10 +242,10 @@ export function LearningOSModule() {
                   <input value={scoreInput[chapter.id] || ""} onChange={e => setScoreInput({ ...scoreInput, [chapter.id]: e.target.value })}
                     onKeyDown={e => { if (e.key === "Enter") setScore(chapter.id) }}
                     placeholder="%"
-                    className="w-12 sm:w-14 h-8 px-2 rounded bg-white/5 border border-white/10 text-[11px] text-white outline-none placeholder:text-white/20"
+                    className="w-12 sm:w-14 h-8 px-2 rounded bg-white/5 border border-white/10 text-[11px] text-white outline-none placeholder:text-text-muted"
                   />
                   <button onClick={() => setScore(chapter.id)}
-                    className="h-8 px-2 rounded bg-white/5 hover:bg-white/10 text-xs text-white/50 transition-colors"
+                    className="h-8 px-2 rounded bg-white/5 hover:bg-white/10 text-xs text-text-tertiary transition-colors"
                   >
                     Set
                   </button>
@@ -253,7 +253,7 @@ export function LearningOSModule() {
               )}
 
               <button onClick={() => deleteChapter(chapter.id)}
-                className="h-8 w-8 rounded flex items-center justify-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 hover:bg-red-500/20 text-white/30 hover:text-red-400 transition-all flex-shrink-0"
+                className="h-8 w-8 rounded flex items-center justify-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 hover:bg-red-500/20 text-text-tertiary hover:text-red-400 transition-all flex-shrink-0"
                 aria-label="Delete chapter"
               >
                 <Trash2 className="w-3.5 h-3.5" />

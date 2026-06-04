@@ -115,7 +115,7 @@ export function HabitsModule() {
         <button onClick={() => setShowAdd(!showAdd)}
           className="h-8 w-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors"
         >
-          <Plus className="w-3.5 h-3.5 text-white/60" />
+          <Plus className="w-3.5 h-3.5 text-text-secondary" />
         </button>
       </div>
 
@@ -126,11 +126,11 @@ export function HabitsModule() {
               <input value={newName} onChange={e => setNewName(e.target.value)}
                 onKeyDown={e => e.key === "Enter" && addHabit()}
                 placeholder="New habit..."
-                className="flex-1 h-8 px-3 rounded-lg bg-white/5 border border-white/10 text-xs text-white outline-none placeholder:text-white/30"
+                className="flex-1 h-8 px-3 rounded-lg bg-white/5 border border-white/10 text-xs text-white outline-none placeholder:text-text-tertiary"
               />
               <div className="flex gap-2">
                 <select value={newCategory} onChange={e => setNewCategory(e.target.value as Habit["category"])}
-                  className="h-8 px-2 rounded-lg bg-white/5 border border-white/10 text-xs text-white/70 outline-none"
+                  className="h-8 px-2 rounded-lg bg-white/5 border border-white/10 text-xs text-text-secondary outline-none"
                 >
                   <option value="health">Health</option>
                   <option value="learning">Learning</option>
@@ -154,10 +154,10 @@ export function HabitsModule() {
               <button onClick={() => toggleHabit(habit.id)} className="flex-shrink-0">
                 {done
                   ? <CheckCircle2 className="w-4 h-4" style={{ color: categoryColors[habit.category] }} />
-                  : <Circle className="w-4 h-4 text-white/20 group-hover:text-white/40 transition-colors" />
+                  : <Circle className="w-4 h-4 text-text-muted group-hover:text-text-tertiary transition-colors" />
                 }
               </button>
-              <span className={`text-sm flex-1 ${done ? "line-through text-white/30" : "text-white/80"}`}>
+              <span className={`text-sm flex-1 ${done ? "line-through text-text-tertiary" : "text-text-primary"}`}>
                 {habit.name}
               </span>
               <div className="flex items-center gap-1.5">
@@ -170,7 +170,7 @@ export function HabitsModule() {
                 className="h-8 w-8 rounded flex items-center justify-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 hover:bg-white/10 transition-all"
                 aria-label="Remove habit"
               >
-                <Trash2 className="w-3.5 h-3.5 text-white/30 hover:text-red-400" />
+                <Trash2 className="w-3.5 h-3.5 text-text-tertiary hover:text-red-400" />
               </button>
             </motion.div>
           )

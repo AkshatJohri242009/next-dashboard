@@ -65,7 +65,7 @@ export function TodaysMission() {
         <div className="flex items-center gap-2">
           <span className="badge-brand">{done}/{goals.length}</span>
           <button onClick={() => setShowInput(!showInput)}
-            className="h-8 w-8 rounded-lg flex items-center justify-center text-white/30 hover:text-white/60 hover:bg-white/[0.04] transition-all"
+            className="h-8 w-8 rounded-lg flex items-center justify-center text-text-tertiary hover:text-text-secondary hover:bg-white/[0.04] transition-all"
           >
             <Plus className="w-4 h-4" />
           </button>
@@ -84,7 +84,7 @@ export function TodaysMission() {
               value={newText} onChange={e => setNewText(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="What do you want to accomplish?"
-              className="flex-1 h-9 px-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-sm text-white/70 outline-none focus:border-brand-500/40 placeholder:text-white/20"
+              className="flex-1 h-9 px-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-sm text-text-secondary outline-none focus:border-brand-500/40 placeholder:text-text-muted"
             />
             <button onClick={handleAdd}
               className="h-9 px-4 rounded-xl bg-brand-500/20 border border-brand-500/30 text-xs font-medium text-brand-400 hover:bg-brand-500/30 transition-all"
@@ -98,7 +98,7 @@ export function TodaysMission() {
                 <button key={p} onClick={() => setNewPriority(p === newPriority ? undefined : p)}
                   className={`px-2.5 py-1 text-xs font-medium rounded-md border transition-all ${
                     newPriority === p
-                      ? "bg-white/10 border-white/20 text-white/80"
+                      ? "bg-white/10 border-white/20 text-text-primary"
                       : "border-white/[0.06] text-text-tertiary hover:text-text-secondary hover:bg-white/[0.03]"
                   }`}
                   style={{ borderColor: newPriority === p ? priorityColors[p] : undefined, color: newPriority === p ? priorityColors[p] : undefined }}
@@ -126,7 +126,7 @@ export function TodaysMission() {
 
       <div className="space-y-1 max-h-64 overflow-y-auto">
         {goals.length === 0 && !showInput && (
-          <p className="text-sm text-white/30 text-center py-6">No goals yet. Tap + to add one.</p>
+          <p className="text-sm text-text-tertiary text-center py-6">No goals yet. Tap + to add one.</p>
         )}
         {goals.map((goal, idx) => (
           <motion.div
@@ -139,10 +139,10 @@ export function TodaysMission() {
             <button onClick={() => toggleGoal(idx)} className="shrink-0">
               {goal.done
                 ? <CheckCircle2 className="w-4 h-4 text-brand" />
-                : <Circle className="w-4 h-4 text-white/20 group-hover:text-white/40 transition-colors" />
+                : <Circle className="w-4 h-4 text-text-muted group-hover:text-text-tertiary transition-colors" />
               }
             </button>
-            <span className={`text-sm flex-1 min-w-0 truncate ${goal.done ? "line-through text-white/30" : "text-white/80"}`}>
+            <span className={`text-sm flex-1 min-w-0 truncate ${goal.done ? "line-through text-text-tertiary" : "text-text-primary"}`}>
               {goal.text}
             </span>
             {goal.priority && !goal.done && (
@@ -170,7 +170,7 @@ export function TodaysMission() {
               </span>
             )}
             <button onClick={() => deleteGoal(idx)}
-              className="shrink-0 h-7 w-7 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 text-white/20 hover:text-danger transition-all"
+              className="shrink-0 h-7 w-7 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 text-text-muted hover:text-danger transition-all"
             >
               <Trash2 className="w-3.5 h-3.5" />
             </button>

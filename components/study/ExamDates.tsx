@@ -79,20 +79,20 @@ export function ExamDates() {
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         <div className="glass rounded-xl p-3 text-center space-y-1">
           <Calendar className="w-4 h-4 text-brand-400 mx-auto" />
-          <span className="block text-lg font-extrabold tabular-nums text-white/80">{total}</span>
-          <span className="text-xs font-mono text-white/30">Exams</span>
+          <span className="block text-lg font-extrabold tabular-nums text-text-primary">{total}</span>
+          <span className="text-xs font-mono text-text-tertiary">Exams</span>
         </div>
         <div className="glass rounded-xl p-3 text-center space-y-1">
           <Clock className="w-4 h-4 text-amber-400 mx-auto" />
-          <span className="block text-lg font-extrabold tabular-nums text-white/80">{soon}</span>
-          <span className="text-xs font-mono text-white/30">Within 7d</span>
+          <span className="block text-lg font-extrabold tabular-nums text-text-primary">{soon}</span>
+          <span className="text-xs font-mono text-text-tertiary">Within 7d</span>
         </div>
         <div className="glass rounded-xl p-3 text-center space-y-1">
           <AlertTriangle className="w-4 h-4 text-red-400 mx-auto" />
-          <span className="block text-lg font-extrabold tabular-nums text-white/80">
+          <span className="block text-lg font-extrabold tabular-nums text-text-primary">
             {nearest ? `${nearest.daysUntil}d` : "--"}
           </span>
-          <span className="text-xs font-mono text-white/30">Nearest</span>
+          <span className="text-xs font-mono text-text-tertiary">Nearest</span>
         </div>
       </div>
 
@@ -103,14 +103,14 @@ export function ExamDates() {
           value={title}
           onChange={e => setTitle(e.target.value)}
           placeholder="Exam title..."
-          className="flex-1 h-11 px-4 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white/80 placeholder:text-white/20 outline-none focus:border-brand-500/40 focus:bg-white/[0.06] transition-colors"
+          className="flex-1 h-11 px-4 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-brand-500/40 focus:bg-white/[0.06] transition-colors"
           onKeyDown={e => { if (e.key === "Enter") add() }}
         />
         <input
           type="date"
           value={date}
           onChange={e => setDate(e.target.value)}
-          className="h-11 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white/80 outline-none focus:border-brand-500/40 focus:bg-white/[0.06] transition-colors [color-scheme:dark] sm:w-[140px] min-w-0 max-w-[45%]"
+          className="h-11 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-text-primary outline-none focus:border-brand-500/40 focus:bg-white/[0.06] transition-colors [color-scheme:dark] sm:w-[140px] min-w-0 max-w-[45%]"
         />
         <button
           onClick={add}
@@ -122,7 +122,7 @@ export function ExamDates() {
 
       <div className="space-y-2 max-h-[400px] overflow-y-auto scrollbar-hide">
         {exams.length === 0 && (
-          <p className="text-sm text-white/20 text-center py-6">No exams yet — add one above</p>
+          <p className="text-sm text-text-muted text-center py-6">No exams yet — add one above</p>
         )}
         {upcoming.map((exam) => (
           <motion.div
@@ -133,14 +133,14 @@ export function ExamDates() {
           >
             <CheckCircle className="w-4 h-4 text-green-400 shrink-0" />
             <div className="flex-1 min-w-0">
-              <span className="text-sm text-white/70 block truncate">{exam.title}</span>
-              <span className="text-[11px] font-mono text-white/30">
+              <span className="text-sm text-text-secondary block truncate">{exam.title}</span>
+              <span className="text-[11px] font-mono text-text-tertiary">
                 {exam.date} · {exam.daysUntil === 0 ? "Today!" : `${exam.daysUntil}d away`}
               </span>
             </div>
             <button
               onClick={() => remove(exam.id)}
-              className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity text-white/20 hover:text-red-400 h-8 w-8 flex items-center justify-center"
+              className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity text-text-muted hover:text-red-400 h-8 w-8 flex items-center justify-center"
             >
               <Trash2 className="w-3.5 h-3.5" />
             </button>
@@ -153,16 +153,16 @@ export function ExamDates() {
             animate={{ opacity: 1, y: 0 }}
             className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white/[0.02] hover:bg-white/[0.04] transition-colors group opacity-50"
           >
-            <CheckCircle className="w-4 h-4 text-white/20 shrink-0" />
+            <CheckCircle className="w-4 h-4 text-text-muted shrink-0" />
             <div className="flex-1 min-w-0">
-              <span className="text-sm text-white/40 block truncate line-through">{exam.title}</span>
-              <span className="text-[11px] font-mono text-white/20">
+              <span className="text-sm text-text-tertiary block truncate line-through">{exam.title}</span>
+              <span className="text-[11px] font-mono text-text-muted">
                 {exam.date} · {Math.abs(exam.daysUntil)}d ago
               </span>
             </div>
             <button
               onClick={() => remove(exam.id)}
-              className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity text-white/20 hover:text-red-400 h-8 w-8 flex items-center justify-center"
+              className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity text-text-muted hover:text-red-400 h-8 w-8 flex items-center justify-center"
             >
               <Trash2 className="w-3.5 h-3.5" />
             </button>

@@ -117,20 +117,20 @@ export function CommandPalette() {
             onClick={e => e.stopPropagation()}
           >
             <div className="flex items-center gap-3 px-4 h-12 border-b border-white/[0.06]">
-              <Search className="w-4 h-4 text-white/30 flex-shrink-0" />
+              <Search className="w-4 h-4 text-text-tertiary flex-shrink-0" />
               <input
                 ref={inputRef}
                 value={query}
                 onChange={e => { setQuery(e.target.value); setSelectedIdx(0) }}
                 onKeyDown={handleKey}
                 placeholder="Search commands..."
-                className="flex-1 bg-transparent text-sm text-white outline-none placeholder:text-white/30"
+                className="flex-1 bg-transparent text-sm text-white outline-none placeholder:text-text-tertiary"
               />
               <kbd className="kbd">ESC</kbd>
             </div>
             <div className="max-h-80 overflow-y-auto p-2">
               {filtered.length === 0 && (
-                <div className="flex flex-col items-center py-8 text-white/30 gap-2">
+                <div className="flex flex-col items-center py-8 text-text-tertiary gap-2">
                   <Brain className="w-8 h-8 text-white/10" />
                   <p className="text-xs">No commands found for &quot;{query}&quot;</p>
                 </div>
@@ -143,13 +143,13 @@ export function CommandPalette() {
                     onClick={() => handleSelect(cmd)}
                     className={cn(
                       "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors",
-                      idx === selectedIdx ? "bg-white/10 text-white" : "text-white/60 hover:bg-white/5 hover:text-white/80"
+                      idx === selectedIdx ? "bg-white/10 text-white" : "text-text-secondary hover:bg-white/5 hover:text-text-primary"
                     )}
                   >
                     <Icon className="w-4 h-4 flex-shrink-0" />
                     <span className="flex-1 text-left">{cmd.label}</span>
                     {"href" in cmd && cmd.href && (
-                      <span className="text-xs text-white/20 font-mono">Navigate</span>
+                      <span className="text-xs text-text-muted font-mono">Navigate</span>
                     )}
                   </button>
                 )

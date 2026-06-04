@@ -27,7 +27,7 @@ export default function HealthPage() {
     <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
       <div>
         <h1 className="text-2xl md:text-3xl font-bold text-gradient">Health & Hydration</h1>
-        <p className="text-sm text-white/40 mt-1">
+        <p className="text-sm text-text-tertiary mt-1">
           Supplement timing, running-low flags, and a dynamic water target that reacts to your day.
         </p>
       </div>
@@ -35,7 +35,7 @@ export default function HealthPage() {
       <JarvisInsightBar />
 
       <motion.div variants={item}>
-        <GlassPanel variant="strong" glow="green">
+        <GlassPanel variant="strong" glow="brand">
           <div className="section-bar">
             <span className="section-label">Supplement Windows</span>
           </div>

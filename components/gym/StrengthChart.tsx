@@ -12,8 +12,8 @@ export function StrengthChart() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {["Bench Press", "Squat", "Deadlift"].map(ex => (
           <div key={ex} className="rounded-xl p-4 bg-white/[0.02] border border-white/[0.06]">
-            <div className="text-[11px] font-mono font-bold text-white/30 mb-3">{ex}</div>
-            <div className="h-[80px] flex items-center justify-center text-xs text-white/20">
+            <div className="text-[11px] font-mono font-bold text-text-tertiary mb-3">{ex}</div>
+            <div className="h-[80px] flex items-center justify-center text-xs text-text-muted">
               Add more logs
             </div>
           </div>
@@ -31,9 +31,9 @@ export function StrengthChart() {
 
         return (
           <div key={ex} className="rounded-xl p-4 bg-white/[0.02] border border-white/[0.06]">
-            <div className="text-[11px] font-mono font-bold text-white/30 mb-3">{ex}</div>
+            <div className="text-[11px] font-mono font-bold text-text-tertiary mb-3">{ex}</div>
             {data.length < 2 ? (
-              <div className="h-[80px] flex items-center justify-center text-xs text-white/20">
+              <div className="h-[80px] flex items-center justify-center text-xs text-text-muted">
                 Add more logs
               </div>
             ) : (

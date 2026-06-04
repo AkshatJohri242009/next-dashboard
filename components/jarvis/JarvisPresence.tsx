@@ -44,7 +44,7 @@ export function JarvisPresence() {
             <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-brand" />
           </div>
           <Bot className="w-3.5 h-3.5 text-brand" />
-          <span className="text-[11px] font-medium text-white/40 tracking-wide">{message}</span>
+          <span className="text-[11px] font-medium text-text-tertiary tracking-wide">{message}</span>
         </motion.div>
       )}
     </AnimatePresence>

@@ -15,7 +15,7 @@ const CATEGORY_CONFIG: Record<string, { icon: any; color: string }> = {
   milestone: { icon: Award, color: "text-brand-400" },
   decision: { icon: GitBranch, color: "text-accent-400" },
   project: { icon: Brain, color: "text-brand-400" },
-  journal: { icon: BookOpen, color: "text-white/60" },
+  journal: { icon: BookOpen, color: "text-text-secondary" },
   habit: { icon: Flame, color: "text-warning" },
   workout: { icon: Dumbbell, color: "text-success" },
   learning: { icon: Brain, color: "text-brand-400" },
@@ -23,7 +23,7 @@ const CATEGORY_CONFIG: Record<string, { icon: any; color: string }> = {
   failure: { icon: AlertTriangle, color: "text-danger" },
   lesson: { icon: Star, color: "text-warning" },
   preference: { icon: Star, color: "text-accent-400" },
-  fact: { icon: Brain, color: "text-white/50" },
+  fact: { icon: Brain, color: "text-text-tertiary" },
 }
 
 export function MemoryAmplifier() {
@@ -74,11 +74,11 @@ export function MemoryAmplifier() {
     <div className="space-y-4">
       <div className="flex flex-wrap gap-2">
         <div className="relative flex-1 min-w-0">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
           <input
             value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
             placeholder="Search memories..."
-            className="w-full h-9 pl-9 pr-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-sm text-white/70 outline-none focus:border-brand-500/40 placeholder:text-white/20"
+            className="w-full h-9 pl-9 pr-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-sm text-text-secondary outline-none focus:border-brand-500/40 placeholder:text-text-muted"
           />
         </div>
         <button onClick={handleAutoExtract} disabled={extracting}
@@ -87,7 +87,7 @@ export function MemoryAmplifier() {
           <Brain className="w-3.5 h-3.5" /> {extracting ? "Extracting..." : "Auto-Extract"}
         </button>
         <button onClick={() => setShowAddForm(!showAddForm)}
-          className="h-9 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-xs text-white/50 hover:text-white/70 transition-all"
+          className="h-9 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-xs text-text-tertiary hover:text-text-secondary transition-all"
         >
           + Add
         </button>
@@ -102,8 +102,8 @@ export function MemoryAmplifier() {
         ].map((stat, i) => (
           <div key={i} className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06] text-center">
             <stat.icon className={`w-4 h-4 mx-auto mb-1 ${stat.color}`} />
-            <p className="text-lg font-bold text-white/80">{stat.value}</p>
-            <p className="text-xs text-white/30">{stat.label}</p>
+            <p className="text-lg font-bold text-text-primary">{stat.value}</p>
+            <p className="text-xs text-text-tertiary">{stat.label}</p>
           </div>
         ))}
       </div>
@@ -111,12 +111,12 @@ export function MemoryAmplifier() {
       <div className="flex gap-1.5 flex-wrap">
         <button onClick={() => setSelectedCategory("all")}
           className={cn("px-2.5 h-7 rounded-lg text-xs font-medium border transition-all",
-            selectedCategory === "all" ? "bg-brand-500/20 text-brand-400 border-brand-500/30" : "text-white/30 border-white/[0.06] hover:text-white/50"
+            selectedCategory === "all" ? "bg-brand-500/20 text-brand-400 border-brand-500/30" : "text-text-tertiary border-white/[0.06] hover:text-text-tertiary"
           )}>All</button>
         {Object.entries(CATEGORY_CONFIG).map(([key, config]) => (
           <button key={key} onClick={() => setSelectedCategory(key)}
             className={cn("px-2.5 h-7 rounded-lg text-xs font-medium border transition-all flex items-center gap-1",
-              selectedCategory === key ? "bg-brand-500/20 text-brand-400 border-brand-500/30" : "text-white/30 border-white/[0.06] hover:text-white/50"
+              selectedCategory === key ? "bg-brand-500/20 text-brand-400 border-brand-500/30" : "text-text-tertiary border-white/[0.06] hover:text-text-tertiary"
             )}>
             <config.icon className={`w-3 h-3 ${config.color}`} />{key}
           </button>
@@ -133,17 +133,17 @@ export function MemoryAmplifier() {
           >
             <textarea value={newText} onChange={e => setNewText(e.target.value)}
               placeholder="What do you want to remember?"
-              className="w-full h-20 bg-white/[0.04] border border-white/[0.08] rounded-xl p-3 text-sm text-white/70 resize-none outline-none focus:border-brand-500/40 placeholder:text-white/20"
+              className="w-full h-20 bg-white/[0.04] border border-white/[0.08] rounded-xl p-3 text-sm text-text-secondary resize-none outline-none focus:border-brand-500/40 placeholder:text-text-muted"
             />
             <div className="flex gap-2 flex-wrap">
               <select value={newCategory} onChange={e => setNewCategory(e.target.value as MemoryCategory)}
-                className="h-8 px-2 rounded-lg bg-white/[0.04] border border-white/[0.08] text-xs text-white/50 outline-none"
+                className="h-8 px-2 rounded-lg bg-white/[0.04] border border-white/[0.08] text-xs text-text-tertiary outline-none"
               >
                 {Object.keys(CATEGORY_CONFIG).map(c => <option key={c} value={c}>{c}</option>)}
               </select>
               <input value={newTags} onChange={e => setNewTags(e.target.value)}
                 placeholder="Tags (comma separated)"
-                className="flex-1 h-8 px-3 rounded-lg bg-white/[0.04] border border-white/[0.08] text-xs text-white/50 outline-none focus:border-brand-500/40 placeholder:text-white/20 min-w-0"
+                className="flex-1 h-8 px-3 rounded-lg bg-white/[0.04] border border-white/[0.08] text-xs text-text-tertiary outline-none focus:border-brand-500/40 placeholder:text-text-muted min-w-0"
               />
               <button onClick={handleAdd}
                 className="h-8 px-4 rounded-lg bg-brand-500/20 border border-brand-500/30 text-xs font-medium text-brand-400 hover:bg-brand-500/30"
@@ -155,7 +155,7 @@ export function MemoryAmplifier() {
 
       <div className="space-y-1.5 max-h-96 overflow-y-auto">
         {filtered.length === 0 && (
-          <p className="text-center text-sm text-white/30 py-8">No memories yet. Use auto-extract or add manually.</p>
+          <p className="text-center text-sm text-text-tertiary py-8">No memories yet. Use auto-extract or add manually.</p>
         )}
         {filtered.map((memory) => {
           const config = CATEGORY_CONFIG[memory.category] || CATEGORY_CONFIG.fact
@@ -169,19 +169,19 @@ export function MemoryAmplifier() {
             >
               <Icon className={`w-4 h-4 mt-0.5 shrink-0 ${config.color}`} />
               <div className="flex-1 min-w-0">
-                <p className="text-sm text-white/70">{memory.text}</p>
+                <p className="text-sm text-text-secondary">{memory.text}</p>
                 <div className="flex items-center gap-2 mt-1 flex-wrap">
-                  <span className="text-xs text-white/20">{memory.category}</span>
-                  <span className="text-xs text-white/20">·</span>
-                  <span className="text-xs text-white/20">{memory.date}</span>
+                  <span className="text-xs text-text-muted">{memory.category}</span>
+                  <span className="text-xs text-text-muted">·</span>
+                  <span className="text-xs text-text-muted">{memory.date}</span>
                   {memory.tags.map(t => (
-                    <span key={t} className="px-1.5 py-0.5 rounded text-[11px] bg-white/[0.04] text-white/30">{t}</span>
+                    <span key={t} className="px-1.5 py-0.5 rounded text-[11px] bg-white/[0.04] text-text-tertiary">{t}</span>
                   ))}
                   {memory.importance >= 3 && <Star className="w-3 h-3 text-warning" />}
                 </div>
               </div>
               <button onClick={() => handleDelete(memory.id)}
-                className="shrink-0 h-7 w-7 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 text-white/20 hover:text-danger transition-all"
+                className="shrink-0 h-7 w-7 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 text-text-muted hover:text-danger transition-all"
               >
                 <Trash2 className="w-3.5 h-3.5" />
               </button>

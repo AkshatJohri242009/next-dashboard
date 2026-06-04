@@ -70,8 +70,8 @@ export function PeakRing() {
             >
               {!time || sleepTimerStart ? "--" : `${Math.round(peakPct)}%`}
             </motion.span>
-            <span className="text-xs sm:text-[9.5px] font-mono font-extrabold tracking-widest text-white/30 mt-1">{phase}</span>
-            <span className="text-[11px] sm:text-[10.5px] font-mono text-white/30 mt-1">
+            <span className="text-xs sm:text-[9.5px] font-mono font-extrabold tracking-widest text-text-tertiary mt-1">{phase}</span>
+            <span className="text-[11px] sm:text-[10.5px] font-mono text-text-tertiary mt-1">
               {time ? time.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" }) : ""}
             </span>
           </div>
@@ -79,12 +79,12 @@ export function PeakRing() {
 
         <div className="flex-1 space-y-2 min-w-0">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-bold text-white/80">{status}</span>
-            <span className="text-[11px] font-mono text-white/30 tabular-nums">
+            <span className="text-sm font-bold text-text-primary">{status}</span>
+            <span className="text-[11px] font-mono text-text-tertiary tabular-nums">
               PEAK WINDOW · {peakPct}%
             </span>
           </div>
-          <div className="text-[12px] font-mono text-white/40">
+          <div className="text-[12px] font-mono text-text-tertiary">
             {!time ? ""
               : sleepTimerStart && hours < WAKE_HOUR
               ? `${Math.ceil((WAKE_HOUR - hours) * 60)}m until wake-up`
@@ -112,12 +112,12 @@ export function PeakRing() {
           />
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-[11px] font-mono text-white/40">0h</span>
+          <span className="text-[11px] font-mono text-text-tertiary">0h</span>
           <div className="flex items-baseline gap-2">
             <span className="text-[28px] font-bold tabular-nums text-white/90">{sleep}</span>
-            <span className="text-sm text-white/40 font-mono">hours</span>
+            <span className="text-sm text-text-tertiary font-mono">hours</span>
           </div>
-          <span className="text-[11px] font-mono text-white/40">16h</span>
+          <span className="text-[11px] font-mono text-text-tertiary">16h</span>
         </div>
         <div className="flex items-center justify-between mt-2">
           <span className={`text-xs font-bold font-mono ${
@@ -138,7 +138,7 @@ export function PeakRing() {
           {sleepTimerStart ? (
             <>
               <Clock className="w-4 h-4 text-brand-400 shrink-0" />
-              <span className="text-sm font-mono text-white/60 flex-1">
+              <span className="text-sm font-mono text-text-secondary flex-1">
                 Sleeping for {Math.floor((Date.now() - sleepTimerStart) / 60000)}m
               </span>
               <button
@@ -151,7 +151,7 @@ export function PeakRing() {
           ) : (
             <button
               onClick={startSleepTimer}
-              className="flex items-center justify-center gap-2 w-full h-11 rounded-xl bg-white/[0.04] text-white/60 text-sm font-bold border border-white/[0.06] hover:text-white/80 hover:bg-white/[0.08] transition-colors"
+              className="flex items-center justify-center gap-2 w-full h-11 rounded-xl bg-white/[0.04] text-text-secondary text-sm font-bold border border-white/[0.06] hover:text-text-primary hover:bg-white/[0.08] transition-colors"
             >
               <Moon className="w-4 h-4" />
               Start Sleep Timer

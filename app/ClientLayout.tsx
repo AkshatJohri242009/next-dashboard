@@ -1,6 +1,8 @@
 "use client"
 
 import { useEffect, useRef } from "react"
+import { usePathname } from "next/navigation"
+import { motion, AnimatePresence } from "framer-motion"
 import { Sidebar } from "@/components/layout/Sidebar"
 import { TopNav } from "@/components/layout/TopNav"
 import { CommandPalette } from "@/components/layout/CommandPalette"
@@ -16,6 +18,7 @@ import { autoExtractMemories } from "@/lib/memory-engine"
 import { useMediaQuery } from "@/lib/use-media-query"
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname()
   const { sidebarOpen, loadGoals, loadHealth, loadGym, loadSleepLog, loadReminders, loadTrackedProjects, loadStudyData, loadStocks, fetchStockQuotes, stockHoldings, syncWithSupabase, theme, pushToTomorrow } = useStore()
   const isMobile = useMediaQuery("(max-width: 1023px)")
   const lastDateRef = useRef(new Date().toISOString().slice(0, 10))
@@ -79,7 +82,17 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
       >
         <TopNav />
         <main className="p-4 md:p-6 lg:p-8 pb-[4.5rem] lg:pb-[env(safe-area-inset-bottom)] max-w-7xl mx-auto overflow-x-hidden">
-          {children}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={pathname}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+            >
+              {children}
+            </motion.div>
+          </AnimatePresence>
         </main>
       </div>
     </>

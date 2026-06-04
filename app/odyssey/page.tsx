@@ -9,8 +9,8 @@ const JarvisChat = dynamic(() => import("@/components/jarvis/JarvisChat"), {
   loading: () => (
     <div className="flex items-center justify-center h-[calc(100dvh-200px)]">
       <div className="flex flex-col items-center gap-4">
-        <div className="w-8 h-8 border-2 border-brand/30 border-t-brand rounded-full animate-spin" />
-        <p className="text-sm text-white/30">Initializing JARVIS...</p>
+        <div className="w-8 h-8 rounded-full border-2 border-white/[0.06] border-t-brand animate-spin" />
+        <p className="text-sm text-text-tertiary">Initializing JARVIS...</p>
       </div>
     </div>
   ),

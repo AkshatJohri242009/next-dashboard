@@ -52,7 +52,7 @@ export function VoiceJournalModal() {
   const moodColors: Record<string, string> = {
     great: "text-success bg-success/10 border-success/20",
     good: "text-brand-400 bg-brand-500/10 border-brand-500/20",
-    okay: "text-white/50 bg-white/[0.04] border-white/[0.06]",
+    okay: "text-text-tertiary bg-white/[0.04] border-white/[0.06]",
     bad: "text-warning bg-warning/10 border-warning/20",
     awful: "text-danger bg-danger/10 border-danger/20",
   }
@@ -64,7 +64,7 @@ export function VoiceJournalModal() {
   return (
     <>
       <button onClick={() => setIsOpen(!isOpen)}
-        className="w-full h-9 rounded-xl text-xs font-medium bg-white/[0.04] hover:bg-white/[0.06] border border-white/[0.06] text-white/50 hover:text-white/70 flex items-center justify-center gap-2 transition-all"
+        className="w-full h-9 rounded-xl text-xs font-medium bg-white/[0.04] hover:bg-white/[0.06] border border-white/[0.06] text-text-tertiary hover:text-text-secondary flex items-center justify-center gap-2 transition-all"
       >
         <Mic className="w-3.5 h-3.5" />
         Voice Journal
@@ -79,9 +79,9 @@ export function VoiceJournalModal() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Mic className="w-4 h-4 text-brand-400" />
-              <span className="text-sm font-medium text-white/70">Voice Journal Entry</span>
+              <span className="text-sm font-medium text-text-secondary">Voice Journal Entry</span>
             </div>
-            <button onClick={() => setIsOpen(false)} className="h-7 w-7 flex items-center justify-center text-white/30 hover:text-white/60">
+            <button onClick={() => setIsOpen(false)} className="h-7 w-7 flex items-center justify-center text-text-tertiary hover:text-text-secondary">
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -96,14 +96,14 @@ export function VoiceJournalModal() {
               >
                 {isListening ? <Loader2 className="w-7 h-7 text-danger animate-spin" /> : <Mic className="w-7 h-7 text-brand-400" />}
               </button>
-              <p className="text-xs text-white/40">{isListening ? "Listening... speak naturally" : "Tap the mic and tell me about your day"}</p>
+              <p className="text-xs text-text-tertiary">{isListening ? "Listening... speak naturally" : "Tap the mic and tell me about your day"}</p>
             </div>
           )}
 
           {isProcessing && (
             <div className="flex items-center justify-center gap-2 py-4">
               <Loader2 className="w-5 h-5 text-brand-400 animate-spin" />
-              <span className="text-sm text-white/50">Analyzing your entry...</span>
+              <span className="text-sm text-text-tertiary">Analyzing your entry...</span>
             </div>
           )}
 
@@ -114,7 +114,7 @@ export function VoiceJournalModal() {
                   <button key={mood} onClick={() => setParsed({ ...parsed, mood })}
                     className={cn(
                       "px-3 h-8 rounded-lg text-xs font-medium border transition-all",
-                      parsed.mood === mood ? moodColors[mood] : "text-white/30 border-white/[0.06] hover:text-white/50"
+                      parsed.mood === mood ? moodColors[mood] : "text-text-tertiary border-white/[0.06] hover:text-text-tertiary"
                     )}
                   >
                     {emoji} {mood}
@@ -126,10 +126,10 @@ export function VoiceJournalModal() {
                 <textarea
                   value={editedContent}
                   onChange={e => setEditedContent(e.target.value)}
-                  className="w-full h-24 bg-white/[0.04] border border-white/[0.08] rounded-xl p-3 text-sm text-white/70 resize-none outline-none focus:border-brand-500/40"
+                  className="w-full h-24 bg-white/[0.04] border border-white/[0.08] rounded-xl p-3 text-sm text-text-secondary resize-none outline-none focus:border-brand-500/40"
                 />
               ) : (
-                <p className="text-sm text-white/70 p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]"
+                <p className="text-sm text-text-secondary p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]"
                   onClick={() => setShowEdit(true)}>
                   {parsed.content}
                 </p>
@@ -138,7 +138,7 @@ export function VoiceJournalModal() {
               {parsed.tags.length > 0 && (
                 <div className="flex gap-1.5 flex-wrap">
                   {parsed.tags.map((tag: string) => (
-                    <span key={tag} className="px-2 py-0.5 rounded-full text-xs font-medium bg-white/[0.04] text-white/40 border border-white/[0.06] flex items-center gap-1">
+                    <span key={tag} className="px-2 py-0.5 rounded-full text-xs font-medium bg-white/[0.04] text-text-tertiary border border-white/[0.06] flex items-center gap-1">
                       <Tag className="w-3 h-3" />{tag}
                     </span>
                   ))}
@@ -149,7 +149,7 @@ export function VoiceJournalModal() {
                 <div className="p-3 rounded-xl bg-warning/[0.03] border border-warning/10">
                   <p className="text-xs text-warning mb-1">Detected Action Items:</p>
                   {parsed.goals.map((g: string, i: number) => (
-                    <p key={i} className="text-sm text-white/60">• {g}</p>
+                    <p key={i} className="text-sm text-text-secondary">• {g}</p>
                   ))}
                 </div>
               )}
@@ -161,7 +161,7 @@ export function VoiceJournalModal() {
                   <CheckCircle2 className="w-4 h-4 inline mr-1" /> Save Entry
                 </button>
                 <button onClick={() => { setParsed(null); setTranscript(""); setIsOpen(false) }}
-                  className="h-9 px-4 rounded-xl text-xs text-white/40 hover:text-white/60 bg-white/[0.04] hover:bg-white/[0.06] border border-white/[0.06] transition-all"
+                  className="h-9 px-4 rounded-xl text-xs text-text-tertiary hover:text-text-secondary bg-white/[0.04] hover:bg-white/[0.06] border border-white/[0.06] transition-all"
                 >
                   Cancel
                 </button>
@@ -176,13 +176,13 @@ export function VoiceJournalModal() {
               className="flex flex-col items-center gap-2 py-4"
             >
               <CheckCircle2 className="w-10 h-10 text-success" />
-              <p className="text-sm font-medium text-white/70">Entry Saved!</p>
-              <p className="text-xs text-white/40 text-center">
+              <p className="text-sm font-medium text-text-secondary">Entry Saved!</p>
+              <p className="text-xs text-text-tertiary text-center">
                 Mood: {parsed.mood} · Tags: {parsed.tags?.join(", ")}
               </p>
               <p className="text-xs text-warning">{detectActionItems(editedContent || parsed.content).length} action items detected</p>
               <button onClick={() => { setIsOpen(false); setSaved(false); setParsed(null); setTranscript("") }}
-                className="mt-2 h-8 px-4 rounded-lg text-xs text-white/40 hover:text-white/60 bg-white/[0.04] border border-white/[0.06]"
+                className="mt-2 h-8 px-4 rounded-lg text-xs text-text-tertiary hover:text-text-secondary bg-white/[0.04] border border-white/[0.06]"
               >
                 Close
               </button>

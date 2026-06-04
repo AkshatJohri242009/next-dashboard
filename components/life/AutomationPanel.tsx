@@ -24,25 +24,25 @@ function StudyPlanResult({ data }: { data: any }) {
   if (!data || !data.schedule) return null
   return (
     <div className="mt-3 space-y-3">
-      <div className="flex items-center gap-2 text-xs text-white/70 font-medium">
+      <div className="flex items-center gap-2 text-xs text-text-secondary font-medium">
         <Target className="w-3.5 h-3.5 text-brand" />
         Focus: {data.focus}
-        <span className="text-white/30">·</span>
-        <Clock className="w-3 h-3 text-white/30" />
-        <span className="text-white/50">{data.totalStudyTime}</span>
+        <span className="text-text-tertiary">·</span>
+        <Clock className="w-3 h-3 text-text-tertiary" />
+        <span className="text-text-tertiary">{data.totalStudyTime}</span>
       </div>
       <div className="space-y-2">
         {data.schedule.map((block: any, i: number) => (
           <div key={i} className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]">
             <div className="flex items-center justify-between mb-1.5">
-              <span className="text-xs font-mono text-white/40">{block.time}</span>
+              <span className="text-xs font-mono text-text-tertiary">{block.time}</span>
               <span className="text-[11px] font-semibold px-2 py-0.5 rounded" style={{ backgroundColor: `${subjectColors[block.subject] || "var(--brand)"}20`, color: subjectColors[block.subject] || "var(--brand)" }}>
                 {block.subject}
               </span>
             </div>
-            <p className="text-xs font-medium text-white/80">{block.topic}</p>
-            <p className="text-xs text-white/40 mt-0.5">{block.task}</p>
-            <span className="text-xs text-white/20 mt-1 block capitalize">{block.type}</span>
+            <p className="text-xs font-medium text-text-primary">{block.topic}</p>
+            <p className="text-xs text-text-tertiary mt-0.5">{block.task}</p>
+            <span className="text-xs text-text-muted mt-1 block capitalize">{block.type}</span>
           </div>
         ))}
       </div>
@@ -50,9 +50,9 @@ function StudyPlanResult({ data }: { data: any }) {
         <div className="flex flex-wrap gap-2">
           {data.breaks.map((b: any, i: number) => (
             <div key={i} className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-white/[0.02] border border-white/[0.06]">
-              <Coffee className="w-3 h-3 text-white/30" />
-              <span className="text-[11px] text-white/40">{b.time}</span>
-              <span className="text-[11px] text-white/30">{b.activity}</span>
+              <Coffee className="w-3 h-3 text-text-tertiary" />
+              <span className="text-[11px] text-text-tertiary">{b.time}</span>
+              <span className="text-[11px] text-text-tertiary">{b.activity}</span>
             </div>
           ))}
         </div>
@@ -73,7 +73,7 @@ function StudyPlanResult({ data }: { data: any }) {
             <span className="text-[11px] text-warning font-medium">Tips</span>
           </div>
           {data.tips.map((t: string, i: number) => (
-            <p key={i} className="text-xs text-white/40 ml-5">• {t}</p>
+            <p key={i} className="text-xs text-text-tertiary ml-5">• {t}</p>
           ))}
         </div>
       )}
@@ -152,8 +152,8 @@ export function AutomationPanel() {
                 <Icon className="w-4 h-4 text-brand" />
               </div>
               <div className="flex-1 min-w-0">
-                <h4 className="text-sm font-semibold text-white/80">{auto.name}</h4>
-                <p className="text-xs text-white/40 mt-0.5">{auto.description}</p>
+                <h4 className="text-sm font-semibold text-text-primary">{auto.name}</h4>
+                <p className="text-xs text-text-tertiary mt-0.5">{auto.description}</p>
 
                 <AnimatePresence mode="wait">
                   {result && (

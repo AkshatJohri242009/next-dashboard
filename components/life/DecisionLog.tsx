@@ -88,8 +88,8 @@ export function DecisionLog() {
       {decisions.length > 0 && (
         <div className="flex flex-wrap items-center gap-2 sm:gap-4 p-3 rounded-xl bg-white/5">
           <div className="flex items-center gap-2">
-            <GitBranch className="w-3.5 h-3.5 text-white/40" />
-            <span className="text-xs text-white/40 font-medium">{decisions.length} Decisions</span>
+            <GitBranch className="w-3.5 h-3.5 text-text-tertiary" />
+            <span className="text-xs text-text-tertiary font-medium">{decisions.length} Decisions</span>
           </div>
           {(["positive", "neutral", "negative"] as const).map(o => {
             const count = decisions.filter(d => d.outcome === o).length
@@ -98,8 +98,8 @@ export function DecisionLog() {
             return (
               <div key={o} className="flex items-center gap-1">
                 <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: color }} />
-                <span className="text-xs font-mono text-white/50">{pct}%</span>
-                <span className="text-[11px] text-white/30 capitalize">{o}</span>
+                <span className="text-xs font-mono text-text-tertiary">{pct}%</span>
+                <span className="text-[11px] text-text-tertiary capitalize">{o}</span>
               </div>
             )
           })}
@@ -117,27 +117,27 @@ export function DecisionLog() {
         {showForm && (
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
             <div className="space-y-3 p-4 rounded-xl bg-white/5 border border-white/10">
-              <input value={title} onChange={e => setTitle(e.target.value)} placeholder="Decision title..." className="w-full h-8 px-3 rounded-lg bg-white/5 border border-white/10 text-xs text-white outline-none placeholder:text-white/30" />
+              <input value={title} onChange={e => setTitle(e.target.value)} placeholder="Decision title..." className="w-full h-8 px-3 rounded-lg bg-white/5 border border-white/10 text-xs text-white outline-none placeholder:text-text-tertiary" />
               <textarea value={context} onChange={e => setContext(e.target.value)} placeholder="Context — what led to this decision?" rows={3} className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none placeholder:text-white/25 resize-none" />
 
               <div>
                 <div className="flex gap-2 mb-1">
                   <input value={optionInput} onChange={e => setOptionInput(e.target.value)}
                     onKeyDown={e => { if (e.key === "Enter" && optionInput.trim()) { setOptions([...options, optionInput.trim()]); setOptionInput("") } }}
-                    placeholder="Add option..." className="flex-1 h-8 px-3 rounded-lg bg-white/5 border border-white/10 text-xs text-white outline-none placeholder:text-white/30" />
+                    placeholder="Add option..." className="flex-1 h-8 px-3 rounded-lg bg-white/5 border border-white/10 text-xs text-white outline-none placeholder:text-text-tertiary" />
                 </div>
                 {options.length > 0 && (
                   <div className="flex flex-wrap gap-1.5 mb-2">
                     {options.map((o, i) => (
-                      <span key={i} className="px-2 py-0.5 rounded-full bg-white/5 text-xs text-white/50 flex items-center gap-1">
+                      <span key={i} className="px-2 py-0.5 rounded-full bg-white/5 text-xs text-text-tertiary flex items-center gap-1">
                         <button onClick={() => { setChosen(o); setOutcome(o === chosen ? outcome : "neutral") }}
-                          className={`${chosen === o ? "text-brand" : "text-white/30 hover:text-white/70"}`}
+                          className={`${chosen === o ? "text-brand" : "text-text-tertiary hover:text-text-secondary"}`}
                           aria-label={`Select ${o}`}
                         >
                           <CheckCircle2 className="w-2.5 h-2.5" />
                         </button>
                         {o}
-                        <button onClick={() => setOptions(options.filter((_, j) => j !== i))} className="text-white/20 hover:text-white/50">&times;</button>
+                        <button onClick={() => setOptions(options.filter((_, j) => j !== i))} className="text-text-muted hover:text-text-tertiary">&times;</button>
                       </span>
                     ))}
                   </div>
@@ -149,7 +149,7 @@ export function DecisionLog() {
                 {(["positive", "neutral", "negative"] as const).map(o => (
                   <button key={o} onClick={() => setOutcome(o)}
                     className={`px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all capitalize flex items-center gap-1 ${
-                      outcome === o ? "ring-2 ring-offset-1 ring-offset-[var(--bg)] text-white" : "text-white/40"
+                      outcome === o ? "ring-2 ring-offset-1 ring-offset-[var(--bg)] text-white" : "text-text-tertiary"
                     }`}
                     style={{
                       backgroundColor: outcome === o ? `var(--${o === "positive" ? "success" : o === "negative" ? "danger" : "warning"})20` : "rgba(255,255,255,0.05)",
@@ -167,7 +167,7 @@ export function DecisionLog() {
               <div className="flex flex-col sm:flex-row gap-2">
                 <input value={tagInput} onChange={e => setTagInput(e.target.value)}
                   onKeyDown={e => { if (e.key === "Enter" && tagInput.trim()) { setTags([...tags, tagInput.trim()]); setTagInput("") } }}
-                  placeholder="Tags..." className="flex-1 h-8 px-3 rounded-lg bg-white/5 border border-white/10 text-xs text-white outline-none placeholder:text-white/30" />
+                  placeholder="Tags..." className="flex-1 h-8 px-3 rounded-lg bg-white/5 border border-white/10 text-xs text-white outline-none placeholder:text-text-tertiary" />
                 <button onClick={addDecision} disabled={!title.trim() || !chosen}
                   className="h-8 px-4 rounded-lg bg-accent/20 hover:bg-accent/30 text-accent text-xs font-medium disabled:opacity-30 transition-colors"
                 >
@@ -177,8 +177,8 @@ export function DecisionLog() {
               {tags.length > 0 && (
                 <div className="flex flex-wrap gap-1.5">
                   {tags.map(t => (
-                    <span key={t} className="px-2 py-0.5 rounded-full bg-white/5 text-xs text-white/50">
-                      #{t} <button onClick={() => setTags(tags.filter(x => x !== t))} className="text-white/20 hover:text-white/50">&times;</button>
+                    <span key={t} className="px-2 py-0.5 rounded-full bg-white/5 text-xs text-text-tertiary">
+                      #{t} <button onClick={() => setTags(tags.filter(x => x !== t))} className="text-text-muted hover:text-text-tertiary">&times;</button>
                     </span>
                   ))}
                 </div>
@@ -192,7 +192,7 @@ export function DecisionLog() {
         {decisions.length === 0 && (
           <div className="text-center py-8">
             <GitBranch className="w-6 h-6 text-white/10 mx-auto mb-2" />
-            <p className="text-xs text-white/30">No decisions logged yet. Every major choice is a data point.</p>
+            <p className="text-xs text-text-tertiary">No decisions logged yet. Every major choice is a data point.</p>
           </div>
         )}
         {decisions.map(d => (
@@ -200,32 +200,32 @@ export function DecisionLog() {
             <div className="flex items-start gap-3">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1 flex-wrap">
-                  <span className="text-xs font-semibold text-white/80">{d.title}</span>
+                  <span className="text-xs font-semibold text-text-primary">{d.title}</span>
                   <span className="flex items-center gap-1 text-xs"
                     style={{ color: d.outcome === "positive" ? "var(--success)" : d.outcome === "negative" ? "var(--danger)" : "var(--warning)" }}
                   >
                     {outcomeIcon(d.outcome)} {d.outcome}
                   </span>
                 </div>
-                {d.context && <p className="text-[11px] text-white/40 mb-1 line-clamp-2">{d.context}</p>}
+                {d.context && <p className="text-[11px] text-text-tertiary mb-1 line-clamp-2">{d.context}</p>}
                 {d.options.length > 0 && (
                   <div className="flex flex-wrap gap-1 mb-1">
                     {d.options.map((o, i) => (
-                      <span key={i} className={`px-1.5 py-0.5 rounded text-xs ${o === d.chosen ? "bg-brand/20 text-brand" : "bg-white/5 text-white/30"}`}>
+                      <span key={i} className={`px-1.5 py-0.5 rounded text-xs ${o === d.chosen ? "bg-brand/20 text-brand" : "bg-white/5 text-text-tertiary"}`}>
                         {o}
                       </span>
                     ))}
                   </div>
                 )}
-                {d.reflection && <p className="text-xs text-white/30 italic">{d.reflection}</p>}
+                {d.reflection && <p className="text-xs text-text-tertiary italic">{d.reflection}</p>}
                 <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-                  <Clock className="w-2.5 h-2.5 text-white/20" />
-                  <span className="text-[11px] text-white/20">{new Date(d.createdAt).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}</span>
-                  {d.tags.map(t => <span key={t} className="text-[11px] text-white/20">#{t}</span>)}
+                  <Clock className="w-2.5 h-2.5 text-text-muted" />
+                  <span className="text-[11px] text-text-muted">{new Date(d.createdAt).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}</span>
+                  {d.tags.map(t => <span key={t} className="text-[11px] text-text-muted">#{t}</span>)}
                 </div>
               </div>
               <button onClick={() => deleteDecision(d.id)}
-                className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 h-8 w-8 rounded flex items-center justify-center hover:bg-red-500/20 text-white/30 hover:text-red-400 transition-all flex-shrink-0"
+                className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 h-8 w-8 rounded flex items-center justify-center hover:bg-red-500/20 text-text-tertiary hover:text-red-400 transition-all flex-shrink-0"
                 aria-label="Delete decision"
               >
                 <Trash2 className="w-3.5 h-3.5" />

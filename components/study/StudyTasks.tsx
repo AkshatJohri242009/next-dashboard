@@ -37,18 +37,18 @@ export function StudyTasks() {
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         <div className="glass rounded-xl p-3 text-center space-y-1">
           <Target className="w-4 h-4 text-brand-400 mx-auto" />
-          <span className="block text-lg font-extrabold tabular-nums text-white/80">{total}</span>
-          <span className="text-xs font-mono text-white/30">Total</span>
+          <span className="block text-lg font-extrabold tabular-nums text-text-primary">{total}</span>
+          <span className="text-xs font-mono text-text-tertiary">Total</span>
         </div>
         <div className="glass rounded-xl p-3 text-center space-y-1">
           <CheckCheck className="w-4 h-4 text-blue-400 mx-auto" />
-          <span className="block text-lg font-extrabold tabular-nums text-white/80">{donePct}%</span>
-          <span className="text-xs font-mono text-white/30">Done</span>
+          <span className="block text-lg font-extrabold tabular-nums text-text-primary">{donePct}%</span>
+          <span className="text-xs font-mono text-text-tertiary">Done</span>
         </div>
         <div className="glass rounded-xl p-3 text-center space-y-1">
           <Flame className="w-4 h-4 text-amber-400 mx-auto" />
-          <span className="block text-lg font-extrabold tabular-nums text-white/80">{studyStreak}</span>
-          <span className="text-xs font-mono text-white/30">Streak</span>
+          <span className="block text-lg font-extrabold tabular-nums text-text-primary">{studyStreak}</span>
+          <span className="text-xs font-mono text-text-tertiary">Streak</span>
         </div>
       </div>
 
@@ -59,7 +59,7 @@ export function StudyTasks() {
           value={text}
           onChange={e => setText(e.target.value)}
           placeholder="Add a study task..."
-          className="flex-1 h-11 px-4 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white/80 placeholder:text-white/20 outline-none focus:border-brand-500/40 focus:bg-white/[0.06] transition-colors"
+          className="flex-1 h-11 px-4 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-brand-500/40 focus:bg-white/[0.06] transition-colors"
         />
         <button
           onClick={() => { if (text.trim()) { addStudyTask(text.trim()); setText("") } }}
@@ -71,7 +71,7 @@ export function StudyTasks() {
 
       <div className="space-y-2 max-h-[320px] overflow-y-auto scrollbar-hide">
         {studyTasks.length === 0 && (
-          <p className="text-sm text-white/20 text-center py-6">No tasks yet — add one above</p>
+          <p className="text-sm text-text-muted text-center py-6">No tasks yet — add one above</p>
         )}
         {studyTasks.map((task) => (
           <motion.div
@@ -88,12 +88,12 @@ export function StudyTasks() {
             >
               {task.done && <Check className="w-3 h-3 text-white" />}
             </button>
-            <span className={`flex-1 text-sm ${task.done ? "line-through text-white/30" : "text-white/70"}`}>
+            <span className={`flex-1 text-sm ${task.done ? "line-through text-text-tertiary" : "text-text-secondary"}`}>
               {task.text}
             </span>
             <button
               onClick={() => deleteStudyTask(task.id)}
-              className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity text-white/20 hover:text-red-400 h-8 w-8 flex items-center justify-center"
+              className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity text-text-muted hover:text-red-400 h-8 w-8 flex items-center justify-center"
             >
               <Trash2 className="w-3.5 h-3.5" />
             </button>

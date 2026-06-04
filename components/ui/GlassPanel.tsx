@@ -6,20 +6,44 @@ import { cn } from "@/lib/utils"
 interface GlassPanelProps {
   children: React.ReactNode
   className?: string
-  variant?: "default" | "strong"
-  glow?: "green" | "amber" | "accent" | "none"
+  variant?: "default" | "strong" | "elevated" | "tinted" | "ultraThin" | "thin"
+  glow?: "brand" | "accent" | "none"
   hover?: boolean
+  rounded?: "sm" | "md" | "lg" | "xl"
+  padding?: "sm" | "md" | "lg"
 }
 
 export function GlassPanel({
   children, className, variant = "default",
   glow = "none", hover = false,
+  rounded = "lg", padding = "md",
 }: GlassPanelProps) {
-  const glowMap = {
+  const glassClasses: Record<string, string> = {
+    default: "glass",
+    strong: "glass-strong",
+    elevated: "glass-elevated",
+    tinted: "glass-tinted",
+    ultraThin: "glass-sm",
+    thin: "glass-sm",
+  }
+
+  const glowClasses: Record<string, string> = {
     none: "",
-    green: "shadow-glow-green",
-    amber: "shadow-glow-amber",
+    brand: "shadow-glow-brand",
     accent: "shadow-glow-accent",
+  }
+
+  const radiusClasses: Record<string, string> = {
+    sm: "ios-rounded-sm",
+    md: "ios-rounded-md",
+    lg: "ios-rounded-lg",
+    xl: "ios-rounded-xl",
+  }
+
+  const paddingClasses: Record<string, string> = {
+    sm: "p-3",
+    md: "p-4 sm:p-5",
+    lg: "p-5 sm:p-7",
   }
 
   return (
@@ -28,10 +52,11 @@ export function GlassPanel({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
       className={cn(
-        variant === "strong" ? "glass-strong" : "glass",
+        glassClasses[variant],
         hover && "card-hover",
-        glowMap[glow],
-        "rounded-2xl p-4 sm:p-6",
+        glowClasses[glow],
+        radiusClasses[rounded],
+        paddingClasses[padding],
         className,
       )}
     >

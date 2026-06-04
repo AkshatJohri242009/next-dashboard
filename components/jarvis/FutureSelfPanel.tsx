@@ -46,7 +46,7 @@ export function FutureSelfPanel() {
   }, [])
 
   if (!report) {
-    return <p className="text-center text-sm text-white/30 py-8">Generating projections...</p>
+    return <p className="text-center text-sm text-text-tertiary py-8">Generating projections...</p>
   }
 
   const projection = report.projections[selectedMetric]
@@ -63,7 +63,7 @@ export function FutureSelfPanel() {
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
         {report.projections.map((p, idx) => {
           const Icon = CATEGORY_ICONS[p.category] || BarChart3
-          const color = CATEGORY_COLORS[p.category] || "text-white/50"
+          const color = CATEGORY_COLORS[p.category] || "text-text-tertiary"
           const grad = CATEGORY_GRADIENTS[p.category] || "from-white/[0.02]"
           return (
             <button key={idx} onClick={() => setSelectedMetric(idx)}
@@ -75,13 +75,13 @@ export function FutureSelfPanel() {
               )}
             >
               <Icon className={cn("w-4 h-4 mb-1", color)} />
-              <p className="text-xs font-medium text-white/70 truncate">{p.metric}</p>
+              <p className="text-xs font-medium text-text-secondary truncate">{p.metric}</p>
               <p className={cn("text-lg font-bold", color)}>{p.currentValue}{p.unit.includes("%") ? "%" : ""}</p>
               <div className="flex items-center gap-1 mt-0.5">
                 {p.trend === "improving" && <TrendingUp className="w-3 h-3 text-success" />}
                 {p.trend === "declining" && <TrendingDown className="w-3 h-3 text-danger" />}
-                {p.trend === "stable" && <Minus className="w-3 h-3 text-white/30" />}
-                <span className="text-xs text-white/30">{p.trend}</span>
+                {p.trend === "stable" && <Minus className="w-3 h-3 text-text-tertiary" />}
+                <span className="text-xs text-text-tertiary">{p.trend}</span>
               </div>
             </button>
           )
@@ -97,14 +97,14 @@ export function FutureSelfPanel() {
         >
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-sm font-bold text-white/80">{projection.metric}</h3>
-              <p className="text-xs text-white/30">Confidence: {projection.confidence}%</p>
+              <h3 className="text-sm font-bold text-text-primary">{projection.metric}</h3>
+              <p className="text-xs text-text-tertiary">Confidence: {projection.confidence}%</p>
             </div>
             <span className={cn(
               "text-xs px-2 py-0.5 rounded-full border font-medium",
               projection.confidence >= 70 ? "bg-success/10 text-success border-success/20" :
               projection.confidence >= 40 ? "bg-warning/10 text-warning border-warning/20" :
-              "bg-white/[0.04] text-white/40 border-white/[0.06]"
+              "bg-white/[0.04] text-text-tertiary border-white/[0.06]"
             )}>
               {projection.confidence >= 70 ? "High Confidence" : projection.confidence >= 40 ? "Medium" : "Low Data"}
             </span>
@@ -135,8 +135,8 @@ export function FutureSelfPanel() {
       )}
 
       <div className="p-4 rounded-xl bg-gradient-to-br from-brand-500/5 to-accent-500/5 border border-white/[0.06]">
-        <p className="text-xs text-white/40 mb-2">Assessment</p>
-        <p className="text-sm text-white/70">{report.overallAssessment}</p>
+        <p className="text-xs text-text-tertiary mb-2">Assessment</p>
+        <p className="text-sm text-text-secondary">{report.overallAssessment}</p>
       </div>
     </div>
   )
@@ -148,7 +148,7 @@ function ProjectionBar({ label, value, max, unit, color }: { label: string; valu
   const displayUnit = unit.includes("%") ? "%" : unit.includes("day") ? " days" : unit.includes("wk") ? "/wk" : unit.includes("hours") ? "h" : unit.includes("ml") ? "ml" : ` ${unit}`
   return (
     <div className="flex items-center gap-3">
-      <span className="w-20 text-xs text-white/30 shrink-0">{label}</span>
+      <span className="w-20 text-xs text-text-tertiary shrink-0">{label}</span>
       <div className="flex-1 h-3 rounded-full bg-white/[0.04] overflow-hidden">
         <motion.div
           initial={{ width: 0 }}
@@ -157,7 +157,7 @@ function ProjectionBar({ label, value, max, unit, color }: { label: string; valu
           className={`h-full rounded-full ${color} opacity-70`}
         />
       </div>
-      <span className="w-20 text-xs text-right text-white/50 font-medium">{displayValue}{displayUnit}</span>
+      <span className="w-20 text-xs text-right text-text-tertiary font-medium">{displayValue}{displayUnit}</span>
     </div>
   )
 }

@@ -49,10 +49,10 @@ export function SleepTracker() {
           {latest ? (
             <div>
               <span className="text-[28px] sm:text-[32px] font-bold tabular-nums">{timeFmt(latest.minutes)}</span>
-              <span className="text-xs text-white/40 ml-2 font-mono">{latest.date}</span>
+              <span className="text-xs text-text-tertiary ml-2 font-mono">{latest.date}</span>
             </div>
           ) : (
-            <span className="text-sm text-white/30 italic">No data yet</span>
+            <span className="text-sm text-text-tertiary italic">No data yet</span>
           )}
         </div>
 
@@ -67,7 +67,7 @@ export function SleepTracker() {
               <span className={`text-xs font-bold ml-2 ${statusColor}`}>{statusText}</span>
             </div>
           ) : (
-            <span className="text-sm text-white/30 italic">Need more data</span>
+            <span className="text-sm text-text-tertiary italic">Need more data</span>
           )}
         </div>
 
@@ -84,7 +84,7 @@ export function SleepTracker() {
               </span>
             </div>
           ) : (
-            <span className="text-sm text-white/30 italic">Need more data</span>
+            <span className="text-sm text-text-tertiary italic">Need more data</span>
           )}
         </div>
 
@@ -95,7 +95,7 @@ export function SleepTracker() {
           </div>
           <button
             onClick={() => setAIPanel(true)}
-            className="text-sm text-white/60 hover:text-brand-400 transition-colors text-left py-2"
+            className="text-sm text-text-secondary hover:text-brand-400 transition-colors text-left py-2"
           >
             {avg < 420
               ? `Averaging ${timeFmt(avg)} — below the 7-9h range.`
@@ -108,7 +108,7 @@ export function SleepTracker() {
 
       {chartData.length > 1 && (
         <div className="glass-strong rounded-xl p-4">
-          <span className="text-[11px] font-mono font-bold text-white/30 mb-3 block uppercase">Sleep History</span>
+          <span className="text-[11px] font-mono font-bold text-text-tertiary mb-3 block uppercase">Sleep History</span>
           <ResponsiveContainer width="100%" height={isMobile ? 180 : 250}>
             <ComposedChart data={chartData} margin={{ top: 4, right: 4, left: isMobile ? 4 : -16, bottom: 4 }}>
               <defs>
@@ -142,17 +142,17 @@ export function SleepTracker() {
       )}
 
       {sorted.length === 0 && (
-        <div className="py-12 text-center text-sm text-white/30 italic">
+        <div className="py-12 text-center text-sm text-text-tertiary italic">
           No sleep data yet. Use the Sleep Timer on the Dashboard to start tracking.
         </div>
       )}
 
       {sorted.length > 0 && (
         <div className="space-y-1">
-          <span className="text-[11px] font-mono font-bold text-white/30 block mb-2 uppercase">All Entries</span>
+          <span className="text-[11px] font-mono font-bold text-text-tertiary block mb-2 uppercase">All Entries</span>
           {sorted.slice().reverse().map(e => (
             <div key={e.date} className="flex items-center justify-between px-4 py-3 rounded-xl bg-white/[0.02] border border-white/[0.06]">
-              <span className="text-sm text-white/80">{e.date}</span>
+              <span className="text-sm text-text-primary">{e.date}</span>
               <span className="text-sm font-bold font-mono tabular-nums" style={{
                 color: e.minutes >= 420 && e.minutes <= 540 ? "#6be3a4" : e.minutes < 420 ? "#ff6b6b" : "#fcc419"
               }}>

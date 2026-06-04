@@ -87,7 +87,7 @@ export function ThemePanel() {
               className={`flex-1 h-9 rounded-xl flex items-center justify-center gap-2 text-xs font-bold transition-colors ${
                 theme.mode === "dark"
                   ? "bg-white/[0.08] text-white border border-white/[0.1]"
-                  : "bg-white/[0.03] text-white/40 hover:bg-white/[0.06] border border-transparent"
+                  : "bg-white/[0.03] text-text-tertiary hover:bg-white/[0.06] border border-transparent"
               }`}
             >
               <Moon className="w-3.5 h-3.5" /> Dark
@@ -97,7 +97,7 @@ export function ThemePanel() {
               className={`flex-1 h-9 rounded-xl flex items-center justify-center gap-2 text-xs font-bold transition-colors ${
                 theme.mode === "light"
                   ? "bg-white/[0.08] text-white border border-white/[0.1]"
-                  : "bg-white/[0.03] text-white/40 hover:bg-white/[0.06] border border-transparent"
+                  : "bg-white/[0.03] text-text-tertiary hover:bg-white/[0.06] border border-transparent"
               }`}
             >
               <Sun className="w-3.5 h-3.5" /> Light
@@ -118,7 +118,7 @@ export function ThemePanel() {
                   <div className="w-4 h-4 rounded-full" style={{ backgroundColor: p.brand }} />
                   <div className="w-4 h-4 rounded-full" style={{ backgroundColor: p.accent }} />
                 </div>
-                <span className="text-[11px] text-white/30 font-mono">{p.label}</span>
+                <span className="text-[11px] text-text-tertiary font-mono">{p.label}</span>
               </button>
             ))}
           </div>
@@ -132,7 +132,7 @@ export function ThemePanel() {
               const handler = [handleBrandR, handleBrandG, handleBrandB][i]
               return (
                 <div key={channel} className="flex items-center gap-2">
-                  <span className="text-[11px] font-mono text-white/40 w-4">{channel}</span>
+                  <span className="text-[11px] font-mono text-text-tertiary w-4">{channel}</span>
                   <input
                     type="range"
                     min={0} max={255}
@@ -144,7 +144,7 @@ export function ThemePanel() {
                       [&::-webkit-slider-thumb]:shadow-[0_0_12px_rgba(255,255,255,0.4)]
                       [&::-webkit-slider-track]:h-full [&::-webkit-slider-track]:rounded-full"
                   />
-                  <span className="text-[11px] font-mono text-white/50 w-8 text-right tabular-nums">{val}</span>
+                  <span className="text-[11px] font-mono text-text-tertiary w-8 text-right tabular-nums">{val}</span>
                 </div>
               )
             })}
@@ -165,7 +165,7 @@ export function ThemePanel() {
               const handler = [handleAccentR, handleAccentG, handleAccentB][i]
               return (
                 <div key={channel} className="flex items-center gap-2">
-                  <span className="text-[11px] font-mono text-white/40 w-4">{channel}</span>
+                  <span className="text-[11px] font-mono text-text-tertiary w-4">{channel}</span>
                   <input
                     type="range"
                     min={0} max={255}
@@ -177,7 +177,7 @@ export function ThemePanel() {
                       [&::-webkit-slider-thumb]:shadow-[0_0_12px_rgba(255,255,255,0.4)]
                       [&::-webkit-slider-track]:h-full [&::-webkit-slider-track]:rounded-full"
                   />
-                  <span className="text-[11px] font-mono text-white/50 w-8 text-right tabular-nums">{val}</span>
+                  <span className="text-[11px] font-mono text-text-tertiary w-8 text-right tabular-nums">{val}</span>
                 </div>
               )
             })}

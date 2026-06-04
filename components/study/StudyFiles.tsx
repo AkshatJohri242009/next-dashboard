@@ -87,13 +87,13 @@ export function StudyFiles() {
       <div className="grid grid-cols-2 gap-3">
         <div className="glass rounded-xl p-3 text-center space-y-1">
           <FileText className="w-4 h-4 text-brand-400 mx-auto" />
-          <span className="block text-lg font-extrabold tabular-nums text-white/80">{files.length}</span>
-          <span className="text-xs font-mono text-white/30">Files</span>
+          <span className="block text-lg font-extrabold tabular-nums text-text-primary">{files.length}</span>
+          <span className="text-xs font-mono text-text-tertiary">Files</span>
         </div>
         <div className="glass rounded-xl p-3 text-center space-y-1">
           <HardDrive className="w-4 h-4 text-blue-400 mx-auto" />
-          <span className="block text-lg font-extrabold tabular-nums text-white/80">{formatBytes(totalSize)}</span>
-          <span className="text-xs font-mono text-white/30">Storage</span>
+          <span className="block text-lg font-extrabold tabular-nums text-text-primary">{formatBytes(totalSize)}</span>
+          <span className="text-xs font-mono text-text-tertiary">Storage</span>
         </div>
       </div>
 
@@ -116,7 +116,7 @@ export function StudyFiles() {
 
       <div className="space-y-2 max-h-[400px] overflow-y-auto scrollbar-hide">
         {files.length === 0 && (
-          <p className="text-sm text-white/20 text-center py-6">No files yet — upload one above</p>
+          <p className="text-sm text-text-muted text-center py-6">No files yet — upload one above</p>
         )}
         {files.map((f) => (
           <motion.div
@@ -125,20 +125,20 @@ export function StudyFiles() {
             animate={{ opacity: 1, y: 0 }}
             className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white/[0.02] hover:bg-white/[0.04] transition-colors group"
           >
-            <FileText className="w-4 h-4 text-white/30 shrink-0" />
+            <FileText className="w-4 h-4 text-text-tertiary shrink-0" />
             <div className="flex-1 min-w-0">
-              <span className="text-sm text-white/70 block truncate">{f.name}</span>
-              <span className="text-[11px] font-mono text-white/30">{formatBytes(f.size)}</span>
+              <span className="text-sm text-text-secondary block truncate">{f.name}</span>
+              <span className="text-[11px] font-mono text-text-tertiary">{formatBytes(f.size)}</span>
             </div>
             <button
               onClick={() => download(f)}
-              className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity text-white/20 hover:text-blue-400 h-8 w-8 flex items-center justify-center"
+              className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity text-text-muted hover:text-blue-400 h-8 w-8 flex items-center justify-center"
             >
               <Download className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => remove(f.id)}
-              className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity text-white/20 hover:text-red-400 h-8 w-8 flex items-center justify-center"
+              className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity text-text-muted hover:text-red-400 h-8 w-8 flex items-center justify-center"
             >
               <Trash2 className="w-3.5 h-3.5" />
             </button>

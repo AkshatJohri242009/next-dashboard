@@ -74,7 +74,7 @@ export function LearningProgress() {
         </div>
 
         {!hasData && (
-          <p className="text-sm text-white/30 text-center py-6">No learning data yet. Start tracking on the <a href="/learning" className="text-accent underline">Learning OS</a> page.</p>
+          <p className="text-sm text-text-tertiary text-center py-6">No learning data yet. Start tracking on the <a href="/learning" className="text-accent underline">Learning OS</a> page.</p>
         )}
 
         {hasData && (

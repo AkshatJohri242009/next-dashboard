@@ -83,7 +83,7 @@ export function NotificationPanel() {
             >
               <div className="flex items-center justify-between h-12 px-4 border-b border-white/[0.08]">
                 <span className="text-sm font-bold text-white">Notifications</span>
-                <button onClick={dismiss} className="h-8 w-8 rounded-lg flex items-center justify-center text-white/30 hover:text-white/60 transition-colors">
+                <button onClick={dismiss} className="h-8 w-8 rounded-lg flex items-center justify-center text-text-tertiary hover:text-text-secondary transition-colors">
                   <X className="w-4 h-4" />
                 </button>
               </div>
@@ -96,7 +96,7 @@ export function NotificationPanel() {
                     </div>
                     <div className="flex-1">
                       <div className="text-sm font-bold text-white/90">Time to hydrate</div>
-                      <div className="text-xs text-white/40 mt-0.5">Drink a glass of water</div>
+                      <div className="text-xs text-text-tertiary mt-0.5">Drink a glass of water</div>
                     </div>
                     <button onClick={markWaterNotif} className="h-9 px-3 rounded-xl bg-brand-500 text-black text-xs font-bold hover:bg-brand-400 transition-colors shrink-0">
                       Done
@@ -111,7 +111,7 @@ export function NotificationPanel() {
                     </div>
                     <div className="flex-1">
                       <div className="text-sm font-bold text-white/90">Sleep timer running</div>
-                      <div className="text-xs text-white/40 mt-0.5">
+                      <div className="text-xs text-text-tertiary mt-0.5">
                         {Math.floor((now - sleepTimerStart) / 60000)} min elapsed
                       </div>
                     </div>
@@ -123,7 +123,7 @@ export function NotificationPanel() {
                 )}
 
                 {!waterDue && !sleepDue && (
-                  <div className="py-8 text-center text-sm text-white/30 italic">No notifications right now.</div>
+                  <div className="py-8 text-center text-sm text-text-tertiary italic">No notifications right now.</div>
                 )}
               </div>
             </div>

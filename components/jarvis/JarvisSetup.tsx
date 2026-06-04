@@ -50,7 +50,7 @@ export default function JarvisSetup() {
             <span className="text-3xl">✓</span>
           </div>
           <h2 className="text-xl font-bold text-white">JARVIS is Ready!</h2>
-          <p className="text-sm text-white/60">Tables created. Go to the JARVIS tab to sign in and start chatting.</p>
+          <p className="text-sm text-text-secondary">Tables created. Go to the JARVIS tab to sign in and start chatting.</p>
         </div>
       </div>
     )
@@ -61,14 +61,14 @@ export default function JarvisSetup() {
       <div className="glass rounded-2xl p-8 max-w-lg w-full space-y-6">
         <div className="text-center">
           <h1 className="text-xl font-bold text-white mb-2">J.A.R.V.I.S Setup</h1>
-          <p className="text-sm text-white/50">
+          <p className="text-sm text-text-tertiary">
             One-time setup to create the JARVIS database tables in Supabase.
           </p>
         </div>
 
         <div className="bg-white/[0.03] rounded-xl p-4 space-y-3">
-          <p className="text-xs text-white/60">
-            <strong className="text-white/80">Step 1:</strong> Go to{" "}
+          <p className="text-xs text-text-secondary">
+            <strong className="text-text-primary">Step 1:</strong> Go to{" "}
             <a
               href="https://supabase.com/dashboard/project/kwpfxhxcxsxlkubycxcu/settings/api"
               target="_blank"
@@ -77,11 +77,11 @@ export default function JarvisSetup() {
               Supabase API Settings
             </a>
           </p>
-          <p className="text-xs text-white/60">
-            <strong className="text-white/80">Step 2:</strong> Find <code className="bg-white/10 px-1 rounded text-accent">service_role key</code> in the &ldquo;Project API keys&rdquo; section.
+          <p className="text-xs text-text-secondary">
+            <strong className="text-text-primary">Step 2:</strong> Find <code className="bg-white/10 px-1 rounded text-accent">service_role key</code> in the &ldquo;Project API keys&rdquo; section.
           </p>
-          <p className="text-xs text-white/60">
-            <strong className="text-white/80">Step 3:</strong> Copy it and paste below:
+          <p className="text-xs text-text-secondary">
+            <strong className="text-text-primary">Step 3:</strong> Copy it and paste below:
           </p>
         </div>
 
@@ -95,7 +95,7 @@ export default function JarvisSetup() {
           value={serviceKey}
           onChange={(e) => setServiceKey(e.target.value)}
           placeholder="Paste your service_role key here..."
-          className="w-full bg-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none placeholder:text-white/30"
+          className="w-full bg-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none placeholder:text-text-tertiary"
         />
 
         <button

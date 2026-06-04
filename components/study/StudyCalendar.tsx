@@ -54,11 +54,11 @@ export function StudyCalendar() {
       <div className="flex items-center justify-between mb-4">
         <span className="section-label">Schedule</span>
         <div className="flex items-center gap-2">
-          <button onClick={prev} className="h-8 w-8 sm:h-7 sm:w-7 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-white/30 hover:text-white/60 transition-colors">
+          <button onClick={prev} className="h-8 w-8 sm:h-7 sm:w-7 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-text-tertiary hover:text-text-secondary transition-colors">
             <ChevronLeft className="w-3.5 h-3.5" />
           </button>
-          <span className="text-sm font-bold text-white/80 min-w-[100px] sm:min-w-[140px] text-center">{monthNames[month]} {year}</span>
-          <button onClick={next} className="h-8 w-8 sm:h-7 sm:w-7 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-white/30 hover:text-white/60 transition-colors">
+          <span className="text-sm font-bold text-text-primary min-w-[100px] sm:min-w-[140px] text-center">{monthNames[month]} {year}</span>
+          <button onClick={next} className="h-8 w-8 sm:h-7 sm:w-7 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-text-tertiary hover:text-text-secondary transition-colors">
             <ChevronRight className="w-3.5 h-3.5" />
           </button>
         </div>
@@ -66,7 +66,7 @@ export function StudyCalendar() {
 
       <div className="grid grid-cols-7 gap-0.5">
         {["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(d => (
-          <div key={d} className="text-xs font-mono font-bold text-white/20 text-center py-1">{d}</div>
+          <div key={d} className="text-xs font-mono font-bold text-text-muted text-center py-1">{d}</div>
         ))}
         {Array.from({ length: firstDay }).map((_, i) => (
           <div key={`empty-${i}`} />
@@ -82,7 +82,7 @@ export function StudyCalendar() {
                 isToday ? "bg-brand-500/15 ring-1 ring-brand-500/30" : "hover:bg-white/[0.04]"
               }`}
             >
-              <span className={`text-[11px] font-mono ${isToday ? "text-brand-300 font-bold" : "text-white/40"}`}>
+              <span className={`text-[11px] font-mono ${isToday ? "text-brand-300 font-bold" : "text-text-tertiary"}`}>
                 {d.day}
               </span>
               <div className="flex items-center justify-center gap-0.5 mt-0.5">
@@ -94,7 +94,7 @@ export function StudyCalendar() {
         })}
       </div>
 
-      <div className="flex items-center gap-4 mt-3 text-xs font-mono text-white/20">
+      <div className="flex items-center gap-4 mt-3 text-xs font-mono text-text-muted">
         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-400" /> Exam</span>
         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-brand-400" /> Task</span>
       </div>

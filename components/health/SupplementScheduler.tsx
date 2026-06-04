@@ -49,8 +49,8 @@ export function SupplementScheduler() {
             )}
           >
             <div className="flex items-center justify-between mb-3">
-              <span className="text-sm font-bold text-white/80">{win.title}</span>
-              <span className="text-xs font-mono text-white/30">{win.time}</span>
+              <span className="text-sm font-bold text-text-primary">{win.title}</span>
+              <span className="text-xs font-mono text-text-tertiary">{win.time}</span>
             </div>
             <div className="space-y-2">
               {win.items.map(item => {
@@ -63,12 +63,12 @@ export function SupplementScheduler() {
                       onChange={() => toggleSupp(key)}
                       className="w-5 h-5 rounded accent-brand-400 cursor-pointer shrink-0"
                     />
-                    <span className="flex-1 text-sm text-white/60">{item}</span>
+                    <span className="flex-1 text-sm text-text-secondary">{item}</span>
                     <button
                       onClick={() => toggleLow(item)}
                       className={cn(
                         "h-8 px-4 rounded-full text-xs font-bold font-mono transition-colors",
-                        health.low[item] ? "bg-amber-400/20 text-amber-400" : "bg-white/[0.05] text-white/30 hover:bg-white/[0.08]",
+                        health.low[item] ? "bg-amber-400/20 text-amber-400" : "bg-white/[0.05] text-text-tertiary hover:bg-white/[0.08]",
                       )}
                     >
                       {health.low[item] ? "LOW" : "OK"}

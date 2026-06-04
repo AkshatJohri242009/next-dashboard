@@ -55,12 +55,12 @@ export function FocusMode() {
       <div className="flex items-center justify-between px-6 h-14 border-b border-white/[0.06] shrink-0">
         <div className="flex items-center gap-2.5">
           <Target className="w-4 h-4 text-brand" />
-          <span className="text-sm font-bold text-white/70">Focus Mode</span>
+          <span className="text-sm font-bold text-text-secondary">Focus Mode</span>
         </div>
         <button onClick={close}
           className="h-8 w-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
         >
-          <X className="w-4 h-4 text-white/70" />
+          <X className="w-4 h-4 text-text-secondary" />
         </button>
       </div>
 
@@ -76,14 +76,14 @@ export function FocusMode() {
               {running ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5 ml-0.5" />}
             </button>
             <button onClick={() => { setTimer(25 * 60); setRunning(false) }}
-              className="h-9 px-4 rounded-xl bg-white/5 border border-white/10 text-xs text-white/50 hover:text-white/70 transition-colors flex items-center gap-1.5"
+              className="h-9 px-4 rounded-xl bg-white/5 border border-white/10 text-xs text-text-tertiary hover:text-text-secondary transition-colors flex items-center gap-1.5"
             >
               <RotateCcw className="w-3 h-3" /> Reset
             </button>
             <div className="flex gap-1.5 ml-2">
               {[5, 15, 25, 30, 60].map(m => (
                 <button key={m} onClick={() => { setTimer(m * 60); setRunning(false) }}
-                  className={`h-9 px-3.5 rounded-xl text-xs font-medium transition-colors ${timer === m * 60 ? "bg-white/10 text-white" : "bg-white/5 text-white/40 hover:text-white/60"}`}
+                  className={`h-9 px-3.5 rounded-xl text-xs font-medium transition-colors ${timer === m * 60 ? "bg-white/10 text-white" : "bg-white/5 text-text-tertiary hover:text-text-secondary"}`}
                 >
                   {m}m
                 </button>
@@ -93,13 +93,13 @@ export function FocusMode() {
         </div>
 
         <div className="w-full lg:w-96 xl:w-[28rem] p-6 lg:p-8 overflow-y-auto">
-          <h3 className="text-xs text-white/40 font-medium uppercase tracking-wider mb-4">
-            Active Missions <span className="text-white/20">({missions.length})</span>
+          <h3 className="text-xs text-text-tertiary font-medium uppercase tracking-wider mb-4">
+            Active Missions <span className="text-text-muted">({missions.length})</span>
           </h3>
           {missions.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <Target className="w-8 h-8 text-white/10 mb-3" />
-              <p className="text-sm text-white/20">No active missions</p>
+              <p className="text-sm text-text-muted">No active missions</p>
               <p className="text-xs text-white/10 mt-1">Create missions in Life OS to track them here</p>
             </div>
           ) : (
@@ -108,7 +108,7 @@ export function FocusMode() {
                 <div key={idx} className="rounded-2xl bg-white/[0.03] border border-white/[0.06] p-4">
                   <div className="flex items-center gap-2.5 mb-2">
                     <div className="w-2 h-2 rounded-full bg-brand/60" />
-                    <span className="text-sm font-medium text-white/80">{m.title}</span>
+                    <span className="text-sm font-medium text-text-primary">{m.title}</span>
                   </div>
                   {m.milestones && m.milestones.length > 0 && (
                     <div className="space-y-1.5 ml-4">

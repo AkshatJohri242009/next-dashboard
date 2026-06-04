@@ -47,7 +47,7 @@ export default function GymPage() {
       </motion.div>
 
       <motion.div variants={item}>
-        <GlassPanel variant="strong" glow="green">
+        <GlassPanel variant="strong" glow="brand">
           <div className="section-bar">
             <span className="section-label">Consistency Calendar</span>
           </div>
@@ -56,7 +56,7 @@ export default function GymPage() {
       </motion.div>
 
       <motion.div variants={item}>
-        <GlassPanel variant="strong" glow="green">
+        <GlassPanel variant="strong" glow="brand">
           <div className="section-bar">
             <span className="section-label">Strength Trends</span>
           </div>

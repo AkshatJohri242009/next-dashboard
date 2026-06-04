@@ -33,7 +33,7 @@ export function MobileNav() {
               "flex flex-col items-center justify-center gap-0.5 min-w-0 px-2 h-11 rounded-xl transition-colors",
               active
                 ? "text-brand-400"
-                : "text-white/40 hover:text-white/70",
+                : "text-text-tertiary hover:text-text-secondary",
             )}
           >
             <item.icon className="w-5 h-5" />

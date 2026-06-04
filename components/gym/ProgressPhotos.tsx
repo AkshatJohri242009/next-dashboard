@@ -27,7 +27,7 @@ export function ProgressPhotos() {
           {gym.photos[id] ? (
             <img src={gym.photos[id]} alt={idx === 0 ? "Before" : "After"} className="absolute inset-0 w-full h-full object-cover" />
           ) : (
-            <div className="flex flex-col items-center gap-2 text-white/30">
+            <div className="flex flex-col items-center gap-2 text-text-tertiary">
               <Camera className="w-6 h-6" />
               <span className="text-[11px] font-mono font-bold tracking-wider uppercase">
                 {idx === 0 ? "Before" : "After"}

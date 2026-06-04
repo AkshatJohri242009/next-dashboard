@@ -52,8 +52,8 @@ export function TodoList() {
             >
               {done}
             </motion.span>
-            <span className="text-lg font-mono text-white/30">/ {total}</span>
-            <span className="text-[11px] font-mono text-white/30 ml-1 uppercase">
+            <span className="text-lg font-mono text-text-tertiary">/ {total}</span>
+            <span className="text-[11px] font-mono text-text-tertiary ml-1 uppercase">
               {total === 0 ? "no goals yet" : allDone ? "complete" : "done"}
             </span>
           </div>
@@ -64,7 +64,7 @@ export function TodoList() {
                 onClick={() => {
                 if (window.confirm("Move unchecked goals to tomorrow?")) pushToTomorrow()
               }}
-              className="flex items-center gap-1 h-8 sm:h-8 px-2.5 sm:px-3 rounded-lg text-xs sm:text-[11px] font-bold font-mono text-white/40 bg-white/[0.04] border border-white/[0.06] hover:text-white/70 hover:bg-white/[0.08] transition-colors"
+              className="flex items-center gap-1 h-8 sm:h-8 px-2.5 sm:px-3 rounded-lg text-xs sm:text-[11px] font-bold font-mono text-text-tertiary bg-white/[0.04] border border-white/[0.06] hover:text-text-secondary hover:bg-white/[0.08] transition-colors"
             >
               <ArrowRight className="w-3 h-3" />
               Push
@@ -100,7 +100,7 @@ export function TodoList() {
               )}
               style={{ position: "relative" }}
             >
-              <GripVertical className="w-3.5 h-3.5 sm:w-3.5 sm:h-3.5 text-white/20 cursor-grab active:cursor-grabbing shrink-0" />
+              <GripVertical className="w-3.5 h-3.5 sm:w-3.5 sm:h-3.5 text-text-muted cursor-grab active:cursor-grabbing shrink-0" />
 
               <input
                 type="checkbox"
@@ -128,7 +128,7 @@ export function TodoList() {
               ) : (
                 <span
                   onClick={() => setEditingIdx(idx)}
-                  className={cn("flex-1 text-sm cursor-pointer", goal.done && "line-through text-white/40")}
+                  className={cn("flex-1 text-sm cursor-pointer", goal.done && "line-through text-text-tertiary")}
                 >
                   {goal.text}
                 </span>
@@ -138,7 +138,7 @@ export function TodoList() {
                 onClick={() => toggleQueued(idx)}
                 className={cn(
                   "h-8 w-8 sm:h-7 sm:w-7 rounded-lg flex items-center justify-center text-xs transition-colors",
-                  goal.queued ? "text-amber-400 bg-amber-400/10" : "text-white/30 hover:text-white/60",
+                  goal.queued ? "text-amber-400 bg-amber-400/10" : "text-text-tertiary hover:text-text-secondary",
                 )}
               >
                 <Zap className="w-3.5 h-3.5" />
@@ -149,7 +149,7 @@ export function TodoList() {
                   onClick={() => setRemindIdx(remindIdx === idx ? null : idx)}
                   className={cn(
                     "h-8 w-8 sm:h-7 sm:w-7 rounded-lg flex items-center justify-center text-xs transition-colors",
-                    goal.reminderMin ? "text-brand-400 bg-brand-400/10" : "text-white/30 hover:text-brand-400/60",
+                    goal.reminderMin ? "text-brand-400 bg-brand-400/10" : "text-text-tertiary hover:text-brand-400/60",
                   )}
                 >
                   <Timer className="w-3.5 h-3.5" />
@@ -176,7 +176,7 @@ export function TodoList() {
                       }}
                       className="w-14 h-8 px-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06] text-xs text-white outline-none text-center"
                     />
-                    <span className="text-[11px] font-mono text-white/30 shrink-0">min</span>
+                    <span className="text-[11px] font-mono text-text-tertiary shrink-0">min</span>
                     <button
                       onClick={() => {
                         addReminder(goals[idx].text, "task", goals[idx].reminderMin || 30, idx)
@@ -192,7 +192,7 @@ export function TodoList() {
 
               <button
                 onClick={() => deleteGoal(idx)}
-                className="h-8 w-8 sm:h-7 sm:w-7 rounded-lg flex items-center justify-center text-white/30 hover:text-red-400 hover:bg-red-400/10 transition-colors"
+                className="h-8 w-8 sm:h-7 sm:w-7 rounded-lg flex items-center justify-center text-text-tertiary hover:text-red-400 hover:bg-red-400/10 transition-colors"
               >
                 <Trash2 className="w-3.5 h-3.5" />
               </button>
@@ -202,7 +202,7 @@ export function TodoList() {
       </Reorder.Group>
 
       {goals.length === 0 && (
-        <div className="py-8 text-center text-sm text-white/30 italic">No goals for today — add one below.</div>
+        <div className="py-8 text-center text-sm text-text-tertiary italic">No goals for today — add one below.</div>
       )}
 
       <div className="flex gap-2 mt-4 pt-4 border-t border-white/[0.06]">
@@ -211,7 +211,7 @@ export function TodoList() {
           onChange={e => setInput(e.target.value)}
           onKeyDown={e => { if (e.key === "Enter") handleAdd() }}
           placeholder="Add a goal..."
-          className="flex-1 min-w-0 h-9 px-2.5 rounded-lg bg-white/[0.04] border border-white/[0.06] text-xs text-white outline-none placeholder:text-white/30 focus:border-white/20 transition-colors"
+          className="flex-1 min-w-0 h-9 px-2.5 rounded-lg bg-white/[0.04] border border-white/[0.06] text-xs text-white outline-none placeholder:text-text-tertiary focus:border-white/20 transition-colors"
         />
         <input
           type="number"
@@ -220,7 +220,7 @@ export function TodoList() {
           value={timerMin}
           onChange={e => setTimerMin(Number(e.target.value))}
           placeholder="min"
-          className="w-12 h-9 px-1 rounded-lg bg-white/[0.04] border border-white/[0.06] text-xs text-white outline-none placeholder:text-white/30 text-center"
+          className="w-12 h-9 px-1 rounded-lg bg-white/[0.04] border border-white/[0.06] text-xs text-white outline-none placeholder:text-text-tertiary text-center"
         />
         <button
           onClick={handleAdd}

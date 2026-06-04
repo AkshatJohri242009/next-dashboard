@@ -92,7 +92,7 @@ export function VoiceButton() {
                   </div>
                   <span className="text-sm font-bold text-gradient">J.A.R.V.I.S</span>
                 </div>
-                <button onClick={() => setShowHelp(!showHelp)} className="h-8 w-8 rounded flex items-center justify-center text-white/30 hover:text-white/60">
+                <button onClick={() => setShowHelp(!showHelp)} className="h-8 w-8 rounded flex items-center justify-center text-text-tertiary hover:text-text-secondary">
                   <HelpCircle className="w-4 h-4" />
                 </button>
               </div>
@@ -108,14 +108,14 @@ export function VoiceButton() {
                         className="absolute inset-0 rounded-full bg-brand-500/20"
                       />
                     </div>
-                    <p className="text-sm text-white/50">Listening...</p>
+                    <p className="text-sm text-text-tertiary">Listening...</p>
                   </div>
                 )}
 
                 {transcript && (
                   <div className="p-3 rounded-xl bg-white/[0.04] border border-white/[0.06]">
-                    <p className="text-xs text-white/30 mb-1">You said:</p>
-                    <p className="text-sm text-white/80">{transcript}</p>
+                    <p className="text-xs text-text-tertiary mb-1">You said:</p>
+                    <p className="text-sm text-text-primary">{transcript}</p>
                   </div>
                 )}
 
@@ -124,7 +124,7 @@ export function VoiceButton() {
                     "p-3 rounded-xl border",
                     result.success ? "bg-brand-500/10 border-brand-500/20" : "bg-danger/10 border-danger/20"
                   )}>
-                    <p className="text-sm text-white/80">{result.message}</p>
+                    <p className="text-sm text-text-primary">{result.message}</p>
                     {result.action && (
                       <button
                         onClick={() => handleAction(result.action)}
@@ -139,16 +139,16 @@ export function VoiceButton() {
                 {isSpeaking && (
                   <div className="flex items-center gap-2 py-2">
                     <Volume2 className="w-4 h-4 text-brand-400 animate-pulse" />
-                    <span className="text-xs text-white/40">Speaking...</span>
+                    <span className="text-xs text-text-tertiary">Speaking...</span>
                   </div>
                 )}
 
                 {showHelp && (
                   <div className="max-h-48 overflow-y-auto space-y-1 p-2 rounded-xl bg-white/[0.02]">
-                    <p className="text-xs font-medium text-white/40 mb-2">Try saying:</p>
+                    <p className="text-xs font-medium text-text-tertiary mb-2">Try saying:</p>
                     {getIntentDescriptions().slice(0, 15).map((intent) => (
-                      <p key={intent.id} className="text-xs text-white/30">
-                        <span className="text-white/50 font-medium">{'\u201C'}{intent.example.replace(/[\\"']/g, "")}{'\u201D'}</span>
+                      <p key={intent.id} className="text-xs text-text-tertiary">
+                        <span className="text-text-tertiary font-medium">{'\u201C'}{intent.example.replace(/[\\"']/g, "")}{'\u201D'}</span>
                       </p>
                     ))}
                   </div>
@@ -156,14 +156,14 @@ export function VoiceButton() {
 
                 {!isListening && !result && !showHelp && (
                   <div className="flex flex-col items-center gap-2 py-4">
-                    <p className="text-sm text-white/40 text-center">Tap the mic to speak, or say &ldquo;help&rdquo; for commands</p>
+                    <p className="text-sm text-text-tertiary text-center">Tap the mic to speak, or say &ldquo;help&rdquo; for commands</p>
                   </div>
                 )}
 
                 {result && !isSpeaking && (
                   <button
                     onClick={() => { setIsOpen(false); setResult(null); setTranscript("") }}
-                    className="w-full h-9 rounded-xl text-xs font-medium text-white/40 hover:text-white/60 bg-white/[0.04] hover:bg-white/[0.06] transition-colors"
+                    className="w-full h-9 rounded-xl text-xs font-medium text-text-tertiary hover:text-text-secondary bg-white/[0.04] hover:bg-white/[0.06] transition-colors"
                   >
                     Close
                   </button>

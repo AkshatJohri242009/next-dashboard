@@ -49,7 +49,7 @@ export function WorkoutLog() {
             className={`h-8 px-2.5 rounded-xl text-xs sm:text-[11px] font-bold font-mono tracking-wider uppercase transition-colors ${
               gym.split === s
                 ? "bg-brand-500 text-black"
-                : "bg-white/[0.04] text-white/40 border border-white/[0.06] hover:text-white/70"
+                : "bg-white/[0.04] text-text-tertiary border border-white/[0.06] hover:text-text-secondary"
             }`}
           >
             {s}
@@ -76,7 +76,7 @@ export function WorkoutLog() {
             />
             <button
               onClick={handleAddCustom}
-              className="h-8 px-2.5 rounded-lg bg-white/5 border border-white/10 text-xs text-white/50 hover:text-white/70 transition-colors"
+              className="h-8 px-2.5 rounded-lg bg-white/5 border border-white/10 text-xs text-text-tertiary hover:text-text-secondary transition-colors"
             >
               + Add
             </button>
@@ -84,10 +84,10 @@ export function WorkoutLog() {
         </div>
         <input type="number" min={1} max={10} value={sets} onChange={e => setSets(Number(e.target.value))}
           className="h-10 w-16 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white outline-none text-center" />
-        <span className="text-xs text-white/30 hidden sm:inline">×</span>
+        <span className="text-xs text-text-tertiary hidden sm:inline">×</span>
         <input type="number" min={0} step={0.5} value={weight} onChange={e => setWeight(Number(e.target.value))}
           className="h-10 w-20 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white outline-none text-center" />
-        <span className="text-xs text-white/30">kg</span>
+        <span className="text-xs text-text-tertiary">kg</span>
         <input value={reps} onChange={e => setReps(e.target.value)}
           className="h-10 w-24 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white outline-none text-center" />
         <button
@@ -101,11 +101,11 @@ export function WorkoutLog() {
 
       {gym.customExercises.length > 0 && (
         <div className="flex flex-wrap gap-1.5 items-center">
-          <span className="text-xs text-white/30 font-mono uppercase tracking-wider mr-1">Custom:</span>
+          <span className="text-xs text-text-tertiary font-mono uppercase tracking-wider mr-1">Custom:</span>
           {gym.customExercises.map(name => (
-            <span key={name} className="flex items-center gap-1 h-7 px-2 rounded-lg bg-white/[0.04] border border-white/[0.06] text-[11px] text-white/50">
+            <span key={name} className="flex items-center gap-1 h-7 px-2 rounded-lg bg-white/[0.04] border border-white/[0.06] text-[11px] text-text-tertiary">
               {name}
-              <button onClick={() => deleteCustomExercise(name)} className="text-white/20 hover:text-red-400 transition-colors">
+              <button onClick={() => deleteCustomExercise(name)} className="text-text-muted hover:text-red-400 transition-colors">
                 <X className="w-3 h-3" />
               </button>
             </span>
@@ -126,8 +126,8 @@ export function WorkoutLog() {
                 className="flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-white/[0.02] border border-white/[0.06]"
               >
                 <div className="min-w-0">
-                  <span className="text-sm font-bold text-white/80">{log.exercise}</span>
-                  <span className="text-xs text-white/40 ml-2 font-mono whitespace-nowrap">
+                  <span className="text-sm font-bold text-text-primary">{log.exercise}</span>
+                  <span className="text-xs text-text-tertiary ml-2 font-mono whitespace-nowrap">
                     {log.split} · {log.sets} sets · {log.weight}kg
                   </span>
                 </div>
@@ -138,7 +138,7 @@ export function WorkoutLog() {
                       +2kg
                     </span>
                   )}
-                  <button onClick={() => deleteLog(idx)} className="h-9 w-9 sm:h-7 sm:w-7 rounded-xl sm:rounded-lg flex items-center justify-center text-white/30 hover:text-red-400 hover:bg-red-400/10 transition-colors">
+                  <button onClick={() => deleteLog(idx)} className="h-9 w-9 sm:h-7 sm:w-7 rounded-xl sm:rounded-lg flex items-center justify-center text-text-tertiary hover:text-red-400 hover:bg-red-400/10 transition-colors">
                     <Trash2 className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
                   </button>
                 </div>
@@ -147,7 +147,7 @@ export function WorkoutLog() {
           })}
         </AnimatePresence>
         {gym.logs.length === 0 && (
-          <div className="py-6 text-center text-sm text-white/30 italic">No workout entries yet.</div>
+          <div className="py-6 text-center text-sm text-text-tertiary italic">No workout entries yet.</div>
         )}
       </div>
     </div>

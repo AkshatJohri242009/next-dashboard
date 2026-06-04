@@ -67,7 +67,7 @@ export function StudyTimer() {
         <span className="section-label">
           {mode === "focus" ? "Focus Timer" : "Break"}
         </span>
-        <span className="text-[11px] font-mono text-white/30">
+        <span className="text-[11px] font-mono text-text-tertiary">
           {sessions} session{sessions !== 1 ? "s" : ""} done
         </span>
       </div>
@@ -92,7 +92,7 @@ export function StudyTimer() {
           <span className="text-[40px] font-extrabold tabular-nums text-white/90 leading-none tracking-tight">
             {String(mins).padStart(2, "0")}:{String(secs).padStart(2, "0")}
           </span>
-          <span className="text-[11px] font-mono text-white/30 mt-1 uppercase">
+          <span className="text-[11px] font-mono text-text-tertiary mt-1 uppercase">
             {mode === "focus" ? "Focus" : "Break"}
           </span>
         </div>
@@ -109,7 +109,7 @@ export function StudyTimer() {
           onClick={reset}
           className="h-12 w-12 rounded-full bg-white/[0.04] border border-white/[0.06] flex items-center justify-center hover:bg-white/[0.08] transition-colors"
         >
-          <RotateCcw className="w-4 h-4 text-white/40" />
+          <RotateCcw className="w-4 h-4 text-text-tertiary" />
         </button>
       </div>
     </div>

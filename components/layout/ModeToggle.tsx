@@ -38,7 +38,7 @@ export function ModeToggle() {
         className={`flex items-center gap-1.5 h-8 px-3 rounded-lg text-xs font-bold transition-colors ${
           mode === "work"
             ? "bg-white/[0.08] text-white shadow-sm"
-            : "text-white/40 hover:text-white/70"
+            : "text-text-tertiary hover:text-text-secondary"
         }`}
       >
         <Briefcase className="w-3.5 h-3.5" />
@@ -49,7 +49,7 @@ export function ModeToggle() {
         className={`flex items-center gap-1.5 h-8 px-3 rounded-lg text-xs font-bold transition-colors ${
           mode === "study"
             ? "bg-white/[0.08] text-white shadow-sm"
-            : "text-white/40 hover:text-white/70"
+            : "text-text-tertiary hover:text-text-secondary"
         }`}
       >
         <GraduationCap className="w-3.5 h-3.5" />

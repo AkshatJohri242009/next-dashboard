@@ -38,7 +38,7 @@ export function JarvisInsightBar() {
 
   return (
     <div className="space-y-2 mb-6">
-      <div className="flex items-center gap-2 text-xs text-white/40 font-medium mb-1">
+      <div className="flex items-center gap-2 text-xs text-text-tertiary font-medium mb-1">
         <Brain className="w-3.5 h-3.5" />
         JARVIS Insights
       </div>
@@ -55,11 +55,11 @@ export function JarvisInsightBar() {
               style={{ borderLeftColor: colorMap[insight.type] }}
             >
               <Icon className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" style={{ color: colorMap[insight.type] }} />
-              <p className="text-xs text-white/70 flex-1">{insight.message}</p>
+              <p className="text-xs text-text-secondary flex-1">{insight.message}</p>
               <button onClick={() => setDismissed(new Set([...dismissed, insight.message]))}
                 className="h-5 w-5 rounded flex items-center justify-center hover:bg-white/10 transition-colors flex-shrink-0"
               >
-                <X className="w-3 h-3 text-white/30" />
+                <X className="w-3 h-3 text-text-tertiary" />
               </button>
             </motion.div>
           )

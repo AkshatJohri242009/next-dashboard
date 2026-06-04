@@ -51,8 +51,8 @@ export function StockDetail({ symbol, onClose }: Props) {
     >
       <div className="px-4 py-4 border-t border-white/[0.06] space-y-3">
         <div className="flex items-center justify-between">
-          <span className="text-sm font-bold text-white/80">{symbol} History</span>
-          <button onClick={onClose} className="h-8 w-8 flex items-center justify-center text-white/20 hover:text-white/60 transition-colors">
+          <span className="text-sm font-bold text-text-primary">{symbol} History</span>
+          <button onClick={onClose} className="h-8 w-8 flex items-center justify-center text-text-muted hover:text-text-secondary transition-colors">
             <X className="w-4 h-4" />
           </button>
         </div>
@@ -65,7 +65,7 @@ export function StockDetail({ symbol, onClose }: Props) {
               className={`h-8 sm:h-7 px-2.5 rounded-lg text-xs font-bold font-mono tracking-wider transition-colors ${
                 range === r.value
                   ? "bg-brand-500/20 text-brand-300 border border-brand-500/30"
-                  : "text-white/30 hover:text-white/60 border border-transparent"
+                  : "text-text-tertiary hover:text-text-secondary border border-transparent"
               }`}
             >
               {r.label}
@@ -85,7 +85,7 @@ export function StockDetail({ symbol, onClose }: Props) {
         </div>
 
         {loading ? (
-          <div className="h-[200px] flex items-center justify-center text-sm text-white/20">Loading...</div>
+          <div className="h-[200px] flex items-center justify-center text-sm text-text-muted">Loading...</div>
         ) : history.length > 0 ? (
           <div className="h-[200px]">
             <ResponsiveContainer width="100%" height="100%">
@@ -130,7 +130,7 @@ export function StockDetail({ symbol, onClose }: Props) {
             </ResponsiveContainer>
           </div>
         ) : (
-          <div className="h-[200px] flex items-center justify-center text-sm text-white/20">No data available</div>
+          <div className="h-[200px] flex items-center justify-center text-sm text-text-muted">No data available</div>
         )}
       </div>
     </motion.div>

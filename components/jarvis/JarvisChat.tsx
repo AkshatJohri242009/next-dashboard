@@ -40,10 +40,10 @@ function SessionList({ onClose }: { onClose?: () => void }) {
   return (
     <div className="flex flex-col h-full">
       <div className="p-3 border-b border-white/10 flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-white/80">Chats</h2>
+        <h2 className="text-sm font-semibold text-text-primary">Chats</h2>
         <button
           onClick={async () => { await createSession(); onClose?.() }}
-          className="p-1.5 rounded-lg hover:bg-white/10 text-white/60 hover:text-white/90 transition-colors"
+          className="p-1.5 rounded-lg hover:bg-white/10 text-text-secondary hover:text-white/90 transition-colors"
         >
           <Plus size={16} />
         </button>
@@ -51,10 +51,10 @@ function SessionList({ onClose }: { onClose?: () => void }) {
       <div className="flex-1 overflow-y-auto">
         {sessionsLoading ? (
           <div className="flex items-center justify-center py-8">
-            <Loader2 size={20} className="animate-spin text-white/40" />
+            <Loader2 size={20} className="animate-spin text-text-tertiary" />
           </div>
         ) : sessions.length === 0 ? (
-          <div className="text-center py-8 text-white/40 text-xs">No conversations yet</div>
+          <div className="text-center py-8 text-text-tertiary text-xs">No conversations yet</div>
         ) : (
           sessions.map((s) => (
             <div
@@ -64,7 +64,7 @@ function SessionList({ onClose }: { onClose?: () => void }) {
               }`}
               onClick={() => { selectSession(s.id); onClose?.() }}
             >
-              <MessageSquare size={14} className="text-white/40 flex-shrink-0" />
+              <MessageSquare size={14} className="text-text-tertiary flex-shrink-0" />
               {editingId === s.id ? (
                 <input
                   value={editName}
@@ -76,17 +76,17 @@ function SessionList({ onClose }: { onClose?: () => void }) {
                   onClick={(e) => e.stopPropagation()}
                 />
               ) : (
-                <span className="flex-1 text-xs text-white/70 truncate">{s.name}</span>
+                <span className="flex-1 text-xs text-text-secondary truncate">{s.name}</span>
               )}
               <button
                 onClick={(e) => { e.stopPropagation(); handleEdit(s.id, s.name) }}
-                className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-white/10 text-white/40 hover:text-white/70"
+                className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-white/10 text-text-tertiary hover:text-text-secondary"
               >
                 <Pencil size={12} />
               </button>
               <button
                 onClick={(e) => { e.stopPropagation(); deleteSession(s.id) }}
-                className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-red-500/20 text-white/40 hover:text-red-400"
+                className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-red-500/20 text-text-tertiary hover:text-red-400"
               >
                 <Trash2 size={12} />
               </button>
@@ -114,8 +114,8 @@ function MemoryPanel({ onClose }: { onClose?: () => void }) {
   return (
     <div className="flex flex-col h-full">
       <div className="p-3 border-b border-white/10 flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-white/80">Memories</h2>
-        <button onClick={onClose} className="p-1 rounded-lg hover:bg-white/10 text-white/40">
+        <h2 className="text-sm font-semibold text-text-primary">Memories</h2>
+        <button onClick={onClose} className="p-1 rounded-lg hover:bg-white/10 text-text-tertiary">
           <X size={16} />
         </button>
       </div>
@@ -126,7 +126,7 @@ function MemoryPanel({ onClose }: { onClose?: () => void }) {
             onChange={(e) => setNewMemory(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleAdd()}
             placeholder="Add a memory..."
-            className="flex-1 bg-white/10 rounded-lg px-3 py-1.5 text-xs text-white outline-none placeholder:text-white/30"
+            className="flex-1 bg-white/10 rounded-lg px-3 py-1.5 text-xs text-white outline-none placeholder:text-text-tertiary"
           />
           <select
             value={category}
@@ -149,28 +149,28 @@ function MemoryPanel({ onClose }: { onClose?: () => void }) {
       <div className="flex-1 overflow-y-auto">
         {memoriesLoading ? (
           <div className="flex items-center justify-center py-8">
-            <Loader2 size={20} className="animate-spin text-white/40" />
+            <Loader2 size={20} className="animate-spin text-text-tertiary" />
           </div>
         ) : memories.length === 0 ? (
-          <div className="text-center py-8 text-white/40 text-xs">No memories yet</div>
+          <div className="text-center py-8 text-text-tertiary text-xs">No memories yet</div>
         ) : (
           memories.map((m) => (
             <div key={m.id} className="group flex items-start gap-2 px-3 py-2.5 hover:bg-white/5 transition-colors">
               <button
                 onClick={() => togglePinMemory(m.id, !m.is_pinned)}
-                className={`p-1 rounded flex-shrink-0 mt-0.5 ${m.is_pinned ? "text-yellow-400" : "text-white/20 hover:text-white/40"}`}
+                className={`p-1 rounded flex-shrink-0 mt-0.5 ${m.is_pinned ? "text-yellow-400" : "text-text-muted hover:text-text-tertiary"}`}
               >
                 <Star size={12} />
               </button>
               <div className="flex-1 min-w-0">
-                <p className="text-xs text-white/70 leading-relaxed">{m.text}</p>
-                <span className="text-xs text-white/30 mt-0.5 block">
+                <p className="text-xs text-text-secondary leading-relaxed">{m.text}</p>
+                <span className="text-xs text-text-tertiary mt-0.5 block">
                   {m.category} &middot; {new Date(m.created_at).toLocaleDateString()}
                 </span>
               </div>
               <button
                 onClick={() => deleteMemory(m.id)}
-                className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-red-500/20 text-white/40 hover:text-red-400 flex-shrink-0"
+                className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-red-500/20 text-text-tertiary hover:text-red-400 flex-shrink-0"
               >
                 <Trash2 size={12} />
               </button>
@@ -235,7 +235,7 @@ export default function JarvisChat() {
   if (authLoading) {
     return (
       <div className="flex items-center justify-center h-full">
-        <Loader2 size={24} className="animate-spin text-white/40" />
+        <Loader2 size={24} className="animate-spin text-text-tertiary" />
       </div>
     )
   }
@@ -250,7 +250,7 @@ export default function JarvisChat() {
               <Bot size={24} className="text-brand" />
             </div>
             <h1 className="text-lg font-bold text-gradient">J.A.R.V.I.S</h1>
-            <p className="text-xs text-white/50 text-center">Your AI strategist, coach, and mentor</p>
+            <p className="text-xs text-text-tertiary text-center">Your AI strategist, coach, and mentor</p>
           </div>
 
           {loginError && (
@@ -263,7 +263,7 @@ export default function JarvisChat() {
             value={loginUsername}
             onChange={(e) => setLoginUsername(e.target.value)}
             placeholder="Username"
-            className="w-full bg-white/10 rounded-lg px-3 py-2.5 text-sm text-white outline-none placeholder:text-white/30"
+            className="w-full bg-white/10 rounded-lg px-3 py-2.5 text-sm text-white outline-none placeholder:text-text-tertiary"
             onKeyDown={async (e) => {
               if (e.key === "Enter") {
                 setLoginLoading(true); setLoginError("")
@@ -278,7 +278,7 @@ export default function JarvisChat() {
             value={loginPassword}
             onChange={(e) => setLoginPassword(e.target.value)}
             placeholder="Password"
-            className="w-full bg-white/10 rounded-lg px-3 py-2.5 text-sm text-white outline-none placeholder:text-white/30"
+            className="w-full bg-white/10 rounded-lg px-3 py-2.5 text-sm text-white outline-none placeholder:text-text-tertiary"
             onKeyDown={async (e) => {
               if (e.key === "Enter") {
                 setLoginLoading(true); setLoginError("")
@@ -289,7 +289,7 @@ export default function JarvisChat() {
             }}
           />
 
-          <label className="flex items-center gap-2 text-xs text-white/40 cursor-pointer select-none">
+          <label className="flex items-center gap-2 text-xs text-text-tertiary cursor-pointer select-none">
             <input
               type="checkbox"
               checked={rememberMe}
@@ -328,7 +328,7 @@ export default function JarvisChat() {
 
           <button
             onClick={() => setIsSignup(!isSignup)}
-            className="w-full text-xs text-white/40 hover:text-white/60 transition-colors"
+            className="w-full text-xs text-text-tertiary hover:text-text-secondary transition-colors"
           >
             {isSignup ? "Already have an account? Sign in" : "No account? Create one"}
           </button>
@@ -342,7 +342,7 @@ export default function JarvisChat() {
     <div className="flex h-full">
       {/* Sidebar */}
       {showSidebar && (
-        <div className="w-64 flex-shrink-0 border-r border-white/10 bg-[#050506] hidden md:flex flex-col">
+        <div className="w-64 flex-shrink-0 border-r border-white/[0.06] glass-strong hidden md:flex flex-col">
           <div className="flex border-b border-white/10">
             {[
               { key: "sessions", icon: MessageSquare, label: "Chats" },
@@ -353,7 +353,7 @@ export default function JarvisChat() {
                 key={tab.key}
                 onClick={() => setActivePanel(tab.key as any)}
                 className={`flex-1 py-2.5 text-xs font-medium transition-colors flex items-center justify-center gap-1.5 ${
-                  activePanel === tab.key ? "text-brand border-b-2 border-brand" : "text-white/40 hover:text-white/70"
+                  activePanel === tab.key ? "text-brand border-b-2 border-brand" : "text-text-tertiary hover:text-text-secondary"
                 }`}
               >
                 <tab.icon size={14} />
@@ -370,10 +370,10 @@ export default function JarvisChat() {
             <div className="w-6 h-6 rounded-full bg-accent/20 flex items-center justify-center">
               <span className="text-xs font-bold text-accent">{user?.username?.[0]?.toUpperCase() || "?"}</span>
             </div>
-            <span className="text-xs text-white/50 flex-1 truncate">{user?.username || "User"}</span>
+            <span className="text-xs text-text-tertiary flex-1 truncate">{user?.username || "User"}</span>
             <button
               onClick={logout}
-              className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-red-400 transition-colors"
+              className="p-1.5 rounded-lg hover:bg-white/10 text-text-tertiary hover:text-red-400 transition-colors"
             >
               <LogOut size={14} />
             </button>
@@ -384,10 +384,10 @@ export default function JarvisChat() {
       {/* Main chat area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top bar */}
-        <div className="flex items-center gap-2 px-4 py-2.5 border-b border-white/10 bg-[#050506]/80 backdrop-blur-sm">
+        <div className="flex items-center gap-2 px-4 py-2.5 border-b border-white/[0.06] glass-sm">
           <button
             onClick={() => setShowSidebar(!showSidebar)}
-            className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-white/70 hidden md:block"
+            className="p-1.5 rounded-lg hover:bg-white/10 text-text-tertiary hover:text-text-secondary hidden md:block"
           >
             {showSidebar ? <PanelLeftClose size={16} /> : <PanelLeft size={16} />}
           </button>
@@ -395,7 +395,7 @@ export default function JarvisChat() {
             <Bot size={18} className="text-brand flex-shrink-0" />
             <h1 className="text-sm font-bold text-gradient truncate">J.A.R.V.I.S</h1>
             {!currentSessionId && (
-              <span className="text-xs text-white/30">No conversation selected</span>
+              <span className="text-xs text-text-tertiary">No conversation selected</span>
             )}
           </div>
           <div className="flex items-center gap-1 md:hidden">
@@ -408,7 +408,7 @@ export default function JarvisChat() {
                 key={tab.key}
                 onClick={() => setActivePanel(tab.key as any)}
                 className={`p-1.5 rounded-lg transition-colors ${
-                  activePanel === tab.key ? "bg-brand/20 text-brand" : "text-white/40 hover:bg-white/10"
+                  activePanel === tab.key ? "bg-brand/20 text-brand" : "text-text-tertiary hover:bg-white/10"
                 }`}
               >
                 <tab.icon size={14} />
@@ -416,7 +416,7 @@ export default function JarvisChat() {
             ))}
             <button
               onClick={logout}
-              className="p-1.5 rounded-lg text-white/40 hover:bg-white/10 hover:text-red-400 transition-colors"
+              className="p-1.5 rounded-lg text-text-tertiary hover:bg-white/10 hover:text-red-400 transition-colors"
             >
               <LogOut size={14} />
             </button>
@@ -429,8 +429,8 @@ export default function JarvisChat() {
             <div className="flex items-center justify-center h-full">
               <div className="text-center max-w-sm">
                 <Bot size={48} className="text-accent/30 mx-auto mb-4" />
-                <h2 className="text-lg font-semibold text-white/60 mb-2">Welcome to J.A.R.V.I.S</h2>
-                <p className="text-xs text-white/40 mb-6">
+                <h2 className="text-lg font-semibold text-text-secondary mb-2">Welcome to J.A.R.V.I.S</h2>
+                <p className="text-xs text-text-tertiary mb-6">
                   Your AI assistant with persistent memory and context-aware conversations.
                 </p>
                 <button
@@ -444,8 +444,8 @@ export default function JarvisChat() {
           ) : messages.length === 0 && !chatLoading ? (
             <div className="flex items-center justify-center h-full">
               <div className="text-center">
-                <MessageSquare size={32} className="text-white/20 mx-auto mb-3" />
-                <p className="text-sm text-white/40">Send a message to start chatting</p>
+                <MessageSquare size={32} className="text-text-muted mx-auto mb-3" />
+                <p className="text-sm text-text-tertiary">Send a message to start chatting</p>
               </div>
             </div>
           ) : (
@@ -457,7 +457,7 @@ export default function JarvisChat() {
                 <ChatMessage role="assistant" content={streamingText} />
               )}
               {chatLoading && !streamingText && (
-                <div className="flex items-center gap-2 text-white/40 pl-2">
+                <div className="flex items-center gap-2 text-text-tertiary pl-2">
                   <Loader2 size={14} className="animate-spin" />
                   <span className="text-xs">Thinking...</span>
                 </div>
@@ -484,7 +484,7 @@ export default function JarvisChat() {
                   onKeyDown={handleKeyDown}
                   placeholder="Message J.A.R.V.I.S..."
                   rows={1}
-                  className="flex-1 bg-transparent text-sm text-white outline-none resize-none placeholder:text-white/30 max-h-[120px]"
+                  className="flex-1 bg-transparent text-sm text-white outline-none resize-none placeholder:text-text-tertiary max-h-[120px]"
                 />
                 {chatLoading ? (
                   <button
@@ -512,7 +512,7 @@ export default function JarvisChat() {
       {activePanel && (
         <div className="md:hidden fixed inset-0 z-50 flex">
           <div className="absolute inset-0 bg-black/50" onClick={() => setActivePanel(null)} />
-          <div className="relative w-72 max-w-[85vw] bg-[#050506] border-r border-white/10 flex flex-col">
+          <div className="relative w-72 max-w-[85vw] glass-strong flex flex-col">
             {activePanel === "sessions" && <SessionList onClose={() => setActivePanel(null)} />}
             {activePanel === "memories" && <MemoryPanel onClose={() => setActivePanel(null)} />}
             {activePanel === "settings" && <SettingsPanel onClose={() => setActivePanel(null)} />}

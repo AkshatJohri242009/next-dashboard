@@ -105,9 +105,9 @@ export function JournalModule() {
       {insight && (
         <div className="insight-card mb-4 flex items-center gap-2.5">
           <Brain className="w-3.5 h-3.5 text-accent flex-shrink-0" />
-          <p className="text-xs text-white/70">{insight}</p>
+          <p className="text-xs text-text-secondary">{insight}</p>
           <button onClick={() => setInsight(null)} className="h-8 w-8 rounded flex items-center justify-center hover:bg-white/10 ml-auto flex-shrink-0">
-            <svg viewBox="0 0 24 24" className="w-3 h-3 text-white/30 fill-current"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            <svg viewBox="0 0 24 24" className="w-3 h-3 text-text-tertiary fill-current"><path d="M18 6L6 18M6 6l12 12"/></svg>
           </button>
         </div>
       )}
@@ -119,7 +119,7 @@ export function JournalModule() {
               <div className="flex flex-wrap gap-2">
                 {MOODS.map(m => (
                   <button key={m.value} onClick={() => setMood(m.value as JournalEntry["mood"])}
-                    className={`px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all ${mood === m.value ? "text-white" : "text-white/40 hover:text-white/70"}`}
+                    className={`px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all ${mood === m.value ? "text-white" : "text-text-tertiary hover:text-text-secondary"}`}
                     style={{
                       backgroundColor: mood === m.value ? `${m.color}25` : "rgba(255,255,255,0.05)",
                       outline: mood === m.value ? `2px solid ${m.color}` : "none",
@@ -138,7 +138,7 @@ export function JournalModule() {
                 <input value={tagInput} onChange={e => setTagInput(e.target.value)}
                   onKeyDown={e => { if (e.key === "Enter" && tagInput.trim()) { setTags([...tags, tagInput.trim()]); setTagInput("") } }}
                   placeholder="Add tag..."
-                  className="flex-1 h-8 px-3 rounded-lg bg-white/5 border border-white/10 text-xs text-white outline-none placeholder:text-white/30"
+                  className="flex-1 h-8 px-3 rounded-lg bg-white/5 border border-white/10 text-xs text-white outline-none placeholder:text-text-tertiary"
                 />
                 <button onClick={saveEntry} disabled={!content.trim()}
                   className="h-8 px-4 rounded-lg bg-accent/20 hover:bg-accent/30 text-accent text-xs font-medium disabled:opacity-30 transition-colors"
@@ -149,9 +149,9 @@ export function JournalModule() {
               {tags.length > 0 && (
                 <div className="flex flex-wrap gap-1.5">
                   {tags.map(t => (
-                    <span key={t} className="px-2 py-0.5 rounded-full bg-white/5 text-xs text-white/50">
+                    <span key={t} className="px-2 py-0.5 rounded-full bg-white/5 text-xs text-text-tertiary">
                       #{t}
-                      <button onClick={() => setTags(tags.filter(x => x !== t))} className="ml-1 text-white/20 hover:text-white/50">&times;</button>
+                      <button onClick={() => setTags(tags.filter(x => x !== t))} className="ml-1 text-text-muted hover:text-text-tertiary">&times;</button>
                     </span>
                   ))}
                 </div>
@@ -165,14 +165,14 @@ export function JournalModule() {
         <div className="mb-4 p-3 rounded-xl bg-white/5 border border-white/10">
           <div className="flex items-center gap-2 mb-1.5">
             <span className="text-sm">{moodEmoji(todayEntry.mood)}</span>
-            <span className="text-xs text-white/40">{new Date(todayEntry.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
+            <span className="text-xs text-text-tertiary">{new Date(todayEntry.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
             <div className="flex-1" />
-            <span className="text-xs text-white/30">Today</span>
+            <span className="text-xs text-text-tertiary">Today</span>
           </div>
-          <p className="text-sm text-white/70 leading-relaxed">{todayEntry.content}</p>
+          <p className="text-sm text-text-secondary leading-relaxed">{todayEntry.content}</p>
           {todayEntry.tags.length > 0 && (
             <div className="flex flex-wrap gap-1 mt-2">
-              {todayEntry.tags.map(t => <span key={t} className="px-1.5 py-0.5 rounded bg-white/5 text-xs text-white/30">#{t}</span>)}
+              {todayEntry.tags.map(t => <span key={t} className="px-1.5 py-0.5 rounded bg-white/5 text-xs text-text-tertiary">#{t}</span>)}
             </div>
           )}
         </div>
@@ -182,20 +182,20 @@ export function JournalModule() {
         {recentEntries.length === 0 && !showEditor && (
           <div className="text-center py-6">
             <PenSquare className="w-6 h-6 text-white/10 mx-auto mb-2" />
-            <p className="text-xs text-white/30">No entries yet. Start journaling to see patterns.</p>
+            <p className="text-xs text-text-tertiary">No entries yet. Start journaling to see patterns.</p>
           </div>
         )}
         {recentEntries.filter(e => !e.date.startsWith(today)).map((entry) => (
           <div key={entry.id} className="group flex items-start gap-3 px-3 py-2.5 rounded-xl hover:bg-white/5 transition-colors">
             <span className="text-base mt-0.5">{moodEmoji(entry.mood)}</span>
             <div className="flex-1 min-w-0">
-              <p className="text-xs text-white/70 line-clamp-2 leading-relaxed">{entry.content}</p>
-              <span className="text-xs text-white/30 mt-1 block">
+              <p className="text-xs text-text-secondary line-clamp-2 leading-relaxed">{entry.content}</p>
+              <span className="text-xs text-text-tertiary mt-1 block">
                 {new Date(entry.createdAt).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
               </span>
             </div>
             <button onClick={() => deleteEntry(entry.id)}
-              className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 h-8 w-8 rounded flex items-center justify-center hover:bg-red-500/20 text-white/30 hover:text-red-400 transition-all flex-shrink-0"
+              className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 h-8 w-8 rounded flex items-center justify-center hover:bg-red-500/20 text-text-tertiary hover:text-red-400 transition-all flex-shrink-0"
               aria-label="Delete entry"
             >
               <Trash2 className="w-3.5 h-3.5" />

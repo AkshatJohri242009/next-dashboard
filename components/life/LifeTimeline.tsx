@@ -84,12 +84,12 @@ export function LifeTimeline() {
         {showForm && (
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
             <div className="space-y-3 p-4 rounded-xl bg-white/5 border border-white/10">
-              <input value={title} onChange={e => setTitle(e.target.value)} placeholder="Event title..." className="w-full h-8 px-3 rounded-lg bg-white/5 border border-white/10 text-xs text-white outline-none placeholder:text-white/30" />
+              <input value={title} onChange={e => setTitle(e.target.value)} placeholder="Event title..." className="w-full h-8 px-3 rounded-lg bg-white/5 border border-white/10 text-xs text-white outline-none placeholder:text-text-tertiary" />
               <textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="What happened?" rows={3} className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none placeholder:text-white/25 resize-none" />
               <div className="flex flex-col sm:flex-row gap-2">
                 <input type="date" value={date} onChange={e => setDate(e.target.value)} className="h-8 px-3 rounded-lg bg-white/5 border border-white/10 text-xs text-white outline-none" />
                 <select value={category} onChange={e => setCategory(e.target.value as TimelineEvent["category"])}
-                  className="h-8 px-3 rounded-lg bg-white/5 border border-white/10 text-xs text-white/70 outline-none"
+                  className="h-8 px-3 rounded-lg bg-white/5 border border-white/10 text-xs text-text-secondary outline-none"
                 >
                   {CATEGORIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
                 </select>
@@ -98,7 +98,7 @@ export function LifeTimeline() {
                 {CATEGORIES.map(c => (
                   <button key={c.value} onClick={() => setCategory(c.value as TimelineEvent["category"])}
                     className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
-                      category === c.value ? "text-white" : "text-white/40 hover:text-white/60"
+                      category === c.value ? "text-white" : "text-text-tertiary hover:text-text-secondary"
                     }`}
                     style={{
                       backgroundColor: category === c.value ? `${c.color}20` : "rgba(255,255,255,0.05)",
@@ -121,14 +121,14 @@ export function LifeTimeline() {
 
       {events.length > 0 && (
         <div className="flex items-center gap-3 px-3 py-2 rounded-xl bg-white/[0.03] border border-white/[0.06]">
-          <p className="text-[11px] text-white/50">{events.length} events</p>
+          <p className="text-[11px] text-text-tertiary">{events.length} events</p>
           <div className="w-px h-3 bg-white/10" />
-          <p className="text-[11px] text-white/50">
-            <span className="text-white/70">{new Set(events.map(e => e.date.slice(0, 4))).size}</span> years covered
+          <p className="text-[11px] text-text-tertiary">
+            <span className="text-text-secondary">{new Set(events.map(e => e.date.slice(0, 4))).size}</span> years covered
           </p>
           <div className="w-px h-3 bg-white/10" />
-          <p className="text-[11px] text-white/50">
-            Earliest: <span className="text-white/70">{sorted[sorted.length - 1]?.date || "—"}</span>
+          <p className="text-[11px] text-text-tertiary">
+            Earliest: <span className="text-text-secondary">{sorted[sorted.length - 1]?.date || "—"}</span>
           </p>
         </div>
       )}
@@ -137,7 +137,7 @@ export function LifeTimeline() {
         {sorted.length === 0 && (
           <div className="text-center py-8">
             <Clock className="w-6 h-6 text-white/10 mx-auto mb-2" />
-            <p className="text-xs text-white/30">No events yet. Start building your life timeline.</p>
+            <p className="text-xs text-text-tertiary">No events yet. Start building your life timeline.</p>
           </div>
         )}
         {sorted.map((event, idx) => {
@@ -149,7 +149,7 @@ export function LifeTimeline() {
               {showYear && (
                 <div className="flex items-center gap-3 mb-2 mt-3 first:mt-0">
                   <div className="h-px flex-1 bg-white/10" />
-                  <span className="text-xs font-bold text-white/30 tracking-wider">{event.date.slice(0, 4)}</span>
+                  <span className="text-xs font-bold text-text-tertiary tracking-wider">{event.date.slice(0, 4)}</span>
                   <div className="h-px flex-1 bg-white/10" />
                 </div>
               )}
@@ -160,16 +160,16 @@ export function LifeTimeline() {
                   <div className="flex items-start gap-2">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-xs font-semibold text-white/80">{event.title}</span>
+                        <span className="text-xs font-semibold text-text-primary">{event.title}</span>
                         <span className="text-[11px] px-1.5 py-0.5 rounded" style={{ backgroundColor: `${meta.color}20`, color: meta.color }}>
                           {meta.label}
                         </span>
                       </div>
-                      <p className="text-[11px] text-white/40 mt-0.5">{event.date}</p>
-                      {event.description && <p className="text-[11px] text-white/50 mt-1 line-clamp-2">{event.description}</p>}
+                      <p className="text-[11px] text-text-tertiary mt-0.5">{event.date}</p>
+                      {event.description && <p className="text-[11px] text-text-tertiary mt-1 line-clamp-2">{event.description}</p>}
                     </div>
                     <button onClick={() => deleteEvent(event.id)}
-                      className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 h-8 w-8 rounded flex items-center justify-center hover:bg-red-500/20 text-white/30 hover:text-red-400 transition-all flex-shrink-0"
+                      className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 h-8 w-8 rounded flex items-center justify-center hover:bg-red-500/20 text-text-tertiary hover:text-red-400 transition-all flex-shrink-0"
                       aria-label="Delete event"
                     >
                       <Trash2 className="w-3.5 h-3.5" />

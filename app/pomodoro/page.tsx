@@ -33,7 +33,7 @@ export default function PomodoroPage() {
         </div>
         <div>
           <h1 className="text-xl font-bold text-gradient">Pomodoro</h1>
-          <p className="text-sm text-white/40">25/5/15 minute focus sessions</p>
+          <p className="text-sm text-text-tertiary">25/5/15 minute focus sessions</p>
         </div>
       </div>
       <JarvisInsightBar />
@@ -48,14 +48,14 @@ export default function PomodoroPage() {
             {running ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-0.5" />}
           </button>
           <button onClick={() => { setTimer(25 * 60); setRunning(false) }}
-            className="h-9 px-4 rounded-xl bg-white/5 border border-white/10 text-xs text-white/50 hover:text-white/70 transition-colors flex items-center gap-1.5"
+            className="h-9 px-4 rounded-xl bg-white/5 border border-white/10 text-xs text-white/50 hover:text-text-secondary transition-colors flex items-center gap-1.5"
           >
             <RotateCcw className="w-3 h-3" /> Reset
           </button>
           <div className="flex gap-1 ml-2">
             {[5, 15, 25, 30, 60].map(m => (
               <button key={m} onClick={() => { setTimer(m * 60); setRunning(false) }}
-                className={`h-9 px-3 rounded-xl text-xs font-medium transition-colors ${timer === m * 60 ? "bg-white/10 text-white" : "bg-white/5 text-white/40 hover:text-white/60"}`}
+                className={`h-9 px-3 rounded-xl text-xs font-medium transition-colors ${timer === m * 60 ? "bg-white/10 text-white" : "bg-white/5 text-text-tertiary hover:text-text-secondary"}`}
               >
                 {m}m
               </button>

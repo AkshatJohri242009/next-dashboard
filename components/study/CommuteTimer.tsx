@@ -80,18 +80,18 @@ export function CommuteTimer() {
         <span className="section-label">
           Commute Timer
         </span>
-        <Plane className="w-4 h-4 text-white/30" />
+        <Plane className="w-4 h-4 text-text-tertiary" />
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="text-xs font-mono font-extrabold tracking-widest text-white/30 uppercase block mb-1.5">
+          <label className="text-xs font-mono font-extrabold tracking-widest text-text-tertiary uppercase block mb-1.5">
             From
           </label>
           <select
             value={fromCode}
             onChange={e => { setFromCode(e.target.value); finishedRef.current = false }}
-            className="w-full h-11 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white/80 outline-none focus:border-brand-500/40 focus:bg-white/[0.06] transition-colors appearance-none cursor-pointer"
+            className="w-full h-11 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-text-primary outline-none focus:border-brand-500/40 focus:bg-white/[0.06] transition-colors appearance-none cursor-pointer"
           >
             {airports.map(a => (
               <option key={a.code} value={a.code} className="bg-[#0c0c0e]">{a.code} — {a.city}</option>
@@ -99,13 +99,13 @@ export function CommuteTimer() {
           </select>
         </div>
         <div>
-          <label className="text-xs font-mono font-extrabold tracking-widest text-white/30 uppercase block mb-1.5">
+          <label className="text-xs font-mono font-extrabold tracking-widest text-text-tertiary uppercase block mb-1.5">
             To
           </label>
           <select
             value={toCode}
             onChange={e => { setToCode(e.target.value); finishedRef.current = false }}
-            className="w-full h-11 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white/80 outline-none focus:border-brand-500/40 focus:bg-white/[0.06] transition-colors appearance-none cursor-pointer"
+            className="w-full h-11 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-text-primary outline-none focus:border-brand-500/40 focus:bg-white/[0.06] transition-colors appearance-none cursor-pointer"
           >
             {airports.map(a => (
               <option key={a.code} value={a.code} className="bg-[#0c0c0e]">{a.code} — {a.city}</option>
@@ -115,7 +115,7 @@ export function CommuteTimer() {
       </div>
 
       {from && to && (
-        <div className="text-center text-[11px] font-mono text-white/30">
+        <div className="text-center text-[11px] font-mono text-text-tertiary">
           {from.city} → {to.city} · ~{totalMinutes} min flight
         </div>
       )}
@@ -139,7 +139,7 @@ export function CommuteTimer() {
           <span className="text-[28px] font-extrabold tabular-nums text-white/90 leading-none tracking-tight">
             {String(hours).padStart(2, "0")}:{String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
           </span>
-          <span className="text-[11px] font-mono text-white/30 mt-1">
+          <span className="text-[11px] font-mono text-text-tertiary mt-1">
             {finishedRef.current ? "Arrived!" : running ? "En route" : "Ready"}
           </span>
         </div>
@@ -156,7 +156,7 @@ export function CommuteTimer() {
           onClick={reset}
           className="h-12 w-12 rounded-full bg-white/[0.04] border border-white/[0.06] flex items-center justify-center hover:bg-white/[0.08] transition-colors"
         >
-          <RotateCcw className="w-4 h-4 text-white/40" />
+          <RotateCcw className="w-4 h-4 text-text-tertiary" />
         </button>
         <button
           onClick={() => {
@@ -168,7 +168,7 @@ export function CommuteTimer() {
           }}
           className="h-12 w-12 rounded-full bg-white/[0.04] border border-white/[0.06] flex items-center justify-center hover:bg-white/[0.08] transition-colors"
         >
-          <Clock className="w-4 h-4 text-white/40" />
+          <Clock className="w-4 h-4 text-text-tertiary" />
         </button>
       </div>
     </div>

@@ -70,11 +70,11 @@ export function ProjectTracker() {
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-gradient">Projects</h1>
-          <p className="text-sm text-white/40 mt-1">Track time on your GitHub repos.</p>
+          <p className="text-sm text-text-tertiary mt-1">Track time on your GitHub repos.</p>
         </div>
         <button
           onClick={() => setShowAll(!showAll)}
-          className="h-9 sm:h-10 px-3 sm:px-4 rounded-xl bg-white/[0.04] border border-white/[0.06] text-xs sm:text-xs font-bold text-white/50 hover:text-white/80 hover:bg-white/[0.08] transition-colors"
+          className="h-9 sm:h-10 px-3 sm:px-4 rounded-xl bg-white/[0.04] border border-white/[0.06] text-xs sm:text-xs font-bold text-text-tertiary hover:text-text-primary hover:bg-white/[0.08] transition-colors"
         >
           {showAll ? "Show Featured" : "Show All"}
         </button>
@@ -132,17 +132,17 @@ export function ProjectTracker() {
       )}
 
       <div className="relative">
-        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-tertiary" />
         <input
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="Search repos..."
-          className="w-full h-10 sm:h-11 pl-10 pr-4 rounded-xl bg-white/[0.04] border border-white/[0.06] text-xs sm:text-sm text-white outline-none placeholder:text-white/30 focus:border-white/20 transition-colors"
+          className="w-full h-10 sm:h-11 pl-10 pr-4 rounded-xl bg-white/[0.04] border border-white/[0.06] text-xs sm:text-sm text-white outline-none placeholder:text-text-tertiary focus:border-white/20 transition-colors"
         />
       </div>
 
       {loading && repos.length === 0 && (
-        <div className="py-12 text-center text-sm text-white/30 italic">Loading repos...</div>
+        <div className="py-12 text-center text-sm text-text-tertiary italic">Loading repos...</div>
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -166,24 +166,24 @@ export function ProjectTracker() {
                   href={repo.html_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm font-bold text-white/80 hover:text-brand-400 transition-colors truncate flex items-center gap-1.5"
+                  className="text-sm font-bold text-text-primary hover:text-brand-400 transition-colors truncate flex items-center gap-1.5"
                 >
                   {repo.name}
                   <ExternalLink className="w-3 h-3 shrink-0 opacity-40" />
                 </a>
                 <button
                   onClick={() => toggleFeatured(repo.name)}
-                  className="shrink-0 text-white/30 hover:text-amber-400 transition-colors"
+                  className="shrink-0 text-text-tertiary hover:text-amber-400 transition-colors"
                 >
                   {isFeatured ? <BookmarkCheck className="w-4 h-4 text-amber-400" /> : <Bookmark className="w-4 h-4" />}
                 </button>
               </div>
 
               {repo.description && (
-                <p className="text-xs text-white/40 mb-3 line-clamp-2">{repo.description}</p>
+                <p className="text-xs text-text-tertiary mb-3 line-clamp-2">{repo.description}</p>
               )}
 
-              <div className="flex items-center gap-3 text-xs sm:text-[11px] text-white/30 font-mono mb-3 flex-wrap">
+              <div className="flex items-center gap-3 text-xs sm:text-[11px] text-text-tertiary font-mono mb-3 flex-wrap">
                 {repo.language && (
                   <span className="flex items-center gap-1">
                     <span className="w-2 h-2 rounded-full bg-brand-400" />
@@ -201,7 +201,7 @@ export function ProjectTracker() {
               </div>
 
               {tracked && tracked.totalMinutes > 0 && (
-                <div className="text-xs font-mono text-white/30 mb-2 flex items-center gap-1">
+                <div className="text-xs font-mono text-text-tertiary mb-2 flex items-center gap-1">
                   <Clock className="w-3 h-3" />
                   {timeFmt(tracked.totalMinutes)} total
                 </div>
@@ -214,7 +214,7 @@ export function ProjectTracker() {
                     "flex-1 h-8 sm:h-9 rounded-xl text-xs sm:text-xs font-bold transition-colors",
                     isCurrent
                       ? "bg-brand-500/20 text-brand-300 border border-brand-500/30"
-                      : "bg-white/[0.04] text-white/40 border border-white/[0.06] hover:text-white/70 hover:bg-white/[0.08]",
+                      : "bg-white/[0.04] text-text-tertiary border border-white/[0.06] hover:text-text-secondary hover:bg-white/[0.08]",
                   )}
                 >
                   {isCurrent ? "Selected" : "Select"}
@@ -242,7 +242,7 @@ export function ProjectTracker() {
       </div>
 
       {!loading && searched.length === 0 && (
-        <div className="py-12 text-center text-sm text-white/30 italic">
+        <div className="py-12 text-center text-sm text-text-tertiary italic">
           {search ? "No repos match your search." : showAll ? "No repos found." : "No featured repos. Bookmark some repos above or click 'Show All Repos'."}
         </div>
       )}

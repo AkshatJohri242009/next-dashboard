@@ -25,7 +25,7 @@ export default function WeightPage() {
       </div>
 
       <motion.div variants={item}>
-        <GlassPanel variant="strong" glow="green">
+        <GlassPanel variant="strong" glow="brand">
           <div className="section-bar">
             <span className="section-label">Weight Log</span>
           </div>

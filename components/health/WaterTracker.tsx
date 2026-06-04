@@ -24,7 +24,7 @@ export function WaterTracker() {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-2">
         {fields.map(f => (
           <label key={f.id} className="flex flex-col gap-1">
-            <span className="text-xs font-mono font-extrabold tracking-wider text-white/30 uppercase">{f.label}</span>
+            <span className="text-xs font-mono font-extrabold tracking-wider text-text-tertiary uppercase">{f.label}</span>
             <input
               type="number"
               min={f.min} max={f.max} step={f.step}
@@ -47,12 +47,12 @@ export function WaterTracker() {
               <span className="text-[42px] font-bold leading-none tracking-tight tabular-nums">
                 {(done / 1000).toFixed(1)}
               </span>
-              <span className="text-lg text-white/30">L</span>
-              <span className="text-lg text-white/20 mx-1">/</span>
+              <span className="text-lg text-text-tertiary">L</span>
+              <span className="text-lg text-text-muted mx-1">/</span>
               <span className="text-lg font-bold tabular-nums">{(goalMl / 1000).toFixed(1)}</span>
-              <span className="text-lg text-white/30">L</span>
+              <span className="text-lg text-text-tertiary">L</span>
             </div>
-            <span className="text-xs text-white/40">
+            <span className="text-xs text-text-tertiary">
               {done >= goalMl
                 ? "Target reached. Keep sipping lightly."
                 : `${Math.max(0, Math.ceil((goalMl - done) / 300))} cups to reach the healthy zone.`}
@@ -81,14 +81,14 @@ export function WaterTracker() {
             <button
               key={ml}
               onClick={() => addWater(ml)}
-              className="h-10 sm:h-8 flex-1 sm:flex-none px-4 sm:px-3 rounded-xl text-xs font-bold text-white/50 bg-white/[0.04] border border-white/[0.06] hover:text-white/80 hover:bg-white/[0.08] transition-colors"
+              className="h-10 sm:h-8 flex-1 sm:flex-none px-4 sm:px-3 rounded-xl text-xs font-bold text-text-tertiary bg-white/[0.04] border border-white/[0.06] hover:text-text-primary hover:bg-white/[0.08] transition-colors"
             >
               +{ml}ml
             </button>
           ))}
           <button
             onClick={resetWater}
-            className="h-10 sm:h-8 flex-1 sm:flex-none px-4 sm:px-3 rounded-xl text-xs font-bold text-white/30 bg-white/[0.04] border border-white/[0.06] hover:text-red-400 hover:bg-red-400/10 transition-colors flex items-center justify-center gap-1"
+            className="h-10 sm:h-8 flex-1 sm:flex-none px-4 sm:px-3 rounded-xl text-xs font-bold text-text-tertiary bg-white/[0.04] border border-white/[0.06] hover:text-red-400 hover:bg-red-400/10 transition-colors flex items-center justify-center gap-1"
           >
             <RotateCcw className="w-3.5 h-3.5 sm:w-3 sm:h-3" />
             Reset

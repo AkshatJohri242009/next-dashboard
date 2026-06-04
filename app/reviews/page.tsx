@@ -64,7 +64,7 @@ export default function ReviewsPage() {
     <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
       <div>
         <h1 className="page-title">Reviews & Forecast</h1>
-        <p className="text-sm text-white/40 mt-1">Weekly and monthly performance overviews with AI-powered projections.</p>
+        <p className="text-sm text-text-tertiary mt-1">Weekly and monthly performance overviews with AI-powered projections.</p>
       </div>
 
       <JarvisInsightBar />
@@ -72,17 +72,17 @@ export default function ReviewsPage() {
       {/* Period Selectors */}
       <motion.div variants={item} className="flex flex-wrap gap-3">
         <div className="card-elevated px-4 py-3 flex items-center gap-3">
-          <Calendar className="w-4 h-4 text-white/30" />
+          <Calendar className="w-4 h-4 text-text-tertiary" />
           <div>
-            <p className="text-xs sm:text-[11px] text-white/30 uppercase tracking-wider">Week Starting</p>
-            <p className="text-xs font-medium text-white/70">{weekStart}</p>
+            <p className="text-xs sm:text-[11px] text-text-tertiary uppercase tracking-wider">Week Starting</p>
+            <p className="text-xs font-medium text-text-secondary">{weekStart}</p>
           </div>
         </div>
         <div className="card-elevated px-4 py-3 flex items-center gap-3">
-          <Calendar className="w-4 h-4 text-white/30" />
+          <Calendar className="w-4 h-4 text-text-tertiary" />
           <div>
-            <p className="text-xs sm:text-[11px] text-white/30 uppercase tracking-wider">Month</p>
-            <p className="text-xs font-medium text-white/70">{monthStart?.slice(0, 7)}</p>
+            <p className="text-xs sm:text-[11px] text-text-tertiary uppercase tracking-wider">Month</p>
+            <p className="text-xs font-medium text-text-secondary">{monthStart?.slice(0, 7)}</p>
           </div>
         </div>
       </motion.div>
@@ -122,7 +122,7 @@ export default function ReviewsPage() {
           <div className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.06]">
             <div className="flex items-center gap-2 mb-2">
               <Moon className="w-3.5 h-3.5 text-accent" />
-              <span className="text-xs text-white/60">Sleep</span>
+              <span className="text-xs text-text-secondary">Sleep</span>
             </div>
             <p className="text-lg font-bold text-white/80">{forecast?.sleepTrend.avgHours || "—"}h</p>
             {forecast && <DirectionBadge direction={forecast.sleepTrend.direction} />}
@@ -130,7 +130,7 @@ export default function ReviewsPage() {
           <div className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.06]">
             <div className="flex items-center gap-2 mb-2">
               <Dumbbell className="w-3.5 h-3.5 text-brand" />
-              <span className="text-xs text-white/60">Gym</span>
+              <span className="text-xs text-text-secondary">Gym</span>
             </div>
             <p className="text-lg font-bold text-white/80">{forecast?.gymTrend.weeklyAvg || "—"}x/wk</p>
             {forecast && <DirectionBadge direction={forecast.gymTrend.direction} />}
@@ -138,21 +138,21 @@ export default function ReviewsPage() {
           <div className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.06]">
             <div className="flex items-center gap-2 mb-2">
               <Brain className="w-3.5 h-3.5 text-warning" />
-              <span className="text-xs text-white/60">Mood</span>
+              <span className="text-xs text-text-secondary">Mood</span>
             </div>
             <p className="text-lg font-bold text-white/80 capitalize">{forecast?.moodTrend.dominant || "—"}</p>
-            <p className="text-xs text-white/40">{forecast?.moodTrend.positivityRate || 0}% positive</p>
+            <p className="text-xs text-text-tertiary">{forecast?.moodTrend.positivityRate || 0}% positive</p>
           </div>
         </div>
 
-        <h4 className="text-xs font-semibold text-white/60 mb-3 uppercase tracking-wider">Habit Projections (next 30 days)</h4>
+        <h4 className="text-xs font-semibold text-text-secondary mb-3 uppercase tracking-wider">Habit Projections (next 30 days)</h4>
         <div className="space-y-2">
           {forecast?.habitProjections.slice(0, 8).map((h, i) => (
             <div key={i} className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-white/5 transition-colors">
               <Flame className="w-3.5 h-3.5 text-orange-400 flex-shrink-0" />
-              <span className="text-xs text-white/70 flex-1 min-w-0 truncate">{h.name}</span>
+              <span className="text-xs text-text-secondary flex-1 min-w-0 truncate">{h.name}</span>
               <div className="flex items-center gap-3 text-xs">
-                <span className="text-white/30">{h.currentStreak}d streak</span>
+                <span className="text-text-tertiary">{h.currentStreak}d streak</span>
                 <span className="text-white/50">→</span>
                 <span className="text-brand font-semibold">{h.projected7Day}d / 7d</span>
                 <span className="text-accent font-semibold">{h.projected30Day}d / 30d</span>
@@ -172,7 +172,7 @@ export default function ReviewsPage() {
           {forecast?.recommendations.map((r, i) => (
             <div key={i} className="insight-card flex items-center gap-3 py-3">
               <div className="w-5 h-5 rounded-full bg-accent/20 flex items-center justify-center text-xs font-bold text-accent flex-shrink-0">{i + 1}</div>
-              <p className="text-xs text-white/70">{r}</p>
+              <p className="text-xs text-text-secondary">{r}</p>
             </div>
           ))}
         </div>

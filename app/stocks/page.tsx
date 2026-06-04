@@ -29,7 +29,7 @@ export default function StocksPage() {
       <JarvisInsightBar />
 
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-        <GlassPanel variant="strong" glow="green">
+        <GlassPanel variant="strong" glow="brand">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-1 h-4 rounded-full bg-brand-400" />
             <span className="section-label">Portfolio</span>

@@ -66,7 +66,7 @@ export function VoiceBriefingPanel() {
             <button key={t} onClick={() => setType(t)}
               className={cn(
                 "px-3 h-8 rounded-lg text-xs font-medium transition-all",
-                type === t ? "bg-brand-500/20 text-brand-400 border border-brand-500/30" : "text-white/40 hover:text-white/60"
+                type === t ? "bg-brand-500/20 text-brand-400 border border-brand-500/30" : "text-text-tertiary hover:text-text-secondary"
               )}
             >
               {t === "morning" && <><Sun className="w-3.5 h-3.5 inline mr-1" />Morning</>}
@@ -79,7 +79,7 @@ export function VoiceBriefingPanel() {
         <button onClick={handleSpeak}
           className={cn(
             "h-8 px-3 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-all",
-            isSpeaking ? "bg-danger/20 text-danger border border-danger/30" : "bg-white/[0.04] text-white/50 hover:text-white/70 border border-white/[0.06]"
+            isSpeaking ? "bg-danger/20 text-danger border border-danger/30" : "bg-white/[0.04] text-text-tertiary hover:text-text-secondary border border-white/[0.06]"
           )}
         >
           {isSpeaking ? <><Volume2 className="w-3.5 h-3.5 animate-pulse" />Stop</> : <><Volume2 className="w-3.5 h-3.5" />Speak</>}
@@ -92,7 +92,7 @@ export function VoiceBriefingPanel() {
           <div className="space-y-3">
             <div className="p-4 rounded-xl bg-gradient-to-br from-brand-500/5 to-accent-500/5 border border-white/[0.06]">
               <h2 className="text-lg font-bold text-gradient">{briefing.greeting}</h2>
-              <p className="text-xs text-white/30 mt-1">{briefing.date}</p>
+              <p className="text-xs text-text-tertiary mt-1">{briefing.date}</p>
             </div>
             {briefing.sections.map((section, idx) => {
               const Icon = ICON_MAP[section.icon] || Sparkles
@@ -100,14 +100,14 @@ export function VoiceBriefingPanel() {
               return (
                 <div key={idx} className="rounded-xl border border-white/[0.06] overflow-hidden">
                   <button onClick={() => toggleSection(idx)} className="w-full flex items-center gap-3 p-3 hover:bg-white/[0.02] transition-colors">
-                    <Icon className="w-4 h-4 shrink-0 text-white/50" />
-                    <span className="text-sm font-medium text-white/70">{section.title}</span>
+                    <Icon className="w-4 h-4 shrink-0 text-text-tertiary" />
+                    <span className="text-sm font-medium text-text-secondary">{section.title}</span>
                     <span className={cn(
                       "ml-auto text-xs font-medium px-2 py-0.5 rounded-full",
                       section.type === "positive" ? "bg-success/10 text-success" :
                       section.type === "negative" ? "bg-danger/10 text-danger" :
                       section.type === "action" ? "bg-warning/10 text-warning" :
-                      "bg-white/[0.04] text-white/40"
+                      "bg-white/[0.04] text-text-tertiary"
                     )}>
                       {section.type}
                     </span>
@@ -115,14 +115,14 @@ export function VoiceBriefingPanel() {
                   {isOpen && (
                     <div className="px-3 pb-3 space-y-1">
                       {section.items.filter(Boolean).map((item, i) => (
-                        <p key={i} className="text-sm text-white/60">{item}</p>
+                        <p key={i} className="text-sm text-text-secondary">{item}</p>
                       ))}
                     </div>
                   )}
                 </div>
               )
             })}
-            <p className="text-xs text-white/30 italic">{briefing.summary}</p>
+            <p className="text-xs text-text-tertiary italic">{briefing.summary}</p>
           </div>
         )
       })()}
@@ -132,20 +132,20 @@ export function VoiceBriefingPanel() {
         return (
           <div className="space-y-3">
             <div className="p-4 rounded-xl bg-gradient-to-br from-brand-500/5 to-accent-500/5 border border-white/[0.06] text-center">
-              <p className="text-xs text-white/30">{briefing.weekLabel}</p>
+              <p className="text-xs text-text-tertiary">{briefing.weekLabel}</p>
               <div className="mt-2 flex items-center justify-center gap-2">
                 <span className="text-3xl font-bold text-gradient">{briefing.score}</span>
-                <span className="text-xs text-white/40">/100</span>
+                <span className="text-xs text-text-tertiary">/100</span>
                 {briefing.momentum === "up" && <TrendingUp className="w-5 h-5 text-success" />}
                 {briefing.momentum === "down" && <TrendingDown className="w-5 h-5 text-danger" />}
-                {briefing.momentum === "stable" && <Minus className="w-5 h-5 text-white/40" />}
+                {briefing.momentum === "stable" && <Minus className="w-5 h-5 text-text-tertiary" />}
               </div>
             </div>
             {briefing.achievements.length > 0 && (
               <div className="p-3 rounded-xl bg-success/[0.03] border border-success/10">
                 <p className="text-xs font-medium text-success mb-2">✓ Achievements</p>
                 <ul className="space-y-1">
-                  {briefing.achievements.map((a, i) => <li key={i} className="text-sm text-white/60">• {a}</li>)}
+                  {briefing.achievements.map((a, i) => <li key={i} className="text-sm text-text-secondary">• {a}</li>)}
                 </ul>
               </div>
             )}
@@ -153,14 +153,14 @@ export function VoiceBriefingPanel() {
               <div className="p-3 rounded-xl bg-danger/[0.03] border border-danger/10">
                 <p className="text-xs font-medium text-danger mb-2">✗ Missed Targets</p>
                 <ul className="space-y-1">
-                  {briefing.missedTargets.map((m, i) => <li key={i} className="text-sm text-white/60">• {m}</li>)}
+                  {briefing.missedTargets.map((m, i) => <li key={i} className="text-sm text-text-secondary">• {m}</li>)}
                 </ul>
               </div>
             )}
             <div className="p-3 rounded-xl bg-warning/[0.03] border border-warning/10">
               <p className="text-xs font-medium text-warning mb-2">→ Recommendations</p>
               <ul className="space-y-1">
-                {briefing.recommendations.map((r, i) => <li key={i} className="text-sm text-white/60">• {r}</li>)}
+                {briefing.recommendations.map((r, i) => <li key={i} className="text-sm text-text-secondary">• {r}</li>)}
               </ul>
             </div>
           </div>
@@ -172,28 +172,28 @@ export function VoiceBriefingPanel() {
         return (
           <div className="space-y-3">
             <div className="p-4 rounded-xl bg-gradient-to-br from-brand-500/5 to-accent-500/5 border border-white/[0.06] text-center">
-              <p className="text-xs text-white/30">{briefing.monthLabel}</p>
+              <p className="text-xs text-text-tertiary">{briefing.monthLabel}</p>
               <div className="mt-2">
                 <span className="text-3xl font-bold text-gradient">{briefing.overallScore}</span>
-                <span className="text-xs text-white/40 ml-1">/100 overall</span>
+                <span className="text-xs text-text-tertiary ml-1">/100 overall</span>
               </div>
             </div>
             <div className="p-3 rounded-xl bg-brand-500/[0.03] border border-brand-500/10">
               <p className="text-xs font-medium text-brand-400 mb-2">Growth Areas</p>
               <ul className="space-y-1">
-                {briefing.growthAreas.map((g, i) => <li key={i} className="text-sm text-white/60">• {g}</li>)}
+                {briefing.growthAreas.map((g, i) => <li key={i} className="text-sm text-text-secondary">• {g}</li>)}
               </ul>
             </div>
             <div className="p-3 rounded-xl border border-white/[0.06]">
-              <p className="text-xs font-medium text-white/40 mb-2">Trends</p>
+              <p className="text-xs font-medium text-text-tertiary mb-2">Trends</p>
               <ul className="space-y-1">
-                {briefing.trends.map((t, i) => <li key={i} className="text-sm text-white/60">• {t}</li>)}
+                {briefing.trends.map((t, i) => <li key={i} className="text-sm text-text-secondary">• {t}</li>)}
               </ul>
             </div>
             <div className="p-3 rounded-xl bg-warning/[0.03] border border-warning/10">
               <p className="text-xs font-medium text-warning mb-2">Projections</p>
               <ul className="space-y-1">
-                {briefing.projections.map((p, i) => <li key={i} className="text-sm text-white/60">• {p}</li>)}
+                {briefing.projections.map((p, i) => <li key={i} className="text-sm text-text-secondary">• {p}</li>)}
               </ul>
             </div>
           </div>

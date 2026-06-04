@@ -53,7 +53,7 @@ export function FocusSounds() {
         </span>
         <button
           onClick={() => setMuted(!muted)}
-          className="h-8 w-8 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-white/30 hover:text-white/60 transition-colors"
+          className="h-8 w-8 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-text-tertiary hover:text-text-secondary transition-colors"
         >
           {muted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
         </button>
@@ -72,8 +72,8 @@ export function FocusSounds() {
                   : "bg-white/[0.02] border-white/[0.06] hover:bg-white/[0.04]"
               }`}
             >
-              <s.icon className={`w-6 h-6 ${isActive ? s.color : "text-white/30"}`} />
-              <span className={`text-xs font-bold ${isActive ? "text-white/80" : "text-white/40"}`}>
+              <s.icon className={`w-6 h-6 ${isActive ? s.color : "text-text-tertiary"}`} />
+              <span className={`text-xs font-bold ${isActive ? "text-text-primary" : "text-text-tertiary"}`}>
                 {s.label}
               </span>
               {isActive && (
@@ -89,7 +89,7 @@ export function FocusSounds() {
       </div>
 
       <div className="flex items-center gap-3">
-        <Volume2 className="w-3.5 h-3.5 text-white/30 shrink-0" />
+        <Volume2 className="w-3.5 h-3.5 text-text-tertiary shrink-0" />
         <input
           type="range"
           min={0} max={1} step={0.01}
@@ -101,7 +101,7 @@ export function FocusSounds() {
             [&::-webkit-slider-thumb]:shadow-[0_0_20px_rgba(107,227,164,0.8)]
             [&::-webkit-slider-track]:h-full [&::-webkit-slider-track]:rounded-full"
         />
-        <span className="text-[11px] font-mono text-white/30 w-8 text-right tabular-nums">
+        <span className="text-[11px] font-mono text-text-tertiary w-8 text-right tabular-nums">
           {Math.round((muted ? 0 : volume) * 100)}
         </span>
       </div>
