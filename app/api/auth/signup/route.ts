@@ -25,24 +25,29 @@ export async function POST(req: NextRequest) {
     }
 
     const hashed = await bcrypt.hash(password, 12)
+    const id = crypto.randomUUID()
+    const now = new Date().toISOString()
 
     const { data: user, error } = await db
       .from("User")
       .insert({
+        id,
         name,
         email,
         password: hashed,
+        createdAt: now,
+        updatedAt: now,
       })
       .select("id, name, email")
       .single()
 
     if (error || !user) {
       console.error("Supabase insert error:", error)
-      return NextResponse.json({ error: "Failed to create user" }, { status: 500 })
+      return NextResponse.json({ error: "Failed to create user: " + (error?.message || "Unknown") }, { status: 500 })
     }
 
-    await db.from("UserProfile").insert({ userId: user.id, displayName: name })
-    await db.from("UserSettings").insert({ userId: user.id })
+    await db.from("UserProfile").insert({ userId: user.id, displayName: name, createdAt: now, updatedAt: now })
+    await db.from("UserSettings").insert({ userId: user.id, createdAt: now, updatedAt: now })
 
     return NextResponse.json({ id: user.id, name: user.name, email: user.email })
   } catch (err) {
