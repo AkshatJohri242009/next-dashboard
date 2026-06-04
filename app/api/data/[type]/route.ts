@@ -1,48 +1,57 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
+import { adminDb } from "@/lib/admin-supabase"
 
-const MODEL_MAP: Record<string, string> = {
-  goals: "goal",
-  health: "health",
-  gym: "gym",
-  habits: "habit",
-  journal: "journalEntry",
-  sleep: "sleepEntry",
-  weight: "weightEntry",
-  reminders: "reminder",
-  chapters: "chapter",
-  missions: "mission",
-  decisions: "decision",
-  ideas: "idea",
-  timeline: "timelineEvent",
-  studyTasks: "studyTask",
-  studyFiles: "studyFile",
-  studyScores: "studyScore",
-  examDates: "examDate",
-  stocks: "stockHolding",
-  projects: "trackedProject",
-  notifications: "notification",
-  water: "waterLog",
+const TYPE_TABLE_MAP: Record<string, string> = {
+  goals: "Goal",
+  health: "Health",
+  gym: "Gym",
+  habits: "Habit",
+  journal: "JournalEntry",
+  sleep: "SleepEntry",
+  weight: "WeightEntry",
+  reminders: "Reminder",
+  chapters: "Chapter",
+  missions: "Mission",
+  decisions: "Decision",
+  ideas: "Idea",
+  timeline: "TimelineEvent",
+  studyTasks: "StudyTask",
+  studyFiles: "StudyFile",
+  studyScores: "StudyScore",
+  examDates: "ExamDate",
+  stocks: "StockHolding",
+  projects: "TrackedProject",
+  notifications: "Notification",
+  water: "WaterLog",
+  settings: "UserSettings",
+  profile: "UserProfile",
 }
 
-const UNIQUE_TYPES = ["health", "gym", "settings", "profile"]
+const SINGLETON_TABLES = new Set(["Health", "Gym", "UserSettings", "UserProfile"])
 
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions)
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
   const type = req.nextUrl.pathname.split("/").pop()
-  const model = type ? MODEL_MAP[type] : null
-  if (!model) return NextResponse.json({ error: "Invalid type" }, { status: 400 })
+  const table = type ? TYPE_TABLE_MAP[type] : null
+  if (!table) return NextResponse.json({ error: "Invalid type" }, { status: 400 })
+
+  const db = adminDb
+  if (!db) return NextResponse.json({ error: "Database not configured" }, { status: 500 })
 
   try {
-    const data = await (prisma as any)[model].findMany({
-      where: { userId: session.user.id },
-      orderBy: { createdAt: "desc" },
-    })
-    return NextResponse.json(data)
+    const query = db.from(table).select("*").eq("userId", session.user.id)
+
+    if (SINGLETON_TABLES.has(table)) {
+      const { data } = await query.single()
+      return NextResponse.json(data || null)
+    }
+
+    const { data } = await query.order("createdAt", { ascending: false })
+    return NextResponse.json(data || [])
   } catch (err) {
     console.error(`Error fetching ${type}:`, err)
     return NextResponse.json({ error: "Failed to fetch data" }, { status: 500 })
@@ -54,29 +63,35 @@ export async function POST(req: NextRequest) {
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
   const type = req.nextUrl.pathname.split("/").pop()
-  const model = type ? MODEL_MAP[type] : null
-  if (!model) return NextResponse.json({ error: "Invalid type" }, { status: 400 })
+  const table = type ? TYPE_TABLE_MAP[type] : null
+  if (!table) return NextResponse.json({ error: "Invalid type" }, { status: 400 })
+
+  const db = adminDb
+  if (!db) return NextResponse.json({ error: "Database not configured" }, { status: 500 })
 
   try {
     const body = await req.json()
+    const now = new Date().toISOString()
 
-    if (UNIQUE_TYPES.includes(type!)) {
-      const existing = await (prisma as any)[model].findUnique({
-        where: { userId: session.user.id },
-      })
-      if (existing) {
-        const updated = await (prisma as any)[model].update({
-          where: { id: existing.id },
-          data: body,
-        })
-        return NextResponse.json(updated)
+    if (SINGLETON_TABLES.has(table)) {
+      const { data: existing } = await db.from(table).select("id").eq("userId", session.user.id).limit(1)
+      if (existing && existing.length > 0) {
+        const { data } = await db.from(table).update(body).eq("userId", session.user.id).select().single()
+        return NextResponse.json(data)
       }
     }
 
-    const record = await (prisma as any)[model].create({
-      data: { ...body, userId: session.user.id },
-    })
-    return NextResponse.json(record, { status: 201 })
+    const { data, error } = await db
+      .from(table)
+      .insert({ ...body, userId: session.user.id, createdAt: now, updatedAt: now })
+      .select()
+      .single()
+
+    if (error) {
+      console.error(`Error creating ${type}:`, error)
+      return NextResponse.json({ error: "Failed to create" }, { status: 500 })
+    }
+    return NextResponse.json(data, { status: 201 })
   } catch (err) {
     console.error(`Error creating ${type}:`, err)
     return NextResponse.json({ error: "Failed to create" }, { status: 500 })
@@ -90,17 +105,24 @@ export async function PUT(req: NextRequest) {
   const segments = req.nextUrl.pathname.split("/")
   const type = segments[segments.length - 2]
   const id = segments[segments.length - 1]
-  const model = type ? MODEL_MAP[type] : null
-  if (!model || !id) return NextResponse.json({ error: "Invalid type or id" }, { status: 400 })
+  const table = type ? TYPE_TABLE_MAP[type] : null
+  if (!table || !id) return NextResponse.json({ error: "Invalid type or id" }, { status: 400 })
+
+  const db = adminDb
+  if (!db) return NextResponse.json({ error: "Database not configured" }, { status: 500 })
 
   try {
     const body = await req.json()
-    const record = await (prisma as any)[model].updateMany({
-      where: { id, userId: session.user.id },
-      data: body,
-    })
-    if (record.count === 0) return NextResponse.json({ error: "Not found" }, { status: 404 })
-    return NextResponse.json({ success: true })
+    const { data, error } = await db
+      .from(table)
+      .update({ ...body, updatedAt: new Date().toISOString() })
+      .eq("id", id)
+      .eq("userId", session.user.id)
+      .select()
+      .single()
+
+    if (error || !data) return NextResponse.json({ error: "Not found" }, { status: 404 })
+    return NextResponse.json(data)
   } catch (err) {
     console.error(`Error updating ${type}:`, err)
     return NextResponse.json({ error: "Failed to update" }, { status: 500 })
@@ -114,14 +136,15 @@ export async function DELETE(req: NextRequest) {
   const segments = req.nextUrl.pathname.split("/")
   const type = segments[segments.length - 2]
   const id = segments[segments.length - 1]
-  const model = type ? MODEL_MAP[type] : null
-  if (!model || !id) return NextResponse.json({ error: "Invalid type or id" }, { status: 400 })
+  const table = type ? TYPE_TABLE_MAP[type] : null
+  if (!table || !id) return NextResponse.json({ error: "Invalid type or id" }, { status: 400 })
+
+  const db = adminDb
+  if (!db) return NextResponse.json({ error: "Database not configured" }, { status: 500 })
 
   try {
-    const record = await (prisma as any)[model].deleteMany({
-      where: { id, userId: session.user.id },
-    })
-    if (record.count === 0) return NextResponse.json({ error: "Not found" }, { status: 404 })
+    const { error } = await db.from(table).delete().eq("id", id).eq("userId", session.user.id)
+    if (error) return NextResponse.json({ error: "Not found" }, { status: 404 })
     return NextResponse.json({ success: true })
   } catch (err) {
     console.error(`Error deleting ${type}:`, err)

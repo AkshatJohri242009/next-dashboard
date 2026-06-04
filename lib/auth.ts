@@ -2,12 +2,9 @@ import { NextAuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import GoogleProvider from "next-auth/providers/google"
 import GitHubProvider from "next-auth/providers/github"
-import { PrismaAdapter } from "@next-auth/prisma-adapter"
-import { prisma } from "./prisma"
-import bcrypt from "bcryptjs"
+import { adminDb } from "./admin-supabase"
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma) as NextAuthOptions["adapter"],
   session: { strategy: "jwt" },
   pages: {
     signIn: "/login",
@@ -22,18 +19,19 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null
+        const db = adminDb
+        if (!db) return null
 
-        const user = await prisma.user.findFirst({
-          where: {
-            OR: [
-              { email: credentials.email },
-              { username: credentials.email },
-            ],
-          },
-        })
+        const { data: users } = await db
+          .from("User")
+          .select("id, name, email, image, password")
+          .or(`email.eq.${credentials.email},username.eq.${credentials.email}`)
+          .limit(1)
 
+        const user = users?.[0]
         if (!user || !user.password) return null
 
+        const bcrypt = await import("bcryptjs")
         const valid = await bcrypt.compare(credentials.password, user.password)
         if (!valid) return null
 
@@ -48,16 +46,16 @@ export const authOptions: NextAuthOptions = {
     ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
       ? [
           GoogleProvider({
-            clientId: process.env.GOOGLE_CLIENT_ID,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+            clientId: process.env.GOOGLE_CLIENT_ID!,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
           }),
         ]
       : []),
     ...(process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET
       ? [
           GitHubProvider({
-            clientId: process.env.GITHUB_CLIENT_ID,
-            clientSecret: process.env.GITHUB_CLIENT_SECRET,
+            clientId: process.env.GITHUB_CLIENT_ID!,
+            clientSecret: process.env.GITHUB_CLIENT_SECRET!,
           }),
         ]
       : []),
@@ -71,7 +69,7 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, token }) {
       if (session.user && token.id) {
-        session.user.id = token.id as string
+        ;(session.user as any).id = token.id as string
       }
       return session
     },

@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
+import { adminDb } from "@/lib/admin-supabase"
 import bcrypt from "bcryptjs"
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions)
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+
+  const db = adminDb
+  if (!db) return NextResponse.json({ error: "Database not configured" }, { status: 500 })
 
   try {
     const { currentPassword, newPassword } = await req.json()
@@ -19,10 +22,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Password must be at least 8 characters" }, { status: 400 })
     }
 
-    const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      select: { password: true },
-    })
+    const { data: user } = await db
+      .from("User")
+      .select("password")
+      .eq("id", session.user.id)
+      .single()
 
     if (!user?.password) {
       return NextResponse.json({ error: "Cannot change password for OAuth accounts" }, { status: 400 })
@@ -34,10 +38,7 @@ export async function POST(req: NextRequest) {
     }
 
     const hashed = await bcrypt.hash(newPassword, 12)
-    await prisma.user.update({
-      where: { id: session.user.id },
-      data: { password: hashed },
-    })
+    await db.from("User").update({ password: hashed }).eq("id", session.user.id)
 
     return NextResponse.json({ success: true })
   } catch (err) {

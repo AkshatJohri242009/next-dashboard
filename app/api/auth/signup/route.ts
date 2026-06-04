@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { prisma } from "@/lib/prisma"
+import { adminDb } from "@/lib/admin-supabase"
 import bcrypt from "bcryptjs"
 
 export async function POST(req: NextRequest) {
@@ -14,26 +14,40 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Password must be at least 8 characters" }, { status: 400 })
     }
 
-    const existing = await prisma.user.findUnique({ where: { email } })
-    if (existing) {
+    const db = adminDb
+    if (!db) {
+      return NextResponse.json({ error: "Database not configured" }, { status: 500 })
+    }
+
+    const { data: existing } = await db.from("User").select("id").eq("email", email).limit(1)
+    if (existing && existing.length > 0) {
       return NextResponse.json({ error: "An account with this email already exists" }, { status: 409 })
     }
 
     const hashed = await bcrypt.hash(password, 12)
-    const user = await prisma.user.create({
-      data: {
+
+    const { data: user, error } = await db
+      .from("User")
+      .insert({
         name,
         email,
         password: hashed,
-        profile: { create: { displayName: name } },
-        settings: { create: {} },
-      },
-    })
+      })
+      .select("id, name, email")
+      .single()
+
+    if (error || !user) {
+      console.error("Supabase insert error:", error)
+      return NextResponse.json({ error: "Failed to create user" }, { status: 500 })
+    }
+
+    await db.from("UserProfile").insert({ userId: user.id, displayName: name })
+    await db.from("UserSettings").insert({ userId: user.id })
 
     return NextResponse.json({ id: user.id, name: user.name, email: user.email })
   } catch (err) {
     console.error("Signup error:", err)
     const message = err instanceof Error ? err.message : "Unknown error"
-    return NextResponse.json({ error: message, detail: message }, { status: 500 })
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }

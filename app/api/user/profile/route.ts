@@ -1,32 +1,38 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
+import { adminDb } from "@/lib/admin-supabase"
 
 export async function PUT(req: NextRequest) {
   const session = await getServerSession(authOptions)
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
+  const db = adminDb
+  if (!db) return NextResponse.json({ error: "Database not configured" }, { status: 500 })
+
   try {
     const { name, image } = await req.json()
 
-    const data: Record<string, string> = {}
-    if (name !== undefined) data.name = name
-    if (image !== undefined) data.image = image
+    const updates: Record<string, string> = {}
+    if (name !== undefined) updates.name = name
+    if (image !== undefined) updates.image = image
 
-    const user = await prisma.user.update({
-      where: { id: session.user.id },
-      data,
-      select: { id: true, name: true, email: true, image: true },
-    })
+    if (Object.keys(updates).length > 0) {
+      await db.from("User").update(updates).eq("id", session.user.id)
+    }
 
     if (name !== undefined) {
-      await prisma.userProfile.upsert({
-        where: { userId: session.user.id },
-        update: { displayName: name },
-        create: { userId: session.user.id, displayName: name },
-      })
+      await db.from("UserProfile").upsert(
+        { userId: session.user.id, displayName: name },
+        { onConflict: "userId", ignoreDuplicates: false }
+      )
     }
+
+    const { data: user } = await db
+      .from("User")
+      .select("id, name, email, image")
+      .eq("id", session.user.id)
+      .single()
 
     return NextResponse.json(user)
   } catch (err) {
@@ -39,17 +45,19 @@ export async function GET() {
   const session = await getServerSession(authOptions)
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      image: true,
-      createdAt: true,
-      profile: { select: { displayName: true, bio: true, timezone: true, onboardingDone: true } },
-    },
-  })
+  const db = adminDb
+  if (!db) return NextResponse.json({ error: "Database not configured" }, { status: 500 })
 
-  return NextResponse.json(user)
+  try {
+    const { data: user } = await db
+      .from("User")
+      .select("id, name, email, image, createdAt, profile:UserProfile(displayName, bio, timezone, onboardingDone)")
+      .eq("id", session.user.id)
+      .single()
+
+    return NextResponse.json(user)
+  } catch (err) {
+    console.error("Profile fetch error:", err)
+    return NextResponse.json({ error: "Failed to fetch profile" }, { status: 500 })
+  }
 }
