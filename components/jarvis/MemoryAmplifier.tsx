@@ -103,19 +103,19 @@ export function MemoryAmplifier() {
           <div key={i} className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06] text-center">
             <stat.icon className={`w-4 h-4 mx-auto mb-1 ${stat.color}`} />
             <p className="text-lg font-bold text-white/80">{stat.value}</p>
-            <p className="text-[10px] text-white/30">{stat.label}</p>
+            <p className="text-xs text-white/30">{stat.label}</p>
           </div>
         ))}
       </div>
 
       <div className="flex gap-1.5 flex-wrap">
         <button onClick={() => setSelectedCategory("all")}
-          className={cn("px-2.5 h-7 rounded-lg text-[10px] font-medium border transition-all",
+          className={cn("px-2.5 h-7 rounded-lg text-xs font-medium border transition-all",
             selectedCategory === "all" ? "bg-brand-500/20 text-brand-400 border-brand-500/30" : "text-white/30 border-white/[0.06] hover:text-white/50"
           )}>All</button>
         {Object.entries(CATEGORY_CONFIG).map(([key, config]) => (
           <button key={key} onClick={() => setSelectedCategory(key)}
-            className={cn("px-2.5 h-7 rounded-lg text-[10px] font-medium border transition-all flex items-center gap-1",
+            className={cn("px-2.5 h-7 rounded-lg text-xs font-medium border transition-all flex items-center gap-1",
               selectedCategory === key ? "bg-brand-500/20 text-brand-400 border-brand-500/30" : "text-white/30 border-white/[0.06] hover:text-white/50"
             )}>
             <config.icon className={`w-3 h-3 ${config.color}`} />{key}
@@ -171,11 +171,11 @@ export function MemoryAmplifier() {
               <div className="flex-1 min-w-0">
                 <p className="text-sm text-white/70">{memory.text}</p>
                 <div className="flex items-center gap-2 mt-1 flex-wrap">
-                  <span className="text-[10px] text-white/20">{memory.category}</span>
-                  <span className="text-[10px] text-white/20">·</span>
-                  <span className="text-[10px] text-white/20">{memory.date}</span>
+                  <span className="text-xs text-white/20">{memory.category}</span>
+                  <span className="text-xs text-white/20">·</span>
+                  <span className="text-xs text-white/20">{memory.date}</span>
                   {memory.tags.map(t => (
-                    <span key={t} className="px-1.5 py-0.5 rounded text-[9px] bg-white/[0.04] text-white/30">{t}</span>
+                    <span key={t} className="px-1.5 py-0.5 rounded text-[11px] bg-white/[0.04] text-white/30">{t}</span>
                   ))}
                   {memory.importance >= 3 && <Star className="w-3 h-3 text-warning" />}
                 </div>

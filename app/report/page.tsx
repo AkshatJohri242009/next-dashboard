@@ -14,7 +14,7 @@ export default function ReportPage() {
         </div>
         <div>
           <h1 className="text-xl font-bold text-gradient">Annual Life Report</h1>
-          <p className="text-sm text-white/40">Your year in review — goals, habits, fitness, and growth</p>
+          <p className="text-sm text-text-tertiary">Your year in review — goals, habits, fitness, and growth</p>
         </div>
       </div>
       <JarvisInsightBar />

@@ -58,7 +58,7 @@ export default function ProjectsPage() {
             <Github className="w-4 h-4 text-brand-400 shrink-0" />
             <div className="min-w-0">
               <span className="text-sm font-bold text-white/80 group-hover:text-white block truncate">{p.name}</span>
-              <span className="text-[10px] font-mono text-white/30 truncate block">{p.repo}</span>
+              <span className="text-xs font-mono text-white/30 truncate block">{p.repo}</span>
             </div>
             <ExternalLink className="w-3.5 h-3.5 text-white/20 shrink-0 ml-auto" />
           </a>
@@ -78,20 +78,20 @@ export default function ProjectsPage() {
             return (
               <div key={p.repo} className="rounded-xl bg-white/[0.02] border border-white/[0.06] p-4 sm:p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase">{p.name}</span>
-                  <a href={p.url} target="_blank" rel="noopener noreferrer" className="text-[10px] font-mono text-brand-400/60 hover:text-brand-400">View on GitHub</a>
+                  <span className="section-label">{p.name}</span>
+                  <a href={p.url} target="_blank" rel="noopener noreferrer" className="text-xs font-mono text-brand-400/60 hover:text-brand-400">View on GitHub</a>
                 </div>
 
                 {projectReleases.length > 0 && (
                   <div className="mb-4">
-                    <span className="text-[10px] font-mono text-white/30 font-bold block mb-2">Releases</span>
+                    <span className="text-xs font-mono text-white/30 font-bold block mb-2">Releases</span>
                     <div className="space-y-2">
                       {projectReleases.map((r: any) => (
                         <a key={r.id} href={r.html_url} target="_blank" rel="noopener noreferrer"
                           className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02] hover:bg-white/[0.04] border border-white/[0.06] transition-colors group">
                           <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
                           <span className="text-xs font-bold text-white/70 group-hover:text-white flex-1">{r.tag_name}</span>
-                          <span className="text-[10px] font-mono text-white/20">{r.published_at?.slice(0, 10)}</span>
+                          <span className="text-xs font-mono text-white/20">{r.published_at?.slice(0, 10)}</span>
                         </a>
                       ))}
                     </div>
@@ -99,7 +99,7 @@ export default function ProjectsPage() {
                 )}
 
                 <div>
-                  <span className="text-[10px] font-mono text-white/30 font-bold block mb-2">Recent Commits</span>
+                  <span className="text-xs font-mono text-white/30 font-bold block mb-2">Recent Commits</span>
                   {projectCommits.length === 0 ? (
                     <p className="text-xs text-white/20 text-center py-4">No commits found</p>
                   ) : (
@@ -111,9 +111,9 @@ export default function ProjectsPage() {
                           <div className="min-w-0 flex-1">
                             <p className="text-xs text-white/70 group-hover:text-white truncate">{c.commit?.message?.split("\n")[0] || "No message"}</p>
                             <div className="flex items-center gap-2 mt-1">
-                              <span className="text-[10px] font-mono text-white/20">{c.commit?.author?.name}</span>
-                              <span className="text-[10px] font-mono text-white/20">{c.commit?.author?.date?.slice(0, 10)}</span>
-                              <span className="text-[9px] font-mono text-white/10">{c.sha?.slice(0, 7)}</span>
+                              <span className="text-xs font-mono text-white/20">{c.commit?.author?.name}</span>
+                              <span className="text-xs font-mono text-white/20">{c.commit?.author?.date?.slice(0, 10)}</span>
+                              <span className="text-[11px] font-mono text-white/10">{c.sha?.slice(0, 7)}</span>
                             </div>
                           </div>
                         </a>

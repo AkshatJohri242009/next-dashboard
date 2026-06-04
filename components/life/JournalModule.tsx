@@ -91,7 +91,7 @@ export function JournalModule() {
       <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
         <div className="flex items-center gap-2.5">
           <PenSquare className="w-4 h-4 text-accent" />
-          <h3 className="section-title text-sm">Journal</h3>
+          <h3 className="section-heading">Journal</h3>
         </div>
         {!todayEntry && (
           <button onClick={() => setShowEditor(!showEditor)}
@@ -149,7 +149,7 @@ export function JournalModule() {
               {tags.length > 0 && (
                 <div className="flex flex-wrap gap-1.5">
                   {tags.map(t => (
-                    <span key={t} className="px-2 py-0.5 rounded-full bg-white/5 text-[10px] text-white/50">
+                    <span key={t} className="px-2 py-0.5 rounded-full bg-white/5 text-xs text-white/50">
                       #{t}
                       <button onClick={() => setTags(tags.filter(x => x !== t))} className="ml-1 text-white/20 hover:text-white/50">&times;</button>
                     </span>
@@ -167,12 +167,12 @@ export function JournalModule() {
             <span className="text-sm">{moodEmoji(todayEntry.mood)}</span>
             <span className="text-xs text-white/40">{new Date(todayEntry.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
             <div className="flex-1" />
-            <span className="text-[10px] text-white/30">Today</span>
+            <span className="text-xs text-white/30">Today</span>
           </div>
           <p className="text-sm text-white/70 leading-relaxed">{todayEntry.content}</p>
           {todayEntry.tags.length > 0 && (
             <div className="flex flex-wrap gap-1 mt-2">
-              {todayEntry.tags.map(t => <span key={t} className="px-1.5 py-0.5 rounded bg-white/5 text-[10px] text-white/30">#{t}</span>)}
+              {todayEntry.tags.map(t => <span key={t} className="px-1.5 py-0.5 rounded bg-white/5 text-xs text-white/30">#{t}</span>)}
             </div>
           )}
         </div>
@@ -190,7 +190,7 @@ export function JournalModule() {
             <span className="text-base mt-0.5">{moodEmoji(entry.mood)}</span>
             <div className="flex-1 min-w-0">
               <p className="text-xs text-white/70 line-clamp-2 leading-relaxed">{entry.content}</p>
-              <span className="text-[10px] text-white/30 mt-1 block">
+              <span className="text-xs text-white/30 mt-1 block">
                 {new Date(entry.createdAt).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
               </span>
             </div>

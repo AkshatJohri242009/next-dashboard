@@ -1,94 +1,38 @@
-"use client"
-
-import { useEffect, useRef } from "react"
-import { Sidebar } from "@/components/layout/Sidebar"
-import { TopNav } from "@/components/layout/TopNav"
-import { CommandPalette } from "@/components/layout/CommandPalette"
-import { AIPanel } from "@/components/layout/AIPanel"
-import { SwipeHandler } from "@/components/layout/SwipeHandler"
-import { ScrollToTop } from "@/components/layout/ScrollToTop"
-import { VoiceButton } from "@/components/jarvis/VoiceButton"
-import { JarvisPresence } from "@/components/jarvis/JarvisPresence"
-import { useStore } from "@/lib/store"
-import { autoExtractMemories } from "@/lib/memory-engine"
-import { useMediaQuery } from "@/lib/use-media-query"
+import type { Metadata, Viewport } from "next"
+import ClientLayout from "./ClientLayout"
 import "./globals.css"
 
+export const metadata: Metadata = {
+  title: {
+    default: "LifeOS",
+    template: "%s — LifeOS",
+  },
+  description: "Your AI-powered Personal Operating System",
+  manifest: "/manifest.json",
+  icons: {
+    icon: "/app-icon.jpg",
+    apple: "/app-icon.jpg",
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+  },
+}
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: "#050506",
+}
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const { sidebarOpen, loadGoals, loadHealth, loadGym, loadSleepLog, loadReminders, loadTrackedProjects, loadStudyData, loadStocks, fetchStockQuotes, stockHoldings, syncWithSupabase, theme, pushToTomorrow } = useStore()
-  const isMobile = useMediaQuery("(max-width: 1023px)")
-  const lastDateRef = useRef(new Date().toISOString().slice(0, 10))
-
-  useEffect(() => {
-    loadGoals()
-    loadHealth()
-    loadGym()
-    loadSleepLog()
-    loadReminders()
-    loadStudyData()
-    loadStocks()
-    fetchStockQuotes()
-    syncWithSupabase()
-    autoExtractMemories()
-    document.title = "LifeOS"
-    const root = document.documentElement
-    root.style.setProperty("--brand", theme.brandColor)
-    root.style.setProperty("--brand-500", theme.brandColor)
-    root.style.setProperty("--accent", theme.accentColor)
-    root.style.setProperty("--accent-500", theme.accentColor)
-    root.classList.toggle("light", theme.mode === "light")
-    const syncInterval = setInterval(() => {
-      syncWithSupabase()
-      loadGoals()
-      loadHealth()
-      loadGym()
-      loadSleepLog()
-      loadReminders()
-      loadTrackedProjects()
-      loadStudyData()
-      loadStocks()
-      fetchStockQuotes()
-      const today = new Date().toISOString().slice(0, 10)
-      if (today !== lastDateRef.current) {
-        lastDateRef.current = today
-        pushToTomorrow()
-      }
-    }, 30000)
-    return () => clearInterval(syncInterval)
-  }, [loadGoals, loadHealth, loadGym, loadSleepLog, loadReminders, loadTrackedProjects, loadStudyData, loadStocks, fetchStockQuotes, syncWithSupabase, theme, pushToTomorrow])
-
   return (
     <html lang="en">
-      <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
-        <link rel="manifest" href="/manifest.json" />
-        <link rel="icon" type="image/jpeg" href="/app-icon.jpg" />
-        <link rel="apple-touch-icon" href="/app-icon.jpg" />
-        <meta name="theme-color" content="#050506" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-      </head>
       <body>
-        <Sidebar />
-        <CommandPalette />
-        <AIPanel />
-        <SwipeHandler />
-        <ScrollToTop />
-        <VoiceButton />
-        <JarvisPresence />
-
-        <div
-          style={{
-            marginLeft: isMobile ? 0 : (sidebarOpen ? 240 : 72),
-            transition: "margin-left 0.3s cubic-bezier(0.22, 1, 0.36, 1)",
-          }}
-          className="min-h-screen"
-        >
-          <TopNav />
-          <main className="p-4 md:p-6 lg:p-8 pb-[env(safe-area-inset-bottom)] max-w-7xl mx-auto">
-            {children}
-          </main>
-        </div>
+        <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
   )

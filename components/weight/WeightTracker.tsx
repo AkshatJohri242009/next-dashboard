@@ -92,7 +92,7 @@ export function WeightTracker() {
           <span className="text-xs text-white/40">{entries.length} entries</span>
         </div>
         <div>
-          <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase">Streak</span>
+          <span className="section-label">Streak</span>
           <div className="mt-1 flex items-baseline gap-1">
             <Flame className="w-4 h-4 text-brand-400 inline" />
             <span className="text-[28px] sm:text-[32px] font-bold tabular-nums">{streak}</span>
@@ -102,14 +102,14 @@ export function WeightTracker() {
         {entries.length >= 7 && (
           <>
             <div>
-              <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase">7-day Avg</span>
+              <span className="section-label">7-day Avg</span>
               <div className="mt-1">
                 <span className="text-[28px] font-bold tabular-nums">{weekAvg.toFixed(1)}</span>
                 <span className="text-xs text-white/30 ml-1">kg</span>
               </div>
             </div>
             <div>
-              <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase">7-day Trend</span>
+              <span className="section-label">7-day Trend</span>
               <div className="mt-1">
                 <span className={`text-[28px] font-bold tabular-nums ${weekDelta > 0 ? "text-red-400" : weekDelta < 0 ? "text-brand-400" : "text-white/60"}`}>
                   {weekDelta > 0 ? "+" : ""}{weekDelta.toFixed(1)}
@@ -123,14 +123,14 @@ export function WeightTracker() {
 
       <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 items-end">
         <label className="flex flex-col gap-1">
-          <span className="text-[10px] font-mono font-extrabold tracking-wider text-white/30 uppercase">Weight (kg)</span>
+          <span className="text-xs font-mono font-extrabold tracking-wider text-white/30 uppercase">Weight (kg)</span>
           <input type="number" min={20} max={300} step={0.1} value={weight}
             onChange={e => setWeight(e.target.value)}
             onKeyDown={e => { if (e.key === "Enter") add() }}
             className="h-10 w-full sm:w-24 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white outline-none focus:border-white/20 transition-colors" />
         </label>
         <label className="flex flex-col gap-1">
-          <span className="text-[10px] font-mono font-extrabold tracking-wider text-white/30 uppercase">Note</span>
+          <span className="text-xs font-mono font-extrabold tracking-wider text-white/30 uppercase">Note</span>
           <input value={note} onChange={e => setNote(e.target.value)}
             onKeyDown={e => { if (e.key === "Enter") add() }}
             placeholder="Optional..."

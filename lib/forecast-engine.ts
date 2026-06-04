@@ -1,3 +1,4 @@
+import type { GymState, Habit, JournalEntry } from "./types"
 import { loadJSON } from "./utils"
 
 export interface Forecast {
@@ -14,8 +15,8 @@ export function generateForecast(): Forecast {
 
   // Habits projection
   const rawHabits = loadJSON("lifeos_habits")
-  const habits: any[] = Array.isArray(rawHabits) ? rawHabits : []
-  const habitProjections = habits.map((h: any) => {
+  const habits: Habit[] = Array.isArray(rawHabits) ? rawHabits : []
+  const habitProjections = habits.map(h => {
     const logs: string[] = h.logs || []
     const recent14 = logs.filter((d: string) => new Date(d).getTime() > now - 14 * day).length
     const projected7Day = Math.min(7, Math.round((recent14 / 14) * 7))
@@ -25,11 +26,11 @@ export function generateForecast(): Forecast {
 
   // Sleep trend
   const sleepLog = loadJSON("sleep_log") || {}
-  const sleepEntries: any[] = Object.entries(sleepLog)
+  const sleepEntries = Object.entries(sleepLog)
     .filter(([k]) => k.startsWith("20"))
-    .map(([_, v]: [string, any]) => v)
-  const recentSleep = sleepEntries.filter((e: any) => e.date && new Date(e.date).getTime() > now - 14 * day)
-  const sleepHours = recentSleep.map((e: any) => parseFloat(e.hours) || 0)
+    .map(([_, v]) => v as { date: string; hours: string })
+  const recentSleep = sleepEntries.filter(e => e.date && new Date(e.date).getTime() > now - 14 * day)
+  const sleepHours = recentSleep.map(e => parseFloat(e.hours) || 0)
   const avgHours = sleepHours.length > 0 ? Math.round((sleepHours.reduce((a: number, b: number) => a + b, 0) / sleepHours.length) * 10) / 10 : 0
   const firstWeek = sleepHours.slice(0, 7)
   const secondWeek = sleepHours.slice(7)
@@ -38,24 +39,24 @@ export function generateForecast(): Forecast {
   const sleepDirection = secondAvg > firstAvg ? "improving" as const : secondAvg < firstAvg ? "declining" as const : "stable" as const
 
   // Gym trend
-  const gymData = loadJSON("gym_dashboard_v1")
-  const gymLogs: any[] = gymData?.logs || []
-  const recentGym = gymLogs.filter((l: any) => l.date && new Date(l.date).getTime() > now - 28 * day)
+  const gymData: GymState | null = loadJSON("gym_dashboard_v1")
+  const gymLogs = gymData?.logs || []
+  const recentGym = gymLogs.filter((l: GymState["logs"][0]) => l.at > now - 28 * day)
   const weeklyAvg = recentGym.length > 0 ? Math.round((recentGym.length / 4) * 10) / 10 : 0
-  const gymFirstHalf = recentGym.filter((l: any) => new Date(l.date).getTime() > now - 28 * day && new Date(l.date).getTime() <= now - 14 * day).length
-  const gymSecondHalf = recentGym.filter((l: any) => new Date(l.date).getTime() > now - 14 * day).length
+  const gymFirstHalf = recentGym.filter(l => l.at > now - 28 * day && l.at <= now - 14 * day).length
+  const gymSecondHalf = recentGym.filter(l => l.at > now - 14 * day).length
   const gymDirection = gymSecondHalf > gymFirstHalf ? "improving" as const : gymSecondHalf < gymFirstHalf ? "declining" as const : "stable" as const
 
   // Mood trend
   const journal = loadJSON("lifeos_journal") || []
-  const entries: any[] = Array.isArray(journal) ? journal : []
-  const recentMoods = entries.filter((e: any) => e.createdAt > now - 14 * day)
-  const good = recentMoods.filter((e: any) => e.mood === "great" || e.mood === "good").length
-  const bad = recentMoods.filter((e: any) => e.mood === "bad" || e.mood === "awful").length
+  const entries: JournalEntry[] = Array.isArray(journal) ? journal : []
+  const recentMoods = entries.filter(e => e.createdAt > now - 14 * day)
+  const good = recentMoods.filter(e => e.mood === "great" || e.mood === "good").length
+  const bad = recentMoods.filter(e => e.mood === "bad" || e.mood === "awful").length
   const totalMoods = recentMoods.length
   const positivityRate = totalMoods > 0 ? Math.round((good / totalMoods) * 100) : 0
   const counts: Record<string, number> = {}
-  recentMoods.forEach((e: any) => { counts[e.mood] = (counts[e.mood] || 0) + 1 })
+  recentMoods.forEach(e => { counts[e.mood] = (counts[e.mood] || 0) + 1 })
   const dominant = Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0] || "okay"
 
   // Recommendations

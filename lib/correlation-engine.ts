@@ -29,6 +29,8 @@ interface DaySnapshot {
   studyTasks: number
 }
 
+import type { Goal, GymState, Habit, JournalEntry } from "./types"
+import type { StudyTask, StudyScore } from "./study-types"
 import { loadJSON } from "./utils"
 
 function getLastNDays(n: number): DaySnapshot[] {
@@ -39,33 +41,33 @@ function getLastNDays(n: number): DaySnapshot[] {
   for (let i = 0; i < n; i++) {
     const date = new Date(now - i * day).toISOString().slice(0, 10)
 
-    const goals = loadJSON(`goals:${date}`) || []
-    const done = goals.filter((g: any) => g.done).length
+    const goals: Goal[] = loadJSON(`goals:${date}`) || []
+    const done = goals.filter(g => g.done).length
 
     const sleepLog = loadJSON("sleep_log") || {}
-    const sleepEntry = Object.values(sleepLog as Record<string, any>).find((e: any) => e?.date === date)
-    const sleepHours = sleepEntry ? parseFloat((sleepEntry as any).hours) || null : null
+    const sleepEntry = Object.values(sleepLog as Record<string, { date: string; hours: string }>).find(e => e?.date === date)
+    const sleepHours = sleepEntry ? parseFloat(sleepEntry.hours) || null : null
 
     const gymData = loadJSON("gym_dashboard_v1")
-    const gymToday = gymData?.logs?.filter((l: any) => l.date === date).length > 0
+    const gymToday = gymData?.logs?.filter((l: { date: string }) => l.date === date).length > 0
 
     const journal = loadJSON("lifeos_journal") || []
-    const journalEntry = Array.isArray(journal) ? journal.find((e: any) => e.date?.startsWith(date)) : null
+    const journalEntry = Array.isArray(journal) ? journal.find((e: JournalEntry) => e.date?.startsWith(date)) : null
     const moodMap: Record<string, number> = { great: 5, good: 4, okay: 3, bad: 2, awful: 1 }
 
     const habits = loadJSON("lifeos_habits") || []
-    const habitDone = habits.filter((h: any) => h.logs?.includes(date)).length
+    const habitDone = habits.filter((h: Habit) => h.logs?.includes(date)).length
 
     const health = loadJSON("health_dashboard_v1")
     const waterMl = health?.waterMl || 0
 
     const study = loadJSON("study_tasks_v1") || []
-    const studyDone = Array.isArray(study) ? study.filter((t: any) => t.done).length : 0
+    const studyDone = Array.isArray(study) ? study.filter((t: StudyTask) => t.done).length : 0
     const studyTotal = Array.isArray(study) ? study.length : 0
 
     const studyScores = loadJSON("study_scores_v1") || []
-    const todayScores = Array.isArray(studyScores) ? studyScores.filter((s: any) => s.date === date) : []
-    const avgScore = todayScores.length > 0 ? todayScores.reduce((a: number, s: any) => a + (s.score || 0), 0) / todayScores.length : null
+    const todayScores = Array.isArray(studyScores) ? studyScores.filter((s: StudyScore) => s.date === date) : []
+    const avgScore = todayScores.length > 0 ? todayScores.reduce((a: number, s: StudyScore) => a + (s.score || 0), 0) / todayScores.length : null
 
     snapshots.push({
       date,
@@ -112,7 +114,7 @@ export function discoverCorrelations(): Correlation[] {
         direction: diff > 0 ? "positive" : "negative",
         sourceA: "Sleep",
         sourceB: "Mood",
-        valueA: avg(highSleep.map(d => d.sleep!)).toFixed(1) as any,
+        valueA: parseFloat(avg(highSleep.map(d => d.sleep!)).toFixed(1)),
         valueB: highMood,
         confidence: Math.min(100, Math.round((highSleep.length + lowSleep.length) / 30 * 100)),
         insight: diff > 0

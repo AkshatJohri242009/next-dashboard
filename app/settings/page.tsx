@@ -13,7 +13,7 @@ export default function SettingsPage() {
         </div>
         <div>
           <h1 className="text-xl font-bold text-gradient">Settings</h1>
-          <p className="text-sm text-white/40">JARVIS configuration & preferences</p>
+          <p className="text-sm text-text-tertiary">JARVIS configuration & preferences</p>
         </div>
       </div>
       <JarvisInsightBar />

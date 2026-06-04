@@ -65,9 +65,9 @@ export function NotificationPanel() {
         onClick={() => setNotificationPanel(!notificationPanelOpen)}
         className="relative h-9 w-9 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center hover:bg-white/[0.08] transition-colors"
       >
-        <Bell className="w-4 h-4 text-white/50" />
+        <Bell className="w-4 h-4 text-text-tertiary" />
         {badgeCount > 0 && (
-          <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-brand-400 text-[9px] font-bold text-black flex items-center justify-center shadow-[0_0_6px_rgba(107,227,164,0.6)]">
+          <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-brand-400 text-[11px] font-bold text-black flex items-center justify-center shadow-[0_0_6px_rgba(107,227,164,0.6)]">
             {badgeCount}
           </span>
         )}
@@ -79,7 +79,7 @@ export function NotificationPanel() {
           <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
             <div
               ref={panelRef}
-              className="pointer-events-auto w-[360px] max-w-[90vw] bg-[#0a0a0d] border border-white/[0.08] rounded-2xl shadow-2xl overflow-hidden"
+              className="pointer-events-auto w-[360px] max-w-[90vw] glass-strong rounded-2xl overflow-hidden"
             >
               <div className="flex items-center justify-between h-12 px-4 border-b border-white/[0.08]">
                 <span className="text-sm font-bold text-white">Notifications</span>

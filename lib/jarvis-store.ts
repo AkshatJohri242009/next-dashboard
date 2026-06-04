@@ -1,6 +1,7 @@
 "use client"
 
 import { create } from "zustand"
+import type { Goal, GymState, Habit, HealthState } from "./types"
 import type { JarvisSession, JarvisMessage, JarvisMemory, JarvisDocument, JarvisEndpoint, LLMProvider, JarvisUser } from "./jarvis-types"
 
 interface JarvisState {
@@ -37,7 +38,7 @@ interface JarvisState {
   endpoints: JarvisEndpoint[]
 
   // Actions
-  login: (username: string, password: string) => Promise<void>
+  login: (username: string, password: string, rememberMe?: boolean) => Promise<void>
   signup: (username: string, password: string) => Promise<void>
   logout: () => Promise<void>
   checkAuth: () => Promise<void>
@@ -92,11 +93,11 @@ export const useJarvisStore = create<JarvisState>((set, get) => ({
   providers: [],
   endpoints: [],
 
-  login: async (username, password) => {
+  login: async (username, password, rememberMe = false) => {
     const res = await fetch("/api/jarvis/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({ username, password, rememberMe }),
     })
     if (!res.ok) {
       const err = await res.json()
@@ -235,23 +236,23 @@ export const useJarvisStore = create<JarvisState>((set, get) => ({
         const today = new Date().toISOString().slice(0, 10)
         const hour = new Date().getHours()
         const timeOfDay = hour < 12 ? "morning" : hour < 17 ? "afternoon" : "evening"
-        const goals = JSON.parse(localStorage.getItem("goals:" + today) || "[]")
-        const health = JSON.parse(localStorage.getItem("health_dashboard_v1") || "{}")
-        const gym = JSON.parse(localStorage.getItem("gym_dashboard_v1") || "{}")
+        const goals: Goal[] = JSON.parse(localStorage.getItem("goals:" + today) || "[]")
+        const health: HealthState = JSON.parse(localStorage.getItem("health_dashboard_v1") || "{}")
+        const gym: GymState = JSON.parse(localStorage.getItem("gym_dashboard_v1") || "{}")
         const sleepHrs = JSON.parse(localStorage.getItem("last_sleep_hours") || "8")
-        const habits = JSON.parse(localStorage.getItem("lifeos_habits") || "[]")
+        const habits: Habit[] = JSON.parse(localStorage.getItem("lifeos_habits") || "[]")
         const tomorrow = new Date(Date.now() + 86400000).toISOString().slice(0, 10)
-        const tomorrowGoals = JSON.parse(localStorage.getItem("goals:" + tomorrow) || "[]")
+        const tomorrowGoals: Goal[] = JSON.parse(localStorage.getItem("goals:" + tomorrow) || "[]")
 
         lifeContext = [
           `Current time: ${timeOfDay}`,
-          `Goals today: ${goals.filter((g: any) => g.done).length}/${goals.length}`,
+          `Goals today: ${goals.filter((g: Goal) => g.done).length}/${goals.length}`,
           `Water: ${Math.round((health.waterMl || 0) / 2000 * 100)}% of target`,
-          `Gym sessions this week: ${new Set((gym.logs || []).filter((l: any) => new Date(l.at).getTime() > Date.now() - 604800000).map((l: any) => new Date(l.at).toISOString().slice(0, 10))).size}`,
+          `Gym sessions this week: ${new Set((gym.logs || []).filter((l: GymState["logs"][0]) => new Date(l.at).getTime() > Date.now() - 604800000).map((l: GymState["logs"][0]) => new Date(l.at).toISOString().slice(0, 10))).size}`,
           `Sleep: ${typeof sleepHrs === "number" ? sleepHrs : 8}h average`,
-          `Habits done today: ${habits.filter((h: any) => h.logs?.includes(today)).length}/${habits.length}`,
-          `Habits longest streak: ${Math.max(0, ...habits.map((h: any) => h.streak || 0))}d`,
-          tomorrowGoals.length > 0 ? `Goals for tomorrow: ${tomorrowGoals.filter((g: any) => !g.done).length}` : "",
+          `Habits done today: ${habits.filter((h: Habit) => h.logs?.includes(today)).length}/${habits.length}`,
+          `Habits longest streak: ${Math.max(0, ...habits.map((h: Habit) => h.streak || 0))}d`,
+          tomorrowGoals.length > 0 ? `Goals for tomorrow: ${tomorrowGoals.filter((g: Goal) => !g.done).length}` : "",
         ].filter(Boolean).join("\n")
       } catch {}
     }
@@ -338,9 +339,9 @@ export const useJarvisStore = create<JarvisState>((set, get) => ({
         }
         set((s) => ({ messages: [...s.messages, assistantMsg], streamingText: "" }))
       }
-    } catch (err: any) {
-      if (err.name !== "AbortError") {
-        set({ error: err.message, chatLoading: false })
+      } catch (err) {
+      if ((err as Error).name !== "AbortError") {
+        set({ error: (err as Error).message, chatLoading: false })
       }
     }
     set({ chatLoading: false })

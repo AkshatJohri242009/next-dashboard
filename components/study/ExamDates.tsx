@@ -71,7 +71,7 @@ export function ExamDates() {
   return (
     <div className="glass rounded-2xl p-4 sm:p-6 space-y-4">
       <div className="flex items-center justify-between">
-        <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase">
+        <span className="section-label">
           Exam Dates
         </span>
       </div>
@@ -80,19 +80,19 @@ export function ExamDates() {
         <div className="glass rounded-xl p-3 text-center space-y-1">
           <Calendar className="w-4 h-4 text-brand-400 mx-auto" />
           <span className="block text-lg font-extrabold tabular-nums text-white/80">{total}</span>
-          <span className="text-[10px] font-mono text-white/30">Exams</span>
+          <span className="text-xs font-mono text-white/30">Exams</span>
         </div>
         <div className="glass rounded-xl p-3 text-center space-y-1">
           <Clock className="w-4 h-4 text-amber-400 mx-auto" />
           <span className="block text-lg font-extrabold tabular-nums text-white/80">{soon}</span>
-          <span className="text-[10px] font-mono text-white/30">Within 7d</span>
+          <span className="text-xs font-mono text-white/30">Within 7d</span>
         </div>
         <div className="glass rounded-xl p-3 text-center space-y-1">
           <AlertTriangle className="w-4 h-4 text-red-400 mx-auto" />
           <span className="block text-lg font-extrabold tabular-nums text-white/80">
             {nearest ? `${nearest.daysUntil}d` : "--"}
           </span>
-          <span className="text-[10px] font-mono text-white/30">Nearest</span>
+          <span className="text-xs font-mono text-white/30">Nearest</span>
         </div>
       </div>
 

@@ -84,11 +84,11 @@ export function StockList() {
     <div className="space-y-4">
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         <div className="glass rounded-xl px-4 py-3">
-          <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase">Holdings</span>
+          <span className="section-label">Holdings</span>
           <p className="text-xl font-bold text-white/90 mt-1">{stockHoldings.length}</p>
         </div>
         <div className="glass rounded-xl px-4 py-3">
-          <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase">Value</span>
+          <span className="section-label">Value</span>
           <p className="text-xl font-bold text-white/90 mt-1">
             {stockHoldings.length > 0
               ? `${currencySymbol(stockQuotes[stockHoldings[0].symbol]?.currency)}${totalValue.toFixed(2)}`
@@ -96,7 +96,7 @@ export function StockList() {
           </p>
         </div>
         <div className="glass rounded-xl px-4 py-3">
-          <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase">Return</span>
+          <span className="section-label">Return</span>
           <p className={`text-xl font-bold mt-1 ${totalReturn >= 0 ? "text-brand-400" : "text-red-400"}`}>
             {totalReturn >= 0 ? "+" : ""}{totalReturn.toFixed(1)}%
           </p>
@@ -140,7 +140,7 @@ export function StockList() {
                   >
                     <span className="text-sm font-bold text-white/80">{r.symbol}</span>
                     <span className="text-[11px] text-white/30 flex-1 truncate">{r.name}</span>
-                    <span className="text-[10px] text-white/20 font-mono">{r.exchange}</span>
+                    <span className="text-xs text-white/20 font-mono">{r.exchange}</span>
                   </motion.button>
                 ))}
               </motion.div>
@@ -223,7 +223,7 @@ export function StockList() {
                     {q ? `${currencySymbol(q.currency)}${q.price.toFixed(2)}` : "—"}
                   </span>
                   {q && (
-                    <span className={`text-[10px] sm:text-[11px] font-mono flex items-center gap-0.5 justify-end ${
+                    <span className={`text-xs sm:text-[11px] font-mono flex items-center gap-0.5 justify-end ${
                       q.change >= 0 ? "text-brand-400" : "text-red-400"
                     }`}>
                       {q.change >= 0 ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}

@@ -58,7 +58,7 @@ export async function getUserByUsername(username: string): Promise<(JarvisUser &
   if (jarvisDb) {
     try {
       const { data } = await jarvisDb.from("jarvis_users").select("*").eq("username", username).maybeSingle()
-      if (data) return data as any
+      if (data) return data as unknown as JarvisUser & { password_hash: string }
     } catch (e) {
       console.error("[jarvis-db] getUserByUsername supabase error:", e)
     }
@@ -124,25 +124,38 @@ export async function getFirstUser(): Promise<JarvisUser | null> {
 // Sessions
 // ============================
 export async function listSessions(userId: string): Promise<JarvisSession[]> {
-  if (!jarvisDb) return []
-  const { data } = await jarvisDb.from("jarvis_sessions")
-    .select("*")
-    .eq("user_id", userId)
-    .eq("is_archived", false)
-    .order("last_accessed_at", { ascending: false })
-  return (data as JarvisSession[]) || []
+  if (jarvisDb) {
+    try {
+      const { data } = await jarvisDb.from("jarvis_sessions")
+        .select("*")
+        .eq("user_id", userId)
+        .eq("is_archived", false)
+        .order("last_accessed_at", { ascending: false })
+      if (data) return data as JarvisSession[]
+    } catch (e) {
+      console.error("[jarvis-db] listSessions supabase error:", e)
+    }
+  }
+  return Array.from(localStore.sessions.values()).filter(s => s.user_id === userId && !s.is_archived) as JarvisSession[]
 }
 
 export async function getSession(id: string): Promise<JarvisSession | null> {
-  if (!jarvisDb) return null
-  const { data } = await jarvisDb.from("jarvis_sessions").select("*").eq("id", id).maybeSingle()
-  return data as JarvisSession | null
+  if (jarvisDb) {
+    try {
+      const { data } = await jarvisDb.from("jarvis_sessions").select("*").eq("id", id).maybeSingle()
+      if (data) return data as JarvisSession | null
+    } catch (e) {
+      console.error("[jarvis-db] getSession supabase error:", e)
+    }
+  }
+  const session = localStore.sessions.get(id)
+  return session ? ({ ...session } as JarvisSession) : null
 }
 
 export async function createSession(userId: string, opts?: Partial<JarvisSession>): Promise<JarvisSession> {
-  const session: Record<string, any> = {
-    id: generateId(),
-    user_id: userId,
+  const now = new Date().toISOString()
+  const session = {
+    id: opts?.id || generateId(),
     name: opts?.name || "New Chat",
     model: opts?.model || "gpt-4o",
     endpoint_url: opts?.endpoint_url || "https://api.openai.com/v1",
@@ -153,59 +166,114 @@ export async function createSession(userId: string, opts?: Partial<JarvisSession
     message_count: 0,
     total_input_tokens: 0,
     total_output_tokens: 0,
+    created_at: now,
+    updated_at: now,
+    last_accessed_at: now,
   }
   if (jarvisDb) {
-    const { data } = await jarvisDb.from("jarvis_sessions").insert(session).select().single()
-    return ((data as any) || session) as JarvisSession
+    try {
+      const { data } = await jarvisDb.from("jarvis_sessions").insert({ ...session, user_id: userId }).select().single()
+      if (data) return data as unknown as JarvisSession
+    } catch (e) {
+      console.error("[jarvis-db] createSession supabase error:", e)
+    }
   }
-  return session as unknown as JarvisSession
+  const fullSession = { ...session, user_id: userId } as JarvisSession
+  localStore.sessions.set(fullSession.id, fullSession as any)
+  return fullSession
 }
 
 export async function updateSession(id: string, updates: Partial<JarvisSession>): Promise<void> {
-  if (!jarvisDb) return
-  await jarvisDb.from("jarvis_sessions").update({ ...updates, updated_at: new Date().toISOString() }).eq("id", id)
+  if (jarvisDb) {
+    try {
+      await jarvisDb.from("jarvis_sessions").update({ ...updates, updated_at: new Date().toISOString() }).eq("id", id)
+      return
+    } catch (e) {
+      console.error("[jarvis-db] updateSession supabase error:", e)
+    }
+  }
+  const existing = localStore.sessions.get(id)
+  if (existing) {
+    localStore.sessions.set(id, { ...existing, ...updates, updated_at: new Date().toISOString() })
+  }
 }
 
 export async function deleteSession(id: string): Promise<void> {
-  if (!jarvisDb) return
-  await jarvisDb.from("jarvis_sessions").delete().eq("id", id)
+  if (jarvisDb) {
+    try {
+      await jarvisDb.from("jarvis_sessions").delete().eq("id", id)
+      return
+    } catch (e) {
+      console.error("[jarvis-db] deleteSession supabase error:", e)
+    }
+  }
+  localStore.sessions.delete(id)
+  localStore.messages.delete(id)
 }
 
 // ============================
 // Messages
 // ============================
 export async function listMessages(sessionId: string): Promise<JarvisMessage[]> {
-  if (!jarvisDb) return []
-  const { data } = await jarvisDb.from("jarvis_messages")
-    .select("*")
-    .eq("session_id", sessionId)
-    .order("created_at", { ascending: true })
-  return (data as JarvisMessage[]) || []
+  if (jarvisDb) {
+    try {
+      const { data } = await jarvisDb.from("jarvis_messages")
+        .select("*")
+        .eq("session_id", sessionId)
+        .order("created_at", { ascending: true })
+      if (data) return data as JarvisMessage[]
+    } catch (e) {
+      console.error("[jarvis-db] listMessages supabase error:", e)
+    }
+  }
+  return localStore.messages.get(sessionId) || []
 }
 
 export async function addMessage(msg: Partial<JarvisMessage>): Promise<JarvisMessage> {
+  const now = new Date().toISOString()
   const message = {
     id: msg.id || generateId(),
     session_id: msg.session_id!,
     role: msg.role!,
     content: msg.content!,
     metadata: msg.metadata || {},
-    created_at: new Date().toISOString(),
-  }
+    created_at: now,
+  } as JarvisMessage
   if (jarvisDb) {
-    await jarvisDb.from("jarvis_messages").insert(message)
+    try {
+      await jarvisDb.from("jarvis_messages").insert(message)
+    } catch (e) {
+      console.error("[jarvis-db] addMessage supabase error:", e)
+    }
   }
-  return message as JarvisMessage
+  const existing = localStore.messages.get(message.session_id) || []
+  existing.push(message)
+  localStore.messages.set(message.session_id, existing)
+  return message
 }
 
 export async function updateMessageSessionCount(sessionId: string): Promise<void> {
-  if (!jarvisDb) return
-  const { count } = await jarvisDb.from("jarvis_messages")
-    .select("*", { count: "exact", head: true })
-    .eq("session_id", sessionId)
-  await jarvisDb.from("jarvis_sessions")
-    .update({ message_count: count || 0, updated_at: new Date().toISOString() })
-    .eq("id", sessionId)
+  let count = 0
+  if (jarvisDb) {
+    try {
+      const result = await jarvisDb.from("jarvis_messages")
+        .select("*", { count: "exact", head: true })
+        .eq("session_id", sessionId)
+      if (result.count !== null) count = result.count
+      await jarvisDb.from("jarvis_sessions")
+        .update({ message_count: count || 0, updated_at: new Date().toISOString() })
+        .eq("id", sessionId)
+      return
+    } catch (e) {
+      console.error("[jarvis-db] updateMessageSessionCount supabase error:", e)
+    }
+  }
+  const msgs = localStore.messages.get(sessionId)
+  count = msgs?.length || 0
+  const existing = localStore.sessions.get(sessionId)
+  if (existing) {
+    localStore.sessions.set(sessionId, { ...existing, message_count: count, updated_at: new Date().toISOString() })
+  }
 }
 
 // ============================
@@ -235,7 +303,7 @@ export async function addMemory(userId: string, text: string, category = "fact",
   }
   if (jarvisDb) {
     const { data } = await jarvisDb.from("jarvis_memories").insert(memory).select().single()
-    return (data as any) as JarvisMemory
+    return data as unknown as JarvisMemory
   }
   return memory as unknown as JarvisMemory
 }
@@ -271,7 +339,7 @@ export async function getDocument(id: string): Promise<JarvisDocument | null> {
 
 export async function createDocument(userId: string, title: string, content = "", language?: string): Promise<JarvisDocument> {
   const now = new Date().toISOString()
-  const doc: Record<string, any> = {
+  const doc = {
     id: generateId(),
     user_id: userId,
     title,
@@ -286,7 +354,7 @@ export async function createDocument(userId: string, title: string, content = ""
   }
   if (jarvisDb) {
     const { data } = await jarvisDb.from("jarvis_documents").insert(doc).select().single()
-    return (data as any) as JarvisDocument
+    return data as unknown as JarvisDocument
   }
   return doc as unknown as JarvisDocument
 }
@@ -311,10 +379,10 @@ export async function listEndpoints(userId: string): Promise<JarvisEndpoint[]> {
 }
 
 export async function createEndpoint(userId: string, endpoint: Partial<JarvisEndpoint>): Promise<JarvisEndpoint> {
-  const ep: Record<string, any> = { ...endpoint, user_id: userId }
+  const ep = { ...endpoint, user_id: userId } as const
   if (jarvisDb) {
-    const { data } = await jarvisDb.from("jarvis_endpoints").insert(ep).select().single()
-    return (data as any) as JarvisEndpoint
+    const { data } = await jarvisDb.from("jarvis_endpoints").insert(ep as any).select().single()
+    return data as unknown as JarvisEndpoint
   }
   return ep as unknown as JarvisEndpoint
 }

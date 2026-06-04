@@ -40,7 +40,7 @@ export default function GymPage() {
         <GlassPanel variant="strong" glow="accent">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-1 h-4 rounded-full bg-accent-400" />
-            <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase">Workout Log</span>
+            <span className="section-label">Workout Log</span>
           </div>
           <WorkoutLog />
         </GlassPanel>
@@ -48,9 +48,8 @@ export default function GymPage() {
 
       <motion.div variants={item}>
         <GlassPanel variant="strong" glow="green">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-1 h-4 rounded-full bg-brand-400" />
-            <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase">Consistency Calendar</span>
+          <div className="section-bar">
+            <span className="section-label">Consistency Calendar</span>
           </div>
           <GymCalendar />
         </GlassPanel>
@@ -58,9 +57,8 @@ export default function GymPage() {
 
       <motion.div variants={item}>
         <GlassPanel variant="strong" glow="green">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-1 h-4 rounded-full bg-brand-400" />
-            <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase">Strength Trends</span>
+          <div className="section-bar">
+            <span className="section-label">Strength Trends</span>
           </div>
           <StrengthChart />
         </GlassPanel>
@@ -68,9 +66,8 @@ export default function GymPage() {
 
       <motion.div variants={item}>
         <GlassPanel variant="strong">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-1 h-4 rounded-full bg-white/30" />
-            <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase">Progress Photos</span>
+          <div className="section-bar">
+            <span className="section-label">Progress Photos</span>
           </div>
           <ProgressPhotos />
         </GlassPanel>

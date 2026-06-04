@@ -7,8 +7,8 @@ export default function StudySoundsPage() {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
       <div>
-        <h1 className="text-lg font-bold text-white">Focus Sounds</h1>
-        <p className="text-sm text-white/40 mt-1">Ambient noise generated in your browser</p>
+        <h1 className="text-xl font-bold text-primary">Focus Sounds</h1>
+        <p className="text-sm text-text-tertiary mt-1">Ambient noise generated in your browser</p>
       </div>
 
       <div className="max-w-md">

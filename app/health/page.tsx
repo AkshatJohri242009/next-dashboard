@@ -36,9 +36,8 @@ export default function HealthPage() {
 
       <motion.div variants={item}>
         <GlassPanel variant="strong" glow="green">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-1 h-4 rounded-full bg-brand-400" />
-            <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase">Supplement Windows</span>
+          <div className="section-bar">
+            <span className="section-label">Supplement Windows</span>
           </div>
           <SupplementScheduler />
         </GlassPanel>
@@ -47,8 +46,8 @@ export default function HealthPage() {
       <motion.div variants={item}>
         <GlassPanel variant="strong" glow="accent">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-1 h-4 rounded-full bg-accent-400" />
-            <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase">Fluid Intake Calculator</span>
+            <div className="w-1 h-4 rounded-full bg-accent-400 shrink-0" />
+            <span className="section-label">Fluid Intake Calculator</span>
           </div>
           <WaterTracker />
         </GlassPanel>

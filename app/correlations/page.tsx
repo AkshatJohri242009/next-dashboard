@@ -14,7 +14,7 @@ export default function CorrelationsPage() {
         </div>
         <div>
           <h1 className="text-xl font-bold text-gradient">Correlation Engine</h1>
-          <p className="text-sm text-white/40">Discover patterns that connect your sleep, gym, mood, and productivity</p>
+          <p className="text-sm text-text-tertiary">Discover patterns that connect your sleep, gym, mood, and productivity</p>
         </div>
       </div>
       <JarvisInsightBar />

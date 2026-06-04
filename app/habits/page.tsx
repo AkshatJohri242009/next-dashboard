@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import type { Habit } from "@/lib/types"
 import { motion } from "framer-motion"
 import { HabitsModule } from "@/components/home/HabitsModule"
 import { JarvisInsightBar } from "@/components/life/JarvisInsightBar"
@@ -21,12 +22,12 @@ export default function HabitsPage() {
 
   useEffect(() => {
     try {
-      const habits = JSON.parse(localStorage.getItem("lifeos_habits") || "[]")
+      const habits: Habit[] = JSON.parse(localStorage.getItem("lifeos_habits") || "[]")
       const today = new Date().toISOString().slice(0, 10)
       const total = habits.length
-      const todayDone = habits.filter((h: any) => h.logs?.includes(today)).length
-      const activeStreaks = habits.filter((h: any) => (h.streak || 0) >= 3).length
-      const bestStreak = Math.max(0, ...habits.map((h: any) => h.streak || 0))
+      const todayDone = habits.filter(h => h.logs?.includes(today)).length
+      const activeStreaks = habits.filter(h => (h.streak || 0) >= 3).length
+      const bestStreak = Math.max(0, ...habits.map(h => h.streak || 0))
       setStats({ total, activeStreaks, bestStreak, todayDone })
     } catch {}
   }, [])
@@ -35,31 +36,32 @@ export default function HabitsPage() {
     <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
       <div>
         <h1 className="page-title">Habits</h1>
-        <p className="text-sm text-white/40 mt-1">Daily habit tracking with streaks and category management.</p>
+        <p className="text-sm text-text-tertiary mt-1">Daily habit tracking with streaks and category management.</p>
       </div>
 
       <JarvisInsightBar />
 
-      <motion.div variants={item} className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="card-elevated p-4 text-center">
-          <Flame className="w-4 h-4 text-orange-400 mx-auto mb-1" />
-          <p className="metric-value text-orange-400">{stats.todayDone}/{stats.total}</p>
-          <p className="metric-label">Today</p>
+      <motion.div variants={item} className="flex flex-col sm:flex-row gap-3">
+        <div className="flex-1 sm:flex-[2] card-elevated p-4 sm:p-5 flex items-center gap-4">
+          <div className="w-14 h-14 rounded-full bg-orange-400/15 flex items-center justify-center flex-shrink-0">
+            <Flame className="w-6 h-6 text-orange-400" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-text-primary">Today&apos;s Progress</p>
+            <p className="text-xs text-text-tertiary mt-0.5">{stats.todayDone} of {stats.total} habits done today</p>
+          </div>
         </div>
-        <div className="card-elevated p-4 text-center">
-          <Zap className="w-4 h-4 text-brand mx-auto mb-1" />
-          <p className="metric-value text-brand">{stats.activeStreaks}</p>
-          <p className="metric-label">Active Streaks</p>
+        <div className="card-elevated p-3 text-center min-w-[80px]">
+          <p className="metric-value text-text-primary">{stats.total}</p>
+          <p className="metric-label">Total</p>
         </div>
-        <div className="card-elevated p-4 text-center">
-          <Target className="w-4 h-4 text-accent mx-auto mb-1" />
+        <div className="card-elevated p-3 text-center min-w-[80px]">
+          <p className="metric-value text-semantic-warning">{stats.activeStreaks}</p>
+          <p className="metric-label">Streaks</p>
+        </div>
+        <div className="card-elevated p-3 text-center min-w-[80px]">
           <p className="metric-value text-accent">{stats.bestStreak}d</p>
-          <p className="metric-label">Best Streak</p>
-        </div>
-        <div className="card-elevated p-4 text-center">
-          <TrendingUp className="w-4 h-4 text-success mx-auto mb-1" />
-          <p className="metric-value text-success">{stats.total > 0 ? Math.round((stats.activeStreaks / stats.total) * 100) : 0}%</p>
-          <p className="metric-label">Consistency</p>
+          <p className="metric-label">Best</p>
         </div>
       </motion.div>
 

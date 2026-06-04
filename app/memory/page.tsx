@@ -14,7 +14,7 @@ export default function MemoryPage() {
         </div>
         <div>
           <h1 className="text-xl font-bold text-gradient">Life Memory Engine</h1>
-          <p className="text-sm text-white/40">Your persistent life history — every goal, decision, and insight</p>
+          <p className="text-sm text-text-tertiary">Your persistent life history — every goal, decision, and insight</p>
         </div>
       </div>
       <JarvisInsightBar />

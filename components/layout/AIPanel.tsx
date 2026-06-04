@@ -61,21 +61,21 @@ export function AIPanel() {
         >
           <div className="flex items-center justify-between h-14 px-4 border-b border-white/[0.06] shrink-0">
             <div className="flex items-center gap-2">
-              <div className={`w-6 h-6 rounded-lg flex items-center justify-center ${jarvisMode ? "bg-[#e06c75]/20" : "bg-gradient-to-br from-brand-400 to-accent-500"}`}>
-                {jarvisMode ? <Bot className="w-3.5 h-3.5 text-[#e06c75]" /> : <Sparkles className="w-3.5 h-3.5 text-white" />}
+              <div className={`w-6 h-6 rounded-lg flex items-center justify-center ${jarvisMode ? "bg-[#e06c75]/20" : "bg-brand/20"}`}>
+                {jarvisMode ? <Bot className="w-3.5 h-3.5 text-[#e06c75]" /> : <Sparkles className="w-3.5 h-3.5 text-brand" />}
               </div>
               <span className="text-sm font-bold text-gradient">{jarvisMode ? "J.A.R.V.I.S" : "AI Assistant"}</span>
             </div>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setJarvisMode(!jarvisMode)}
-                className={`h-7 px-2 rounded-lg text-[10px] font-mono font-bold border transition-colors ${
-                  jarvisMode ? "bg-[#e06c75]/20 text-[#e06c75] border-[#e06c75]/30" : "bg-white/[0.04] text-white/30 border-white/[0.06] hover:text-white/50"
+                className={`h-7 px-2 rounded-lg text-xs font-mono font-bold border transition-colors ${
+                  jarvisMode ? "bg-[#e06c75]/20 text-[#e06c75] border-[#e06c75]/30" : "bg-white/[0.04] text-text-tertiary border-white/[0.06] hover:text-text-secondary"
                 }`}
               >
                 {jarvisMode ? "JARVIS" : "Gemini"}
               </button>
-              <button onClick={() => setAIPanel(false)} className="h-8 w-8 flex items-center justify-center text-white/30 hover:text-white/60 transition-colors">
+              <button onClick={() => setAIPanel(false)} className="h-8 w-8 flex items-center justify-center text-text-tertiary hover:text-text-secondary transition-colors">
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -83,9 +83,9 @@ export function AIPanel() {
 
           <div className="flex-1 overflow-y-auto p-4 space-y-3 scrollbar-hide">
             {messages.length === 0 && (
-              <div className="flex flex-col items-center justify-center h-full text-center text-white/30 gap-3">
+              <div className="flex flex-col items-center justify-center h-full text-center text-text-tertiary gap-3">
                 <Bot className="w-10 h-10 text-brand-400/50" />
-                <p className="text-sm">Ask me anything about your dashboard, health, or productivity.</p>
+                <p className="text-sm text-text-secondary">Ask me anything about your dashboard, health, or productivity.</p>
               </div>
             )}
             {messages.map((msg, idx) => (
@@ -102,17 +102,17 @@ export function AIPanel() {
                 {msg.role === "assistant" ? (
                   <Brain className="w-4 h-4 text-brand-400 mt-0.5 shrink-0" />
                 ) : (
-                  <div className="w-4 h-4 rounded bg-accent-400/30 mt-0.5 shrink-0 flex items-center justify-center text-[8px] font-bold text-accent-300">
+                  <div className="w-4 h-4 rounded bg-accent-400/30 mt-0.5 shrink-0 flex items-center justify-center text-xs font-bold text-accent-300">
                     U
                   </div>
                 )}
-                <p className="text-xs text-white/60 leading-relaxed whitespace-pre-wrap">{msg.text}</p>
+                <p className="text-xs text-text-secondary leading-relaxed whitespace-pre-wrap">{msg.text}</p>
               </motion.div>
             ))}
             {loading && (
               <div className="flex gap-3 p-3 rounded-xl bg-white/[0.03] border border-white/[0.06]">
                 <Loader2 className="w-4 h-4 text-brand-400 mt-0.5 shrink-0 animate-spin" />
-                <p className="text-xs text-white/40">Thinking...</p>
+                <p className="text-xs text-text-tertiary">Thinking...</p>
               </div>
             )}
             <div ref={bottomRef} />
@@ -125,7 +125,7 @@ export function AIPanel() {
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={e => { if (e.key === "Enter") send() }}
                 placeholder="Ask AI..."
-                className="flex-1 h-9 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-xs text-white outline-none placeholder:text-white/30"
+                className="flex-1 h-9 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-xs text-text-primary outline-none placeholder:text-text-tertiary"
               />
               <button
                 onClick={send}

@@ -32,7 +32,7 @@ export default function StocksPage() {
         <GlassPanel variant="strong" glow="green">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-1 h-4 rounded-full bg-brand-400" />
-            <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase">Portfolio</span>
+            <span className="section-label">Portfolio</span>
           </div>
           <StockList />
         </GlassPanel>

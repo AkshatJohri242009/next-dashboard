@@ -73,14 +73,14 @@ export function ThemePanel() {
       transition={{ duration: 0.15, ease: "easeOut" }}
       className="absolute top-full right-0 mt-2 w-[320px] z-50"
     >
-      <div className="bg-[#050506] rounded-2xl p-5 space-y-4 border border-white/[0.08] shadow-2xl">
+      <div className="glass-elevated p-5 space-y-4">
         <div className="flex items-center gap-2">
-          <Palette className="w-4 h-4 text-white/50" />
-          <span className="text-xs font-bold font-mono tracking-widest text-white/30 uppercase">Theme</span>
+          <Palette className="w-4 h-4 text-text-tertiary" />
+          <span className="section-label">Theme</span>
         </div>
 
         <div>
-          <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase block mb-2">Mode</span>
+          <span className="section-label block mb-2">Mode</span>
           <div className="flex gap-2">
             <button
               onClick={() => setTheme({ ...theme, mode: "dark" })}
@@ -106,9 +106,7 @@ export function ThemePanel() {
         </div>
 
         <div>
-          <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase block mb-2">
-            Presets
-          </span>
+          <span className="section-label block mb-2">Presets</span>
           <div className="grid grid-cols-4 gap-2">
             {PRESET_COLORS.map(p => (
               <button
@@ -120,16 +118,14 @@ export function ThemePanel() {
                   <div className="w-4 h-4 rounded-full" style={{ backgroundColor: p.brand }} />
                   <div className="w-4 h-4 rounded-full" style={{ backgroundColor: p.accent }} />
                 </div>
-                <span className="text-[9px] text-white/30 font-mono">{p.label}</span>
+                <span className="text-[11px] text-white/30 font-mono">{p.label}</span>
               </button>
             ))}
           </div>
         </div>
 
         <div>
-          <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase block mb-2">
-            Brand Color
-          </span>
+          <span className="section-label block mb-2">Brand Color</span>
           <div className="space-y-1.5">
             {["R", "G", "B"].map((channel, i) => {
               const val = [brandRgb.r, brandRgb.g, brandRgb.b][i]
@@ -162,9 +158,7 @@ export function ThemePanel() {
         </div>
 
         <div>
-          <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase block mb-2">
-            Accent Color
-          </span>
+          <span className="section-label block mb-2">Accent Color</span>
           <div className="space-y-1.5">
             {["R", "G", "B"].map((channel, i) => {
               const val = [accentRgb.r, accentRgb.g, accentRgb.b][i]

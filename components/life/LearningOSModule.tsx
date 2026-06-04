@@ -96,7 +96,7 @@ export function LearningOSModule() {
       <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
         <div className="flex items-center gap-2.5">
           <BookOpen className="w-4 h-4 text-brand" />
-          <h3 className="section-title text-sm">Learning OS</h3>
+          <h3 className="section-heading">Learning OS</h3>
         </div>
         <button onClick={() => setShowAdd(!showAdd)}
           className="h-8 px-3 rounded-lg bg-brand/20 hover:bg-brand/30 text-brand text-[11px] font-medium transition-colors"
@@ -171,7 +171,7 @@ export function LearningOSModule() {
                 <Brain className="w-3.5 h-3.5 text-white/40" />
                 <span className="text-xs text-white/60">Weak</span>
                 {weak.map(w => (
-                  <span key={w.name} className="text-[10px] font-bold px-1.5 py-0.5 rounded"
+                  <span key={w.name} className="text-xs font-bold px-1.5 py-0.5 rounded"
                     style={{ backgroundColor: `${w.color}20`, color: w.color }}
                   >
                     {w.name}
@@ -245,7 +245,7 @@ export function LearningOSModule() {
                     className="w-12 sm:w-14 h-8 px-2 rounded bg-white/5 border border-white/10 text-[11px] text-white outline-none placeholder:text-white/20"
                   />
                   <button onClick={() => setScore(chapter.id)}
-                    className="h-8 px-2 rounded bg-white/5 hover:bg-white/10 text-[10px] text-white/50 transition-colors"
+                    className="h-8 px-2 rounded bg-white/5 hover:bg-white/10 text-xs text-white/50 transition-colors"
                   >
                     Set
                   </button>

@@ -36,9 +36,9 @@ export function GoalTicker() {
   const current = items[idx] || items[0]
 
   return (
-    <div className="flex items-center gap-2 sm:gap-3 px-2 sm:px-4 h-9 sm:h-11 rounded-xl sm:rounded-2xl glass overflow-hidden relative">
+    <div className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 h-10 sm:h-11 rounded-xl sm:rounded-2xl glass overflow-hidden relative">
       <div className="w-2 h-2 rounded-full bg-brand-400 shadow-[0_0_8px_rgba(107,227,164,0.6)] shrink-0" />
-      <span className="text-[10px] font-bold font-mono text-white/30 tracking-widest shrink-0">GOALS</span>
+      <span className="text-[11px] font-bold font-mono text-text-tertiary tracking-widest shrink-0">GOALS</span>
 
       <div className="flex-1 relative h-6 overflow-hidden">
         <AnimatePresence mode="wait">
@@ -50,15 +50,15 @@ export function GoalTicker() {
             transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
             className="absolute inset-0 flex items-center gap-2"
           >
-            <span className={`text-sm ${current?.status === "empty" ? "text-white/30" : current?.status === "done" ? "text-brand-400" : "text-white/80"}`}>
+            <span className={`text-sm ${current?.status === "empty" ? "text-text-tertiary" : current?.status === "done" ? "text-brand-400" : "text-text-secondary"}`}>
               {current?.status === "done" ? "✓" : current?.status === "pending" ? "○" : "."}
             </span>
-            <span className="text-sm text-white/70 truncate">{current?.text}</span>
+            <span className="text-sm text-text-secondary truncate">{current?.text}</span>
           </motion.div>
         </AnimatePresence>
       </div>
 
-      <span className="text-[11px] font-mono font-bold text-white/40 px-2 py-1 rounded-lg bg-white/[0.04] shrink-0">
+      <span className="text-xs font-mono font-bold text-text-tertiary px-2 py-1 rounded-lg bg-white/[0.04] shrink-0">
         {meta}
       </span>
     </div>

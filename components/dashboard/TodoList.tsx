@@ -20,7 +20,7 @@ export function TodoList() {
   const handleAdd = () => {
     const text = input.trim()
     if (!text) return
-    addGoal(text, timerMin > 0 ? timerMin : undefined)
+    addGoal(text, { reminderMin: timerMin > 0 ? timerMin : undefined })
     setInput("")
     setTimerMin(0)
   }
@@ -40,7 +40,7 @@ export function TodoList() {
 
       <div className="flex items-center justify-between mb-4">
         <div>
-          <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase">
+          <span className="section-label">
             {allDone ? "All done — solid day" : "Today's goals"}
           </span>
           <div className="flex items-baseline gap-2 mt-1">
@@ -64,7 +64,7 @@ export function TodoList() {
                 onClick={() => {
                 if (window.confirm("Move unchecked goals to tomorrow?")) pushToTomorrow()
               }}
-              className="flex items-center gap-1 h-8 sm:h-8 px-2.5 sm:px-3 rounded-lg text-[10px] sm:text-[11px] font-bold font-mono text-white/40 bg-white/[0.04] border border-white/[0.06] hover:text-white/70 hover:bg-white/[0.08] transition-colors"
+              className="flex items-center gap-1 h-8 sm:h-8 px-2.5 sm:px-3 rounded-lg text-xs sm:text-[11px] font-bold font-mono text-white/40 bg-white/[0.04] border border-white/[0.06] hover:text-white/70 hover:bg-white/[0.08] transition-colors"
             >
               <ArrowRight className="w-3 h-3" />
               Push
@@ -174,15 +174,15 @@ export function TodoList() {
                           }
                         }
                       }}
-                      className="w-14 h-8 px-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06] text-[10px] text-white outline-none text-center"
+                      className="w-14 h-8 px-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06] text-xs text-white outline-none text-center"
                     />
-                    <span className="text-[9px] font-mono text-white/30 shrink-0">min</span>
+                    <span className="text-[11px] font-mono text-white/30 shrink-0">min</span>
                     <button
                       onClick={() => {
                         addReminder(goals[idx].text, "task", goals[idx].reminderMin || 30, idx)
                         setRemindIdx(null)
                       }}
-                      className="h-8 px-2 rounded-lg bg-brand-500 text-[9px] font-bold text-black hover:bg-brand-400 transition-colors"
+                      className="h-8 px-2 rounded-lg bg-brand-500 text-[11px] font-bold text-black hover:bg-brand-400 transition-colors"
                     >
                       Go
                     </button>

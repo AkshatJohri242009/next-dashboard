@@ -53,7 +53,7 @@ export function CorrelationPanel() {
           <div className="flex gap-1.5">
             {(["all", "strong", "moderate", "weak"] as const).map(s => (
               <button key={s} onClick={() => setFilter(s)}
-                className={cn("px-3 h-7 rounded-lg text-[10px] font-medium border transition-all",
+                className={cn("px-3 h-7 rounded-lg text-xs font-medium border transition-all",
                   filter === s ? "bg-brand-500/20 text-brand-400 border-brand-500/30" : "text-white/30 border-white/[0.06] hover:text-white/50"
                 )}
               >
@@ -95,13 +95,13 @@ export function CorrelationPanel() {
                     </div>
                     <div className="flex items-center gap-1.5">
                       <span className={cn(
-                        "text-[10px] px-1.5 py-0.5 rounded font-medium",
+                        "text-xs px-1.5 py-0.5 rounded font-medium",
                         corr.strength === "strong" ? "bg-brand-500/10 text-brand-400" :
                         corr.strength === "moderate" ? "bg-white/[0.04] text-white/50" : "text-white/30"
                       )}>
                         {corr.strength}
                       </span>
-                      <span className="text-[10px] text-white/20">{corr.confidence}%</span>
+                      <span className="text-xs text-white/20">{corr.confidence}%</span>
                     </div>
                   </div>
                   <p className="text-sm text-white/70">{corr.insight}</p>

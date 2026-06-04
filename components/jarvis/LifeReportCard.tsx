@@ -90,8 +90,8 @@ export function LifeReportCard() {
             >
               <Icon className={`w-4 h-4 mb-1 bg-gradient-to-br ${grad} bg-clip-text text-transparent`} />
               <p className="text-lg font-bold text-white/80">{stat.value}</p>
-              <p className="text-[10px] text-white/30">{stat.label}</p>
-              {selectedStat === idx && <p className="text-[9px] text-white/20 mt-1">{stat.subtitle}</p>}
+              <p className="text-xs text-white/30">{stat.label}</p>
+              {selectedStat === idx && <p className="text-[11px] text-white/20 mt-1">{stat.subtitle}</p>}
             </button>
           )
         })}

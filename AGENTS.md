@@ -1,10 +1,39 @@
-# Session Context — June 2, 2026
+# Session Context — June 3, 2026
 
 ## Project
 **LifeOS** — AI-powered Personal Operating System (Next.js 14, Supabase, Zustand, Recharts, Framer Motion, 52 static routes) with JARVIS 2.0 intelligence layer: voice system, memory engine, correlation engine, future self engine, annual life report, automation engine, plus full health/fitness/sleep tracking, and premium design system.
 
 ## Live URL
 `https://next-dashboard-alpha-seven.vercel.app`
+
+## Recent Changes (June 3)
+
+### Type Safety Remediation — COMPLETE
+- **149 `any` annotations fixed** across 9 lib files: `voice-intents.ts`, `voice-briefings.ts`, `jarvis-context.ts`, `automation-engine.ts`, `life-engine.ts`, `life-report.ts`, `future-engine.ts`, `forecast-engine.ts`, `correlation-engine.ts`
+- **Page file `any` annotations fixed**: `missions`, `reviews`, `habits`, `brain`, `timeline`, `journal` pages
+- **Catch clause patterns**: `(err: any)` → `(err)` with `(err as Error).message` everywhere
+- **`jarvis-store.ts` sendMessage**: typed all localStorage `JSON.parse` results, typed filter/map lambdas
+- **`jarvis-db.ts`**: `Record<string, any>` → explicit typed objects, `as any` → `as unknown as T`
+- **Real type bugs uncovered**: `WorkoutLog.at` (number) vs `.date` (string) mismatches in 6 files; nonexistent `question`/`emoji`/`topic`/`date`/`title` fields removed; string-vs-number coercion for LLM params added
+
+### Learning Progress on Dashboard — NEW
+- `components/home/LearningProgress.tsx` — per-subject progress (Physics/Chemistry/Math/CS), avg scores, weak topic flags, revision cycle (Rest/Light/Active), streak, avg test score
+- Wired into `app/page.tsx` between Action section (TodaysMission + AIRecommendations) and HabitsModule
+
+### Life Score Transparency — FIXED
+- **sleepMinutes bug fixed**: reads `last_sleep_hours` from localStorage instead of hardcoded `0`
+- **Weight labels**: each dimension bar shows its weight (25%, 20%, 20%, 15%, 10%, 10%)
+- **Info toggle**: `Info` icon button toggles a panel showing the full formula + per-dimension descriptions
+- **Wealth marked `(placeholder)`**: subtle text next to Wealth bar
+- **Momentum descriptions**: daily/weekly/monthly now show "Today's goal completion", "7-day goal completion", "Avg of daily + weekly"
+
+### Task Priority/Timing — NEW
+- `Goal` interface extended: `priority?: "low" | "medium" | "high"`, `dueDate?: string`, `estimatedMinutes?: number`
+- `store.addGoal()` updated to accept `{ reminderMin, priority, dueDate, estimatedMinutes }` options object
+- TodaysMission creation form: priority picker (High/Medium/Low), date input, minutes estimate
+- Goal rows show: priority badge (color-coded), due date, estimated time
+- Goals auto-sorted high → medium → low after `loadGoals()`
+- Voice command `addGoal` forwards priority from LLM
 
 ## Architecture
 - **52 static routes** — monolithic Next.js App Router, all pages are `"use client"`, no SSR
@@ -33,7 +62,7 @@
 ### Core
 | Route | Component | Purpose |
 |-------|-----------|---------|
-| `/` | HomePage | Command Center: AIBriefing (hero 60%), LifeScore, TodaysMission, AIRecommendations, HabitsModule, Quick Access grid (14 links), GoalTicker |
+| `/` | HomePage | Command Center: AIBriefing (hero 60%), LifeScore, TodaysMission, AIRecommendations, LearningProgress, HabitsModule, Quick Access grid (14 links), GoalTicker |
 | `/odyssey` | JarvisChat | JARVIS AI strategist with auth, sessions, streaming chat |
 
 ### Life OS
@@ -84,116 +113,42 @@
 | `/future` | FutureSelfPanel | 3/6/12 month projections with risk/opportunity |
 | `/report` | LifeReportCard | Annual "Spotify Wrapped for life" report |
 
-## Key Components
+## Key Components — June 3 Additions/Changes
 
-### Layout
-- **Sidebar**: 6 grouped sections with section labels when expanded (Core, Life OS, Health, Intelligence, Life Data, Dev) + study mode groups; collapse toggle
-- **TopNav**: LifeOS logo, date, mode toggle, Focus Mode, search/command palette, AI panel, theme panel, notifications
-- **CommandPalette**: 27 commands covering all pages + actions (add goal, focus, journal, log workout, add habit, generate study plan, create daily schedule, run weekly review, recommend priorities)
-- **ScrollToTop**: Floating button after 300px scroll
-- **FocusMode**: Full-screen Pomodoro overlay (25/5/15 presets)
-- **JarvisPresence**: Bottom-left status ticker with cycling insights
+### `components/home/LearningProgress.tsx` — NEW
+- Reads `lifeos_chapters`, `study_streak_v1`, `study_scores_v1` from localStorage
+- 4-column grid: Physics, Chemistry, Mathematics, Computer Science with chapter completion bars
+- Each subject: completed/total count, progress bar, avg score with color threshold
+- Weak topic flag (AlertTriangle icon) when avg < 60%
+- Footer row: chapters done, revision cycle (color-coded), streak, avg test score, weak subjects list
 
-### Life OS Modules (all localStorage-only)
-- **HabitsModule**: 4 categories (health/learning/productivity/mindfulness), 6 auto-seeded defaults, streak calculation from consecutive daily logs, toggle/add/delete
-- **JournalModule**: 5 moods (great→awful) with emoji + color, tags, pattern insights (majority positive/negative detection), today entry indicator
-- **LearningOSModule**: 4 subjects (Physics/Chemistry/Math/CS), completion toggles, % score entry, per-subject avg, revision cycle indicator (Rest/Light/Active/Intensive), weak topics detection
-- **MissionsModule**: Milestones with toggle, 3 statuses (active/paused/completed), expandable view, progress bar
-- **DecisionLog**: Options list with chosen indicator, 3 outcomes (positive/neutral/negative), tags, reflection, outcome analytics bar with positive rate
-- **LifeTimeline**: 6 categories (career/education/relationship/move/achievement/other), year separators, color-coded dot timeline
-- **KnowledgeGraph**: SVG connection lines between linked ideas, click-to-select panel, connection search/toggle, incoming/outgoing count
+### `components/home/LifeScore.tsx` — UPDATED
+- `sleepMinutes` now reads from `last_sleep_hours` localStorage (multiple by 60), not hardcoded `0`
+- Dimension weight labels next to each bar name (e.g. "Health 25%")
+- `(placeholder)` label on Wealth dimension
+- `Info` icon button toggles a `motion.div` with full formula breakdown
+- Formula panel: `Life Score = Health×25% + Fitness×20% + Learning×20% + Projects×15% + Wealth×10% + Habits×10%`
+- Per-dimension descriptions (e.g. "Water ×40pts + Sleep ×40pts + Supplements ×20pts")
+- Momentum labels: "Today's goal completion", "7-day goal completion", "Avg of daily + weekly"
 
-### Home Page Components
-- **AIBriefing**: Hero-section layout (60% visual weight), 48px gradient greeting, ambient radial glow, data-driven insights from real localStorage, auto-run Top Priority recommendation, Full Briefing + Voice Command action links
-- **LifeScore**: Animated SVG ring with counter (0–100), 6-dimension breakdown bars with colored progress, momentum delta (daily/weekly/monthly)
-- **TodaysMission**: Inline goal toggling with completion badge counter, empty state
-- **AIRecommendations**: Categorized insight cards (positive/negative/action/neutral) with type-based coloring
-- **Quick Access**: 14-link card grid to all Life OS + JARVIS 2.0 pages
-- **GoalTicker**: Animated goal completion bar
+### `components/home/TodaysMission.tsx` — UPDATED
+- Creation form now has: priority picker (High/Medium/Low colored buttons), date input (Calendar icon), minutes estimate (Clock icon)
+- Goal rows show: priority badge (color-coded text on tinted background), due date (`Calendar + "Jun 3"`), estimated time (`Clock + "30m"`)
+- Priority sorting: high → medium → low via `loadGoals()`
 
-### JARVIS 2.0 Voice System
-- **LLM-powered voice commands**: Speech → transcript → JARVIS (Groq) with full LifeOS context → action execution or conversational answer
-- **12 executable actions**: addGoal, completeGoal, logHabit, addHabit, logWater, logWorkout, startSleepTimer, stopSleepTimer, logJournal, logStudy, navigate, addReminder, setSleep, toggleSupp
-- **Web Speech API STT/TTS** by default (free, no API key); premium providers via Whisper/Deepgram/ElevenLabs API routes
-- **VoiceButton**: Floating mic bottom-right, listen→process→speak→navigate
-- **VoiceBriefingPanel**: Tabbed morning/evening/weekly/monthly briefings with speak-aloud
-- **VoiceJournalModal**: Mic→transcribe→parse→mood picker→save with auto memory
+### `lib/types.ts` — UPDATED
+- `Goal.priority?: "low" | "medium" | "high"`
+- `Goal.dueDate?: string`
+- `Goal.estimatedMinutes?: number`
 
-### JARVIS 2.0 Life Memory Engine
-- 12 memory categories (goal, milestone, decision, project, journal, habit, workout, learning, achievement, failure, lesson, preference, fact)
-- CRUD operations, search, similarity search (pgvector on Supabase, hash-fallback locally)
-- `autoExtractMemories()` scans Journal/Missions/Decisions/Habits/Learning for new entries on app startup
-- Memory stats: total count, category distribution
+### `lib/store.ts` — UPDATED
+- `addGoal(text, options?)` — second param is now `{ reminderMin?, priority?, dueDate?, estimatedMinutes? }`
+- `loadGoals()` sorts by priority after merging carry-over goals
 
-### JARVIS 2.0 Correlation Engine
-- 30-day snapshot analysis across sleep, gym, mood, productivity, hydration, habits
-- `discoverCorrelations()` with strength/confidence scoring
-- `generateCorrelationInsight()` with context-aware summary
+### `lib/voice-intents.ts` — UPDATED
+- `addGoal` intent forwards `action.params?.priority` as `"low" | "medium" | "high"` to store
 
-### JARVIS 2.0 Future Self Engine
-- `generateProjections()`: gym sessions, sleep avg, habit consistency, mood positivity rate, goal completion, water intake
-- 3/6/12 month projections with trend, risk/opportunity assessment
-- Bar chart visualization of current vs projected
-
-### JARVIS 2.0 Annual Life Report
-- `generateLifeReport()`: total goals, gym sessions, journal entries, habit streaks, decisions, missions, chapters, avg sleep, best month, top achievements, growth areas, random quote
-
-### Automation Engine (`lib/automation-engine.ts`)
-- 6 automations exposed via AutomationPanel on `/reviews`:
-  - **Generate Study Plan**: Creates revision schedule from incomplete chapters
-  - **Generate Workout Routine**: Analyzes gym history, recommends focus
-  - **Create Daily Schedule**: Organizes today's pending goals and habits
-  - **Generate Weekly Review**: Auto-summarizes the week
-  - **Organize Notes**: Reviews knowledge graph ideas
-  - **Recommend Priorities**: AI-suggested top priorities for today
-
-### Life Engine (`lib/life-engine.ts`)
-- `calculateLifeScore()`: 6-dimension breakdown (health, fitness, learning, projects, wealth, habits)
-- `generateBriefing()`: Data-driven daily briefing from real localStorage (goals, water, gym, sleep, study, habits)
-- `generateWeeklyReview()`: Wins, losses, progress, risks, recommendations
-- `computeMomentum()`: Daily/weekly/monthly goal completion rate
-
-### JARVIS AI
-- **Auth**: Signup/login/logout with bcrypt + httpOnly cookie (7-day), auto-creates default "General" session. In-memory fallback when Supabase unavailable.
-- **Chat**: SSE streaming to any OpenAI-compatible endpoint (Groq default: `llama-3.3-70b-versatile`)
-- **Context injection**: Real-time LifeOS data (goals, water, gym, sleep, habits, memories, decisions, missions, journal, learning, tomorrow tasks) gathered before each message via `gatherContext()`
-- **Per-page insights**: `JarvisInsightBar` on all 20+ key pages with type-based icons/colors, dismiss support
-- **Database**: 7 Supabase tables — users, sessions, messages, memories (pgvector), documents, endpoints, auth_sessions
-- **API routes**: `/api/jarvis/auth/*`, `/api/jarvis/chat`, `/api/jarvis/sessions`, `/api/jarvis/messages`, `/api/jarvis/memories`, `/api/jarvis/documents`, `/api/jarvis/setup`, `/api/jarvis/embeddings`, `/api/jarvis/voice/command`, `/api/jarvis/voice/whisper`, `/api/jarvis/voice/deepgram`, `/api/jarvis/voice/tts`
-
-### Stocks
-- Yahoo Finance API proxy (quote, history, search)
-- Portfolio cards with currency-aware display (25+ currency symbols)
-- Recharts AreaChart with gradient per symbol (1D–5Y range)
-- 30s auto-sync cycle
-
-## Light Mode
-- `.light` class on `<html>` toggles all CSS variable overrides
-- ALL common Tailwind utility patterns overridden in `globals.css`:
-  - `text-white/{5-95}` — maps to dark text
-  - `bg-white/{5-30}` and `bg-white/[0.01-0.12]` — dark backgrounds
-  - `border-white/{5-30}` and `border-white/[0.02-0.14]` — dark borders
-  - `hover:text-white/{40-90}` and `hover:bg-white/{5-10}` — hover states
-  - `placeholder:text-white/{10-50}` — input placeholders
-  - `bg-[#050506]`, `bg-[#0a0a0d]`, `bg-[#111]` — specific dark backgrounds
-  - `bg-black/{20-60}` — modals/overlays
-  - `ring-offset-[var(--bg)]` — ring offsets
-  - `color-scheme: light` on inputs
-- ThemePanel: Dark/Light toggle, 8 presets, RGB sliders, native `<input type="color">`
-
-## Environment Variables (Vercel)
-- `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- `SUPABASE_SERVICE_ROLE_KEY` / `GEMINI_API_KEY`
-- `JARVIS_GROQ_KEY` / `JARVIS_DEFAULT_ENDPOINT` / `JARVIS_DEFAULT_MODEL`
-
-## Key Architecture Decisions
-- **LLM-powered voice commands**: Voice system sends transcript + full LifeOS context to Groq. JARVIS decides whether to answer questions or execute actions. Returns structured `⟪action:{type,params}⟫` tags for frontend execution. No regex intent matching.
-- **No JARVIS auth on voice routes**: `/api/jarvis/voice/*` routes use env var API keys directly, no `requireJarvisUser()` check.
-- **Local fallback for JARVIS auth**: When Supabase unavailable, `jarvis-db.ts` falls back to in-memory Maps for users/sessions/messages. Auth works immediately.
-- **Web Speech API as default voice provider**: Free, no API key, works in Chrome/Edge/Safari. Whisper/Deepgram/ElevenLabs as premium providers.
-- **Goal persistence via date-key merging**: `loadGoals()` scans last 7 days of `goals:YYYY-MM-DD` keys, merges incomplete items.
-- **Hash-based embedding fallback**: When OpenAI unavailable, `/api/jarvis/embeddings` generates 384-dim embeddings from word-frequency hashing with L2 normalization.
-- **Component-scoped timers**: Pomodoro and commute timers in `useState` + `useRef` interval, not Zustand.
-- **CSS variable theme system**: `.light` class on `<html>` overrides ALL Tailwind utility patterns for light mode.
-- **Home page 60/25/15 hierarchy**: 60% hero (AIBriefing), 25% insights (LifeScore), 15% action (TodaysMission + AIRecommendations), secondary below.
-- **Sleep timer buttons on /sleep page**: Start/Stop timer with live elapsed display, Wake Up button.
+## Next Steps
+- **RLS policies** for JARVIS Supabase tables (~30 min)
+- **SSR/ISR** for static pages (~3-5h)
+- **AIRecommendations dynamic** — replace hardcoded study recommendation with real data from `gatherContext()` (weak topics, upcoming exams, revision cycle)

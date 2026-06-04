@@ -32,7 +32,7 @@ export default function DecisionsPage() {
     <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
       <div>
         <h1 className="page-title">Decision Log</h1>
-        <p className="text-sm text-white/40 mt-1">Track major life choices, reflect on outcomes, improve your judgment.</p>
+        <p className="text-sm text-text-tertiary mt-1">Track major life choices, reflect on outcomes, improve your judgment.</p>
       </div>
 
       <JarvisInsightBar />
@@ -58,7 +58,7 @@ export default function DecisionsPage() {
         </div>
       </motion.div>
 
-      <motion.div variants={item} className="card-elevated p-6">
+      <motion.div variants={item} className="card-elevated p-4 sm:p-6">
         <DecisionLog />
       </motion.div>
     </motion.div>

@@ -79,7 +79,7 @@ export function StudyFiles() {
   return (
     <div className="glass rounded-2xl p-4 sm:p-6 space-y-4">
       <div className="flex items-center justify-between">
-        <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase">
+        <span className="section-label">
           Study Files
         </span>
       </div>
@@ -88,12 +88,12 @@ export function StudyFiles() {
         <div className="glass rounded-xl p-3 text-center space-y-1">
           <FileText className="w-4 h-4 text-brand-400 mx-auto" />
           <span className="block text-lg font-extrabold tabular-nums text-white/80">{files.length}</span>
-          <span className="text-[10px] font-mono text-white/30">Files</span>
+          <span className="text-xs font-mono text-white/30">Files</span>
         </div>
         <div className="glass rounded-xl p-3 text-center space-y-1">
           <HardDrive className="w-4 h-4 text-blue-400 mx-auto" />
           <span className="block text-lg font-extrabold tabular-nums text-white/80">{formatBytes(totalSize)}</span>
-          <span className="text-[10px] font-mono text-white/30">Storage</span>
+          <span className="text-xs font-mono text-white/30">Storage</span>
         </div>
       </div>
 

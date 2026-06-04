@@ -14,7 +14,7 @@ export default function FuturePage() {
         </div>
         <div>
           <h1 className="text-xl font-bold text-gradient">Future Self Engine</h1>
-          <p className="text-sm text-white/40">Trajectory projections — see where your habits are taking you</p>
+          <p className="text-sm text-text-tertiary">Trajectory projections — see where your habits are taking you</p>
         </div>
       </div>
       <JarvisInsightBar />

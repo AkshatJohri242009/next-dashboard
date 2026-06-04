@@ -100,7 +100,7 @@ interface DashboardState {
   stopSleepTimer: () => void
   loadSleepLog: () => void
   loadGoals: () => void
-  addGoal: (text: string, reminderMin?: number) => void
+  addGoal: (text: string, options?: { reminderMin?: number; priority?: "low" | "medium" | "high"; dueDate?: string; estimatedMinutes?: number }) => void
   toggleGoal: (idx: number) => void
   deleteGoal: (idx: number) => void
   editGoal: (idx: number, text: string) => void
@@ -271,8 +271,9 @@ export const useStore = create<DashboardState>((set, get) => ({
       localStorage.removeItem("sleep_timer_start")
       localStorage.removeItem("_ts:sleep_timer_start")
     }
+    const priorityOrder: Record<string, number> = { high: 0, medium: 1, low: 2 }
     set({
-      goals,
+      goals: goals.sort((a, b) => (priorityOrder[a.priority ?? ""] ?? 3) - (priorityOrder[b.priority ?? ""] ?? 3)),
       tomorrowGoals,
       streak: streakData?.count ?? 0,
       sleep: typeof sleepData === "number" ? sleepData : 8,
@@ -280,14 +281,14 @@ export const useStore = create<DashboardState>((set, get) => ({
     })
   },
 
-  addGoal: (text, reminderMin) => {
+  addGoal: (text, options) => {
     const key = todayKey()
     const goals = getGoals(key)
-    goals.push({ text, done: false, reminderMin })
+    goals.push({ text, done: false, reminderMin: options?.reminderMin, priority: options?.priority, dueDate: options?.dueDate, estimatedMinutes: options?.estimatedMinutes })
     storeSet(key, goals)
     set({ goals })
-    if (reminderMin && reminderMin > 0) {
-      get().addReminder(text, "task", reminderMin, goals.length - 1)
+    if (options?.reminderMin && options.reminderMin > 0) {
+      get().addReminder(text, "task", options.reminderMin, goals.length - 1)
     }
     autoSync()
   },

@@ -28,6 +28,7 @@ export interface LifeReportStat {
   subtitle: string
 }
 
+import type { Goal, Habit, Mission, Decision, Chapter, JournalEntry } from "./types"
 import { loadJSON } from "./utils"
 
 export function generateLifeReport(year?: number): LifeReport {
@@ -44,12 +45,12 @@ export function generateLifeReport(year?: number): LifeReport {
   const monthTotals: Record<string, number> = {}
   for (let d = new Date(startMs); d.getTime() <= endMs; d.setDate(d.getDate() + 1)) {
     const dateStr = d.toISOString().slice(0, 10)
-    const goals = loadJSON(`goals:${dateStr}`) || []
+    const goals: Goal[] = loadJSON(`goals:${dateStr}`) || []
     totalGoals += goals.length
-    completedGoals += goals.filter((g: any) => g.done).length
+    completedGoals += goals.filter(g => g.done).length
     if (goals.length > 0) {
       const month = dateStr.slice(0, 7)
-      monthTotals[month] = (monthTotals[month] || 0) + goals.filter((g: any) => g.done).length
+      monthTotals[month] = (monthTotals[month] || 0) + goals.filter(g => g.done).length
     }
   }
 
@@ -59,44 +60,44 @@ export function generateLifeReport(year?: number): LifeReport {
 
   // Gym
   const gymData = loadJSON("gym_dashboard_v1")
-  const gymSessions = (gymData?.logs || []).filter((l: any) => {
+  const gymSessions = (gymData?.logs || []).filter((l: { date: string }) => {
     const t = new Date(l.date).getTime()
     return t >= startMs && t <= endMs
   }).length
 
   // Journal
   const journal = loadJSON("lifeos_journal") || []
-  const yearEntries = Array.isArray(journal) ? journal.filter((e: any) => {
+  const yearEntries = Array.isArray(journal) ? journal.filter((e: JournalEntry) => {
     const t = new Date(e.createdAt).getTime()
     return t >= startMs && t <= endMs
   }) : []
 
   // Habits
   const habits = loadJSON("lifeos_habits") || []
-  const longestHabitStreak = Math.max(...habits.map((h: any) => h.streak || 0), 0)
+  const longestHabitStreak = Math.max(...habits.map((h: Habit) => h.streak || 0), 0)
 
   // Decisions
   const decisions = loadJSON("lifeos_decisions") || []
-  const yearDecisions = Array.isArray(decisions) ? decisions.filter((d: any) => {
+  const yearDecisions = Array.isArray(decisions) ? decisions.filter((d: Decision) => {
     const t = new Date(d.createdAt).getTime()
     return t >= startMs && t <= endMs
   }) : []
-  const positiveDecisions = yearDecisions.filter((d: any) => d.outcome === "positive").length
+  const positiveDecisions = yearDecisions.filter(d => d.outcome === "positive").length
 
   // Missions
   const missions = loadJSON("lifeos_missions") || []
-  const yearMissions = Array.isArray(missions) ? missions.filter((m: any) => new Date(m.createdAt).getTime() >= startMs) : []
-  const completedMissions = yearMissions.filter((m: any) => m.status === "completed").length
+  const yearMissions = Array.isArray(missions) ? missions.filter((m: Mission) => new Date(m.createdAt).getTime() >= startMs) : []
+  const completedMissions = yearMissions.filter(m => m.status === "completed").length
 
   // Learning
   const chapters = loadJSON("lifeos_chapters") || []
-  const yearChapters = Array.isArray(chapters) ? chapters.filter((c: any) => c.date && new Date(c.date).getTime() >= startMs) : []
-  const completedChapters = yearChapters.filter((c: any) => c.completed).length
+  const yearChapters = Array.isArray(chapters) ? chapters.filter((c: Chapter) => c.date && new Date(c.date).getTime() >= startMs) : []
+  const completedChapters = yearChapters.filter(c => c.completed).length
 
   // Sleep
   const sleepLog = loadJSON("sleep_log") || {}
-  const yearSleep = Object.values(sleepLog as Record<string, any>).filter((e: any) => e?.date && new Date(e.date).getTime() >= startMs && new Date(e.date).getTime() <= endMs)
-  const avgSleep = yearSleep.length > 0 ? yearSleep.reduce((a: number, e: any) => a + (parseFloat(e.hours) || 0), 0) / yearSleep.length : 0
+  const yearSleep = Object.values(sleepLog as Record<string, { date: string; hours: string }>).filter(e => e?.date && new Date(e.date).getTime() >= startMs && new Date(e.date).getTime() <= endMs)
+  const avgSleep = yearSleep.length > 0 ? yearSleep.reduce((a: number, e) => a + (parseFloat(e.hours) || 0), 0) / yearSleep.length : 0
 
   // Stats
   const stats: LifeReportStat[] = [
@@ -106,7 +107,7 @@ export function generateLifeReport(year?: number): LifeReport {
     { label: "Habits Tracked", value: habits.length, icon: "🔥", subtitle: `longest streak: ${longestHabitStreak} days` },
     { label: "Decisions Made", value: yearDecisions.length, icon: "🧠", subtitle: `${positiveDecisions} positive outcomes` },
     { label: "Missions Completed", value: completedMissions, icon: "🏆", subtitle: `${yearMissions.length} total missions` },
-    { label: "Chapters Completed", value: completedChapters, icon: "📚", subtitle: `across ${new Set(yearChapters.map((c: any) => c.subject)).size} subjects` },
+    { label: "Chapters Completed", value: completedChapters, icon: "📚", subtitle: `across ${new Set(yearChapters.map(c => c.subject)).size} subjects` },
     { label: "Avg Sleep", value: `${avgSleep.toFixed(1)}h`, icon: "🌙", subtitle: `${yearSleep.length} nights tracked` },
   ]
 

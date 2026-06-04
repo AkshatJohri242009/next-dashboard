@@ -23,6 +23,7 @@ export interface FutureSelfReport {
   generatedAt: number
 }
 
+import type { Goal, Habit, JournalEntry, GymState } from "./types"
 import { loadJSON } from "./utils"
 
 export function generateProjections(): FutureSelfReport {
@@ -33,9 +34,9 @@ export function generateProjections(): FutureSelfReport {
   const opportunities: string[] = []
 
   // Gym projections
-  const gymData = loadJSON("gym_dashboard_v1")
-  const gymLogs: any[] = gymData?.logs || []
-  const recentGym = gymLogs.filter((l: any) => new Date(l.date).getTime() > now - 60 * day)
+  const gymData: GymState | null = loadJSON("gym_dashboard_v1")
+  const gymLogs = gymData?.logs || []
+  const recentGym = gymLogs.filter(l => l.at > now - 60 * day)
   const gymWeekly = recentGym.length / 8.57 // ~60 days = 8.57 weeks
   projections.push({
     metric: "Gym Sessions",
@@ -55,12 +56,12 @@ export function generateProjections(): FutureSelfReport {
 
   // Sleep projections
   const sleepLog = loadJSON("sleep_log") || {}
-  const sleepEntries: any[] = Object.values(sleepLog as Record<string, any>).filter((e: any) => e?.date && new Date(e.date).getTime() > now - 90 * day)
-  const avgSleep = sleepEntries.length > 0 ? sleepEntries.reduce((a: number, e: any) => a + (parseFloat(e.hours) || 0), 0) / sleepEntries.length : 0
+  const sleepEntries = Object.values(sleepLog as Record<string, { date: string; hours: string }>).filter(e => e?.date && new Date(e.date).getTime() > now - 90 * day)
+  const avgSleep = sleepEntries.length > 0 ? sleepEntries.reduce((a: number, e) => a + (parseFloat(e.hours) || 0), 0) / sleepEntries.length : 0
   const sleepFirstHalf = sleepEntries.slice(0, Math.floor(sleepEntries.length / 2))
   const sleepSecondHalf = sleepEntries.slice(Math.floor(sleepEntries.length / 2))
-  const firstAvg = sleepFirstHalf.length ? sleepFirstHalf.reduce((a: number, e: any) => a + (parseFloat(e.hours) || 0), 0) / sleepFirstHalf.length : 0
-  const secondAvg = sleepSecondHalf.length ? sleepSecondHalf.reduce((a: number, e: any) => a + (parseFloat(e.hours) || 0), 0) / sleepSecondHalf.length : 0
+  const firstAvg = sleepFirstHalf.length ? sleepFirstHalf.reduce((a: number, e) => a + (parseFloat(e.hours) || 0), 0) / sleepFirstHalf.length : 0
+  const secondAvg = sleepSecondHalf.length ? sleepSecondHalf.reduce((a: number, e) => a + (parseFloat(e.hours) || 0), 0) / sleepSecondHalf.length : 0
   projections.push({
     metric: "Average Sleep",
     category: "health",
@@ -78,10 +79,10 @@ export function generateProjections(): FutureSelfReport {
   if (avgSleep >= 7) opportunities.push("Excellent sleep habits — this is your strongest health foundation")
 
   // Habit projections
-  const habits = loadJSON("lifeos_habits") || []
-  const activeHabits = habits.filter((h: any) => (h.logs || []).length > 0)
-  const avgStreak = activeHabits.length > 0 ? activeHabits.reduce((a: number, h: any) => a + (h.streak || 0), 0) / activeHabits.length : 0
-  const recentHabitDays = activeHabits.filter((h: any) => (h.logs || []).filter((d: string) => new Date(d).getTime() > now - 14 * day).length >= 10).length
+  const habits: Habit[] = loadJSON("lifeos_habits") || []
+  const activeHabits = habits.filter((h: Habit) => (h.logs || []).length > 0)
+  const avgStreak = activeHabits.length > 0 ? activeHabits.reduce((a: number, h: Habit) => a + (h.streak || 0), 0) / activeHabits.length : 0
+  const recentHabitDays = activeHabits.filter(h => (h.logs || []).filter((d: string) => new Date(d).getTime() > now - 14 * day).length >= 10).length
   projections.push({
     metric: "Habit Consistency",
     category: "habits",
@@ -100,9 +101,9 @@ export function generateProjections(): FutureSelfReport {
 
   // Mood projections
   const journal = loadJSON("lifeos_journal") || []
-  const entries: any[] = Array.isArray(journal) ? journal : []
-  const recentMoods = entries.filter((e: any) => e.createdAt > now - 90 * day)
-  const goodMoods = recentMoods.filter((e: any) => e.mood === "great" || e.mood === "good").length
+  const entries: JournalEntry[] = Array.isArray(journal) ? journal : []
+  const recentMoods = entries.filter(e => e.createdAt > now - 90 * day)
+  const goodMoods = recentMoods.filter(e => e.mood === "great" || e.mood === "good").length
   const moodRate = recentMoods.length > 0 ? Math.round(goodMoods / recentMoods.length * 100) : 0
   projections.push({
     metric: "Positive Mood Rate",
@@ -125,9 +126,9 @@ export function generateProjections(): FutureSelfReport {
   let doneGoals = 0
   for (let i = 0; i < 30; i++) {
     const d = new Date(now - i * day).toISOString().slice(0, 10)
-    const g = loadJSON(`goals:${d}`) || []
+    const g: Goal[] = loadJSON(`goals:${d}`) || []
     totalGoals += g.length
-    doneGoals += g.filter((x: any) => x.done).length
+    doneGoals += g.filter(x => x.done).length
   }
   const goalRate = totalGoals > 0 ? Math.round(doneGoals / totalGoals * 100) : 0
   projections.push({

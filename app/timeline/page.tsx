@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
+import type { TimelineEvent } from "@/lib/types"
 import { LifeTimeline } from "@/components/life/LifeTimeline"
 import { JarvisInsightBar } from "@/components/life/JarvisInsightBar"
 import { Clock, Calendar, Star } from "lucide-react"
@@ -21,9 +22,9 @@ export default function TimelinePage() {
 
   useEffect(() => {
     try {
-      const events = JSON.parse(localStorage.getItem("lifeos_timeline") || "[]")
-      const years = new Set(events.map((e: any) => e.date?.slice(0, 4))).size
-      const cats = new Set(events.map((e: any) => e.category)).size
+      const events: TimelineEvent[] = JSON.parse(localStorage.getItem("lifeos_timeline") || "[]")
+      const years = new Set(events.map(e => e.date?.slice(0, 4))).size
+      const cats = new Set(events.map(e => e.category)).size
       setStats({ total: events.length, years: Math.max(1, years), categories: cats })
     } catch {}
   }, [])
@@ -32,7 +33,7 @@ export default function TimelinePage() {
     <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
       <div>
         <h1 className="page-title">Life Timeline</h1>
-        <p className="text-sm text-white/40 mt-1">A chronological record of meaningful life events.</p>
+        <p className="text-sm text-text-tertiary mt-1">A chronological record of meaningful life events.</p>
       </div>
 
       <JarvisInsightBar />

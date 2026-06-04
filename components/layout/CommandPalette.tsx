@@ -113,7 +113,7 @@ export function CommandPalette() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 12, scale: 0.96 }}
             transition={{ duration: 0.15, ease: [0.22, 1, 0.36, 1] }}
-            className="w-full max-w-lg rounded-2xl overflow-hidden border border-white/[0.08] bg-[#0A0A0A]/95 backdrop-blur-2xl shadow-[0_32px_64px_rgba(0,0,0,0.60)]"
+            className="w-full max-w-lg rounded-2xl overflow-hidden glass-elevated"
             onClick={e => e.stopPropagation()}
           >
             <div className="flex items-center gap-3 px-4 h-12 border-b border-white/[0.06]">
@@ -149,7 +149,7 @@ export function CommandPalette() {
                     <Icon className="w-4 h-4 flex-shrink-0" />
                     <span className="flex-1 text-left">{cmd.label}</span>
                     {"href" in cmd && cmd.href && (
-                      <span className="text-[10px] text-white/20 font-mono">Navigate</span>
+                      <span className="text-xs text-white/20 font-mono">Navigate</span>
                     )}
                   </button>
                 )

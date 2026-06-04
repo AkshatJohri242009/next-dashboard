@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Mic, MicOff, Bot, X, Volume2, Loader2, HelpCircle, ChevronUp } from "lucide-react"
+import { Bot, MicOff, X, Volume2, Loader2, HelpCircle } from "lucide-react"
 import { startListening, speakText, stopSpeaking, isSpeechSupported, isSynthesisSupported } from "@/lib/voice"
 import { processVoiceCommand, getIntentDescriptions } from "@/lib/voice-intents"
 import { useRouter } from "next/navigation"
@@ -42,9 +42,9 @@ export function VoiceButton() {
         await speakText(cmdResult.message)
         setIsSpeaking(false)
       }
-    } catch (e: any) {
+    } catch (e) {
       setIsListening(false)
-      if (e.message === "Listening timed out") {
+      if ((e as Error).message === "Listening timed out") {
         setResult({ message: "I didn't hear anything. Try again?", success: false })
       } else {
         setResult({ message: "Couldn't process voice. Make sure your microphone is enabled.", success: false })
@@ -66,14 +66,14 @@ export function VoiceButton() {
       <button
         onClick={handleToggle}
         className={cn(
-          "fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full flex items-center justify-center shadow-lg transition-all duration-300",
+          "fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full flex items-center justify-center shadow-lg shadow-brand/5 transition-all duration-300",
           isOpen
             ? "bg-danger/20 border border-danger/30 text-danger"
-            : "bg-brand-500/20 border border-brand-500/30 text-brand-400 hover:bg-brand-500/30 hover:scale-110"
+            : "bg-brand/20 border border-brand/30 text-brand hover:bg-brand/30 hover:scale-110"
         )}
         title="Talk to JARVIS"
       >
-        {isOpen ? <X className="w-6 h-6" /> : <Mic className="w-6 h-6" />}
+        {isOpen ? <X className="w-6 h-6" /> : <Bot className="w-6 h-6" />}
       </button>
 
       <AnimatePresence>

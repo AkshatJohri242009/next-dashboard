@@ -46,7 +46,7 @@ export function WorkoutLog() {
           <button
             key={s}
             onClick={() => setSplit(s)}
-            className={`h-8 px-2.5 rounded-xl text-[10px] sm:text-[11px] font-bold font-mono tracking-wider uppercase transition-colors ${
+            className={`h-8 px-2.5 rounded-xl text-xs sm:text-[11px] font-bold font-mono tracking-wider uppercase transition-colors ${
               gym.split === s
                 ? "bg-brand-500 text-black"
                 : "bg-white/[0.04] text-white/40 border border-white/[0.06] hover:text-white/70"
@@ -101,7 +101,7 @@ export function WorkoutLog() {
 
       {gym.customExercises.length > 0 && (
         <div className="flex flex-wrap gap-1.5 items-center">
-          <span className="text-[10px] text-white/30 font-mono uppercase tracking-wider mr-1">Custom:</span>
+          <span className="text-xs text-white/30 font-mono uppercase tracking-wider mr-1">Custom:</span>
           {gym.customExercises.map(name => (
             <span key={name} className="flex items-center gap-1 h-7 px-2 rounded-lg bg-white/[0.04] border border-white/[0.06] text-[11px] text-white/50">
               {name}
@@ -133,7 +133,7 @@ export function WorkoutLog() {
                 </div>
                 <div className="flex items-center gap-2">
                   {targetHit(log) && (
-                    <span className="flex items-center gap-1 px-2 py-1 rounded-lg bg-amber-400/10 text-amber-400 text-[10px] font-bold">
+                    <span className="flex items-center gap-1 px-2 py-1 rounded-lg bg-amber-400/10 text-amber-400 text-xs font-bold">
                       <Target className="w-3 h-3" />
                       +2kg
                     </span>

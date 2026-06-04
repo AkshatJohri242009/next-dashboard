@@ -164,7 +164,7 @@ function MemoryPanel({ onClose }: { onClose?: () => void }) {
               </button>
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-white/70 leading-relaxed">{m.text}</p>
-                <span className="text-[10px] text-white/30 mt-0.5 block">
+                <span className="text-xs text-white/30 mt-0.5 block">
                   {m.category} &middot; {new Date(m.created_at).toLocaleDateString()}
                 </span>
               </div>
@@ -199,12 +199,12 @@ export default function JarvisChat() {
   const [isSignup, setIsSignup] = useState(false)
   const [loginError, setLoginError] = useState("")
   const [loginLoading, setLoginLoading] = useState(false)
+  const [rememberMe, setRememberMe] = useState(true)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
-  useEffect(() => {
-    useJarvisStore.getState().checkAuth()
-  }, [])
+  // checkAuth now runs from layout.tsx
+
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -245,11 +245,13 @@ export default function JarvisChat() {
     return (
       <div className="flex items-center justify-center h-full p-4">
         <div className="w-full max-w-sm glass rounded-2xl p-6 space-y-4">
-          <div className="flex items-center gap-3 justify-center mb-2">
-            <Bot size={28} className="text-accent" />
-            <h1 className="text-lg font-semibold text-white">J.A.R.V.I.S</h1>
+          <div className="flex flex-col items-center gap-2 mb-2">
+            <div className="w-12 h-12 rounded-xl bg-brand/20 flex items-center justify-center">
+              <Bot size={24} className="text-brand" />
+            </div>
+            <h1 className="text-lg font-bold text-gradient">J.A.R.V.I.S</h1>
+            <p className="text-xs text-white/50 text-center">Your AI strategist, coach, and mentor</p>
           </div>
-          <p className="text-xs text-white/50 text-center">Sign in to access your AI assistant</p>
 
           {loginError && (
             <div className="bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2 text-xs text-red-400 text-center">
@@ -265,7 +267,7 @@ export default function JarvisChat() {
             onKeyDown={async (e) => {
               if (e.key === "Enter") {
                 setLoginLoading(true); setLoginError("")
-                try { isSignup ? await signup(loginUsername, loginPassword) : await login(loginUsername, loginPassword) }
+                try { isSignup ? await signup(loginUsername, loginPassword) : await login(loginUsername, loginPassword, rememberMe) }
                 catch (err: any) { setLoginError(err.message) }
                 setLoginLoading(false)
               }
@@ -280,12 +282,22 @@ export default function JarvisChat() {
             onKeyDown={async (e) => {
               if (e.key === "Enter") {
                 setLoginLoading(true); setLoginError("")
-                try { isSignup ? await signup(loginUsername, loginPassword) : await login(loginUsername, loginPassword) }
+                try { isSignup ? await signup(loginUsername, loginPassword) : await login(loginUsername, loginPassword, rememberMe) }
                 catch (err: any) { setLoginError(err.message) }
                 setLoginLoading(false)
               }
             }}
           />
+
+          <label className="flex items-center gap-2 text-xs text-white/40 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+              className="w-4 h-4 rounded border-white/20 bg-white/10 accent-brand"
+            />
+            Remember me (stay logged in for 30 days)
+          </label>
 
           <button
             disabled={loginLoading}
@@ -296,10 +308,10 @@ export default function JarvisChat() {
                 if (isSignup) {
                   await signup(loginUsername, loginPassword)
                 } else {
-                  await login(loginUsername, loginPassword)
+                  await login(loginUsername, loginPassword, rememberMe)
                 }
-              } catch (err: any) {
-                setLoginError(err.message)
+              } catch (err) {
+                setLoginError((err as Error).message)
               }
               setLoginLoading(false)
             }}
@@ -356,7 +368,7 @@ export default function JarvisChat() {
           </div>
           <div className="p-3 border-t border-white/10 flex items-center gap-2">
             <div className="w-6 h-6 rounded-full bg-accent/20 flex items-center justify-center">
-              <span className="text-[10px] font-bold text-accent">{user?.username?.[0]?.toUpperCase() || "?"}</span>
+              <span className="text-xs font-bold text-accent">{user?.username?.[0]?.toUpperCase() || "?"}</span>
             </div>
             <span className="text-xs text-white/50 flex-1 truncate">{user?.username || "User"}</span>
             <button
@@ -380,10 +392,10 @@ export default function JarvisChat() {
             {showSidebar ? <PanelLeftClose size={16} /> : <PanelLeft size={16} />}
           </button>
           <div className="flex items-center gap-2 flex-1 min-w-0">
-            <Bot size={18} className="text-accent flex-shrink-0" />
-            <h1 className="text-sm font-semibold text-white/80 truncate">J.A.R.V.I.S</h1>
+            <Bot size={18} className="text-brand flex-shrink-0" />
+            <h1 className="text-sm font-bold text-gradient truncate">J.A.R.V.I.S</h1>
             {!currentSessionId && (
-              <span className="text-[10px] text-white/30">No conversation selected</span>
+              <span className="text-xs text-white/30">No conversation selected</span>
             )}
           </div>
           <div className="flex items-center gap-1 md:hidden">

@@ -81,7 +81,7 @@ export function FutureSelfPanel() {
                 {p.trend === "improving" && <TrendingUp className="w-3 h-3 text-success" />}
                 {p.trend === "declining" && <TrendingDown className="w-3 h-3 text-danger" />}
                 {p.trend === "stable" && <Minus className="w-3 h-3 text-white/30" />}
-                <span className="text-[10px] text-white/30">{p.trend}</span>
+                <span className="text-xs text-white/30">{p.trend}</span>
               </div>
             </button>
           )
@@ -98,10 +98,10 @@ export function FutureSelfPanel() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="text-sm font-bold text-white/80">{projection.metric}</h3>
-              <p className="text-[10px] text-white/30">Confidence: {projection.confidence}%</p>
+              <p className="text-xs text-white/30">Confidence: {projection.confidence}%</p>
             </div>
             <span className={cn(
-              "text-[10px] px-2 py-0.5 rounded-full border font-medium",
+              "text-xs px-2 py-0.5 rounded-full border font-medium",
               projection.confidence >= 70 ? "bg-success/10 text-success border-success/20" :
               projection.confidence >= 40 ? "bg-warning/10 text-warning border-warning/20" :
               "bg-white/[0.04] text-white/40 border-white/[0.06]"
@@ -148,7 +148,7 @@ function ProjectionBar({ label, value, max, unit, color }: { label: string; valu
   const displayUnit = unit.includes("%") ? "%" : unit.includes("day") ? " days" : unit.includes("wk") ? "/wk" : unit.includes("hours") ? "h" : unit.includes("ml") ? "ml" : ` ${unit}`
   return (
     <div className="flex items-center gap-3">
-      <span className="w-20 text-[10px] text-white/30 shrink-0">{label}</span>
+      <span className="w-20 text-xs text-white/30 shrink-0">{label}</span>
       <div className="flex-1 h-3 rounded-full bg-white/[0.04] overflow-hidden">
         <motion.div
           initial={{ width: 0 }}

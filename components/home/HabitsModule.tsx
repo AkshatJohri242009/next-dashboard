@@ -110,7 +110,7 @@ export function HabitsModule() {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2.5">
           <Flame className="w-4 h-4 text-orange-400" />
-          <h3 className="section-title text-sm">Habits</h3>
+          <h3 className="section-heading">Habits</h3>
         </div>
         <button onClick={() => setShowAdd(!showAdd)}
           className="h-8 w-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors"
@@ -162,7 +162,7 @@ export function HabitsModule() {
               </span>
               <div className="flex items-center gap-1.5">
                 {habit.streak > 0 && (
-                  <span className="text-[11px] font-semibold text-orange-400">{habit.streak}d</span>
+                  <span className="text-xs font-semibold text-orange-400">{habit.streak}d</span>
                 )}
                 <span className="w-2 h-2 rounded-full" style={{ backgroundColor: categoryColors[habit.category] }} />
               </div>

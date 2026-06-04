@@ -115,7 +115,7 @@ export function KnowledgeGraph() {
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-2.5">
           <Brain className="w-4 h-4 text-accent" />
-          <h3 className="section-title text-sm">Second Brain</h3>
+          <h3 className="section-heading">Second Brain</h3>
         </div>
         <button onClick={() => setShowForm(!showForm)}
           className="h-8 px-3 rounded-lg bg-accent/20 hover:bg-accent/30 text-accent text-[11px] font-medium transition-colors"
@@ -166,7 +166,7 @@ export function KnowledgeGraph() {
                       <Zap className={`w-3 h-3 ${isSelected ? "text-accent" : "text-white/30"}`} />
                       <span className="truncate max-w-[100px] sm:max-w-[120px]">{idea.title}</span>
                       {(connectionCount > 0 || relatedCount > 0) && (
-                        <span className="text-[9px] px-1 py-0.5 rounded-full bg-white/10 text-white/30">
+                        <span className="text-[11px] px-1 py-0.5 rounded-full bg-white/10 text-white/30">
                           {connectionCount + relatedCount}
                         </span>
                       )}
@@ -200,7 +200,7 @@ export function KnowledgeGraph() {
               {tags.length > 0 && (
                 <div className="flex flex-wrap gap-1.5">
                   {tags.map(t => (
-                    <span key={t} className="px-2 py-0.5 rounded-full bg-white/5 text-[10px] text-white/50">
+                    <span key={t} className="px-2 py-0.5 rounded-full bg-white/5 text-xs text-white/50">
                       #{t} <button onClick={() => setTags(tags.filter(x => x !== t))} className="text-white/20 hover:text-white/50">&times;</button>
                     </span>
                   ))}
@@ -226,7 +226,7 @@ export function KnowledgeGraph() {
                   {selected.description && <p className="text-[11px] text-white/40 mt-1">{selected.description}</p>}
                   {selected.tags.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-2">
-                      {selected.tags.map(t => <span key={t} className="px-1.5 py-0.5 rounded bg-white/5 text-[9px] text-white/30">#{t}</span>)}
+                      {selected.tags.map(t => <span key={t} className="px-1.5 py-0.5 rounded bg-white/5 text-[11px] text-white/30">#{t}</span>)}
                     </div>
                   )}
                 </div>
@@ -241,7 +241,7 @@ export function KnowledgeGraph() {
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <Link2 className="w-3.5 h-3.5 text-white/30" />
-                  <span className="text-[10px] text-white/40 uppercase tracking-wider">Connections</span>
+                  <span className="text-xs text-white/40 uppercase tracking-wider">Connections</span>
                 </div>
                 <input value={connectionSearch} onChange={e => setConnectionSearch(e.target.value)}
                   placeholder="Search ideas to connect..." className="w-full h-8 px-3 rounded-lg bg-white/5 border border-white/10 text-xs text-white outline-none placeholder:text-white/30 mb-2" />
@@ -253,7 +253,7 @@ export function KnowledgeGraph() {
                       const isConnected = selected.connections.includes(i.id)
                       return (
                         <button key={i.id} onClick={() => toggleConnection(i.id)}
-                          className={`px-2 py-1 rounded-lg text-[10px] font-medium transition-all ${
+                          className={`px-2 py-1 rounded-lg text-xs font-medium transition-all ${
                             isConnected ? "bg-brand/20 text-brand border border-brand/30" : "bg-white/5 text-white/40 hover:text-white/60 border border-transparent"
                           }`}
                         >
@@ -265,7 +265,7 @@ export function KnowledgeGraph() {
                 </div>
                 {connections.length > 0 && (
                   <div className="mt-3 pt-3 border-t border-white/10">
-                    <p className="text-[10px] text-white/40 mb-2">Connected Ideas</p>
+                    <p className="text-xs text-white/40 mb-2">Connected Ideas</p>
                     <div className="space-y-1">
                       {connections.map(c => (
                         <button key={c.id} onClick={() => setSelectedIdea(c.id)}
@@ -293,7 +293,7 @@ export function KnowledgeGraph() {
           >
             <Zap className={`w-3 h-3 ${selectedIdea === idea.id ? "text-accent" : "text-white/20"} flex-shrink-0`} />
             <span className="text-xs text-white/60 flex-1 min-w-0 truncate">{idea.title}</span>
-            <span className="text-[9px] text-white/20">{idea.connections.length} connections</span>
+            <span className="text-[11px] text-white/20">{idea.connections.length} connections</span>
           </button>
         ))}
       </div>

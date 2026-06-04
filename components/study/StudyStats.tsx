@@ -80,24 +80,24 @@ export function StudyStats() {
     <div className="glass rounded-2xl p-4 sm:p-6 space-y-5">
       <div className="flex items-center gap-2">
         <Brain className="w-4 h-4 text-brand-400" />
-        <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase">Test & Mock Scores</span>
+        <span className="section-label">Test & Mock Scores</span>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         <div className="glass rounded-xl p-3 text-center space-y-1">
           <Target className="w-4 h-4 text-brand-400 mx-auto" />
           <span className="block text-lg font-extrabold tabular-nums text-white/80">{scores.length}</span>
-          <span className="text-[10px] font-mono text-white/30">Entries</span>
+          <span className="text-xs font-mono text-white/30">Entries</span>
         </div>
         <div className="glass rounded-xl p-3 text-center space-y-1">
           <Brain className="w-4 h-4 text-accent-400 mx-auto" />
           <span className="block text-lg font-extrabold tabular-nums text-white/80">{avgPct}%</span>
-          <span className="text-[10px] font-mono text-white/30">Avg Score</span>
+          <span className="text-xs font-mono text-white/30">Avg Score</span>
         </div>
         <div className="glass rounded-xl p-3 text-center space-y-1">
           <AlertTriangle className="w-4 h-4 text-red-400 mx-auto" />
           <span className="block text-lg font-extrabold tabular-nums text-white/80">{errors.length}</span>
-          <span className="text-[10px] font-mono text-white/30">Errors</span>
+          <span className="text-xs font-mono text-white/30">Errors</span>
         </div>
       </div>
 
@@ -138,7 +138,7 @@ export function StudyStats() {
       <div className="border-t border-white/[0.06] pt-4 space-y-3">
         <div className="flex items-center gap-2">
           <AlertTriangle className="w-4 h-4 text-red-400" />
-          <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase">Error Log</span>
+          <span className="section-label">Error Log</span>
         </div>
         <div className="flex flex-wrap gap-2">
           <input value={errorSubject} onChange={e => setErrorSubject(e.target.value)} placeholder="Subject" className="w-full sm:flex-1 sm:min-w-[80px] h-10 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white/80 placeholder:text-white/20 outline-none focus:border-brand-500/40 transition-colors" />
@@ -155,7 +155,7 @@ export function StudyStats() {
                 <span className="text-sm text-white/70 block truncate">{e.subject} — {e.topic}</span>
                 {e.description && <span className="text-[11px] text-white/30 block truncate">{e.description}</span>}
               </div>
-              <span className="text-[10px] font-mono text-white/20">{e.date}</span>
+              <span className="text-xs font-mono text-white/20">{e.date}</span>
               <button onClick={() => deleteError(e.id)} className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 h-8 w-8 sm:h-7 sm:w-7 flex items-center justify-center text-white/20 hover:text-red-400 transition-all shrink-0"><Trash2 className="w-3.5 h-3.5 sm:w-3 sm:h-3" /></button>
             </motion.div>
           ))}

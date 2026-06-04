@@ -9,7 +9,7 @@ import {
   ChevronLeft, ChevronRight, Sparkles, X,
   BookOpen, Calendar, FileText, Volume2, Clock, BarChart3, Bot, Code2,
   PenSquare, Brain, GitBranch, Flag, TrendingUp as ForecastIcon, Zap, Flame, Timer,
-  Mic, Trophy, Activity as CorrIcon, Settings,
+  Mic, Trophy, Activity as CorrIcon, Settings, Eye,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useStore } from "@/lib/store"
@@ -60,22 +60,27 @@ const workNav: NavSection[] = [
     ],
   },
   {
-    label: "Life Data",
+    label: "Insights",
     items: [
       { href: ROUTES.MEMORY,       label: "Memory",    icon: Brain },
       { href: ROUTES.CORRELATIONS, label: "Patterns",  icon: CorrIcon },
-      { href: ROUTES.FUTURE,       label: "Future",    icon: ForecastIcon },
+      { href: ROUTES.FUTURE,       label: "Future",    icon: Eye },
       { href: ROUTES.REPORT,       label: "Report",    icon: Trophy },
-      { href: ROUTES.STOCKS,       label: "Stocks",    icon: TrendingUp },
     ],
   },
   {
-    label: "Dev",
+    label: "Data",
     items: [
+      { href: ROUTES.STOCKS,       label: "Stocks",    icon: TrendingUp },
       { href: ROUTES.PROJECTS, label: "Projects", icon: FolderGit2 },
       { href: ROUTES.OPENCODE, label: "OpenCode", icon: Code2 },
-      { href: ROUTES.SETTINGS, label: "Settings", icon: Settings },
       { href: ROUTES.TIMER, label: "Timer", icon: Timer },
+    ],
+  },
+  {
+    label: "System",
+    items: [
+      { href: ROUTES.SETTINGS, label: "Settings", icon: Settings },
       { href: ROUTES.POMODORO, label: "Pomodoro", icon: Timer },
     ],
   },
@@ -151,11 +156,11 @@ export function Sidebar() {
           x: isMobile ? (mobileMenuOpen ? 0 : -sidebarWidth) : 0,
         }}
         transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-        className="fixed left-0 top-0 z-40 h-screen flex flex-col glass-strong border-r border-white/[0.06] overflow-hidden"
+        className="fixed left-0 top-0 z-40 h-screen flex flex-col glass-strong overflow-hidden"
       >
         <div className="flex items-center gap-3 h-14 px-4 shrink-0 border-b border-white/[0.06]">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-brand-400 to-accent-500 flex items-center justify-center shrink-0">
-            <Sparkles className="w-4 h-4 text-white" />
+          <div className="w-7 h-7 rounded-lg bg-brand/20 flex items-center justify-center shrink-0">
+            <Sparkles className="w-4 h-4 text-brand" />
           </div>
           <AnimatePresence>
             {(!isMobile && sidebarOpen) && (
@@ -186,7 +191,7 @@ export function Sidebar() {
           {sections.map((section) => (
             <div key={section.label}>
               {sidebarOpen && (
-                <p className="px-3 pb-1 text-[9px] font-bold tracking-widest text-white/20 uppercase">{section.label}</p>
+                <p className="px-3 pb-1 text-[11px] font-bold tracking-widest text-text-muted uppercase">{section.label}</p>
               )}
               <div className="space-y-0.5">
                 {section.items.map((item) => {

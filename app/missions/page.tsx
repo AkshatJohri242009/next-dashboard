@@ -26,39 +26,44 @@ export default function MissionsPage() {
   const active = missions.filter(m => m.status === "active").length
   const completedMission = missions.filter(m => m.status === "completed").length
   const totalMilestones = missions.reduce((a, m) => a + (m.milestones?.length || 0), 0)
-  const doneMilestones = missions.reduce((a, m) => a + (m.milestones?.filter((ms: any) => ms.done).length || 0), 0)
+  const doneMilestones = missions.reduce((a, m) => a + (m.milestones?.filter((ms: { done: boolean }) => ms.done).length || 0), 0)
 
   return (
     <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
       <div>
         <h1 className="page-title">Missions</h1>
-        <p className="text-sm text-white/40 mt-1">Long-term missions with milestones and progress tracking.</p>
+        <p className="text-sm text-text-tertiary mt-1">Long-term missions with milestones and progress tracking.</p>
       </div>
 
       <JarvisInsightBar />
 
-      <motion.div variants={item} className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="card-elevated p-4 text-center">
-          <p className="metric-value text-brand">{missions.length}</p>
-          <p className="metric-label">Total Missions</p>
+      <motion.div variants={item} className="flex flex-col sm:flex-row gap-3">
+        <div className="flex-1 sm:flex-[2] card-elevated p-4 sm:p-5 flex items-center gap-4">
+          <div className="w-14 h-14 rounded-full bg-brand/15 flex items-center justify-center flex-shrink-0">
+            <span className="text-lg font-bold text-brand">{active}</span>
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-text-primary">Active Missions</p>
+            <p className="text-xs text-text-tertiary mt-0.5">{completedMission} completed · {missions.length} total</p>
+          </div>
         </div>
-        <div className="card-elevated p-4 text-center">
-          <p className="metric-value text-success">{active}</p>
-          <p className="metric-label">Active</p>
+        <div className="card-elevated p-3 text-center min-w-[80px]">
+          <p className="metric-value text-text-primary">{missions.length}</p>
+          <p className="metric-label">Total</p>
         </div>
-        <div className="card-elevated p-4 text-center">
-          <p className="metric-value text-info">{completedMission}</p>
-          <p className="metric-label">Completed</p>
+        <div className="card-elevated p-3 text-center min-w-[80px]">
+          <p className="metric-value text-semantic-success">{completedMission}</p>
+          <p className="metric-label">Done</p>
         </div>
-        <div className="card-elevated p-4 text-center">
-          <p className="metric-value" style={{ color: totalMilestones > 0 ? "var(--accent)" : "var(--text-muted)" }}>
+        <div className="card-elevated p-3 text-center min-w-[80px]">
+          <p className={`metric-value ${totalMilestones > 0 ? "text-semantic-info" : "text-text-muted"}`}>
             {totalMilestones > 0 ? `${Math.round((doneMilestones / totalMilestones) * 100)}%` : "—"}
           </p>
-          <p className="metric-label">Milestone Progress</p>
+          <p className="metric-label">Milestones</p>
         </div>
       </motion.div>
 
-      <motion.div variants={item} className="card-elevated p-6">
+      <motion.div variants={item} className="card-elevated p-4 sm:p-6">
         <MissionsModule />
       </motion.div>
     </motion.div>

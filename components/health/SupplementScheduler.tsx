@@ -50,7 +50,7 @@ export function SupplementScheduler() {
           >
             <div className="flex items-center justify-between mb-3">
               <span className="text-sm font-bold text-white/80">{win.title}</span>
-              <span className="text-[10px] font-mono text-white/30">{win.time}</span>
+              <span className="text-xs font-mono text-white/30">{win.time}</span>
             </div>
             <div className="space-y-2">
               {win.items.map(item => {

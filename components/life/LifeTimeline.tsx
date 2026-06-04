@@ -71,7 +71,7 @@ export function LifeTimeline() {
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-2.5">
           <Clock className="w-4 h-4 text-brand" />
-          <h3 className="section-title text-sm">Life Timeline</h3>
+          <h3 className="section-heading">Life Timeline</h3>
         </div>
         <button onClick={() => setShowForm(!showForm)}
           className="h-8 px-3 rounded-lg bg-brand/20 hover:bg-brand/30 text-brand text-[11px] font-medium transition-colors"
@@ -97,7 +97,7 @@ export function LifeTimeline() {
               <div className="flex flex-wrap gap-1.5">
                 {CATEGORIES.map(c => (
                   <button key={c.value} onClick={() => setCategory(c.value as TimelineEvent["category"])}
-                    className={`px-2.5 py-1 rounded-lg text-[10px] font-medium transition-all ${
+                    className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
                       category === c.value ? "text-white" : "text-white/40 hover:text-white/60"
                     }`}
                     style={{
@@ -149,7 +149,7 @@ export function LifeTimeline() {
               {showYear && (
                 <div className="flex items-center gap-3 mb-2 mt-3 first:mt-0">
                   <div className="h-px flex-1 bg-white/10" />
-                  <span className="text-[10px] font-bold text-white/30 tracking-wider">{event.date.slice(0, 4)}</span>
+                  <span className="text-xs font-bold text-white/30 tracking-wider">{event.date.slice(0, 4)}</span>
                   <div className="h-px flex-1 bg-white/10" />
                 </div>
               )}
@@ -161,7 +161,7 @@ export function LifeTimeline() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="text-xs font-semibold text-white/80">{event.title}</span>
-                        <span className="text-[9px] px-1.5 py-0.5 rounded" style={{ backgroundColor: `${meta.color}20`, color: meta.color }}>
+                        <span className="text-[11px] px-1.5 py-0.5 rounded" style={{ backgroundColor: `${meta.color}20`, color: meta.color }}>
                           {meta.label}
                         </span>
                       </div>

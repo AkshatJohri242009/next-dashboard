@@ -14,7 +14,7 @@ export default function BriefingsPage() {
         </div>
         <div>
           <h1 className="text-xl font-bold text-gradient">Briefings</h1>
-          <p className="text-sm text-white/40">Daily, weekly, and monthly intelligence briefings</p>
+          <p className="text-sm text-text-tertiary">Daily, weekly, and monthly intelligence briefings</p>
         </div>
       </div>
       <JarvisInsightBar />

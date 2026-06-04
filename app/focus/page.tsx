@@ -33,7 +33,7 @@ export default function FocusPage() {
         </div>
         <div>
           <h1 className="text-xl font-bold text-gradient">Focus Mode</h1>
-          <p className="text-sm text-white/40">Deep work. No distractions.</p>
+          <p className="text-sm text-text-tertiary">Deep work. No distractions.</p>
         </div>
       </div>
       <JarvisInsightBar />
@@ -55,7 +55,7 @@ export default function FocusPage() {
           <div className="flex gap-1 ml-2">
             {[5, 15, 25, 30, 60].map(m => (
               <button key={m} onClick={() => { setTimer(m * 60); setRunning(false) }}
-                className={`h-9 px-3 rounded-xl text-xs font-medium transition-colors ${timer === m * 60 ? "bg-white/10 text-white" : "bg-white/5 text-white/40 hover:text-white/60"}`}
+                className={`h-9 px-3 rounded-xl text-xs font-medium transition-colors ${timer === m * 60 ? "bg-white/10 text-white" : "bg-white/5 text-text-tertiary hover:text-white/60"}`}
               >
                 {m}m
               </button>

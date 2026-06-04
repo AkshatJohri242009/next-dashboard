@@ -48,7 +48,7 @@ export function FocusSounds() {
   return (
     <div className="glass rounded-2xl p-4 sm:p-6 space-y-4">
       <div className="flex items-center justify-between">
-        <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase">
+        <span className="section-label">
           Focus Sounds
         </span>
         <button

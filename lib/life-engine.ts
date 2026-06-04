@@ -1,5 +1,8 @@
 "use client"
 
+import type { Goal, GymState, Habit } from "./types"
+import type { StudyTask } from "./study-types"
+
 export interface LifeScoreBreakdown {
   health: number
   fitness: number
@@ -111,11 +114,11 @@ export function generateBriefing(prevBriefing?: DailyBriefing): DailyBriefing {
   let sleepHours = 8, habitDone = 0, habitTotal = 0
 
   try {
-    const g = JSON.parse(localStorage.getItem("goals:" + today) || "[]")
-    goalsTotal = g.length; goalsDone = g.filter((x: any) => x.done).length
+    const g: Goal[] = JSON.parse(localStorage.getItem("goals:" + today) || "[]")
+    goalsTotal = g.length; goalsDone = g.filter(x => x.done).length
     const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10)
-    const gy = JSON.parse(localStorage.getItem("goals:" + yesterday) || "[]")
-    goalsYesterdayTotal = gy.length; goalsYesterdayDone = gy.filter((x: any) => x.done).length
+    const gy: Goal[] = JSON.parse(localStorage.getItem("goals:" + yesterday) || "[]")
+    goalsYesterdayTotal = gy.length; goalsYesterdayDone = gy.filter(x => x.done).length
   } catch {}
 
   try {
@@ -124,16 +127,16 @@ export function generateBriefing(prevBriefing?: DailyBriefing): DailyBriefing {
   } catch {}
 
   try {
-    const g = JSON.parse(localStorage.getItem("gym_dashboard_v1") || "{}")
+    const g: GymState = JSON.parse(localStorage.getItem("gym_dashboard_v1") || "{}")
     if (g.logs) {
-      const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString().slice(0, 10)
-      gymSessions = new Set(g.logs.filter((l: any) => l.at >= weekAgo).map((l: any) => l.at.slice(0, 10))).size
+      const weekAgo = Date.now() - 7 * 86400000
+      gymSessions = new Set(g.logs.filter(l => l.at >= weekAgo).map(l => new Date(l.at).toISOString().slice(0, 10))).size
     }
   } catch {}
 
   try {
-    const s = JSON.parse(localStorage.getItem("study_tasks_v1") || "[]")
-    studyTotal = s.length; studyDone = s.filter((x: any) => x.done).length
+    const s: StudyTask[] = JSON.parse(localStorage.getItem("study_tasks_v1") || "[]")
+    studyTotal = s.length; studyDone = s.filter(x => x.done).length
   } catch {}
 
   try {
@@ -142,8 +145,8 @@ export function generateBriefing(prevBriefing?: DailyBriefing): DailyBriefing {
   } catch {}
 
   try {
-    const hb = JSON.parse(localStorage.getItem("lifeos_habits") || "[]")
-    habitTotal = hb.length; habitDone = hb.filter((x: any) => x.logs?.includes(today)).length
+    const hb: Habit[] = JSON.parse(localStorage.getItem("lifeos_habits") || "[]")
+    habitTotal = hb.length; habitDone = hb.filter(x => x.logs?.includes(today)).length
   } catch {}
 
   const goalCompletion = goalsTotal > 0 ? Math.round(goalsDone / goalsTotal * 100) : 0
@@ -193,12 +196,12 @@ export function generateBriefing(prevBriefing?: DailyBriefing): DailyBriefing {
 
 function focusOfDay(): string {
   try {
-    const tasks = JSON.parse(localStorage.getItem("study_tasks_v1") || "[]")
-    const undone = tasks.filter((t: any) => !t.done)
-    if (undone.length > 0) return `Complete ${undone[0].title || undone[0].name || "pending task"}`
-    const goals = JSON.parse(localStorage.getItem("goals:" + new Date().toISOString().slice(0, 10)) || "[]")
-    const undoneGoals = goals.filter((g: any) => !g.done)
-    if (undoneGoals.length > 0) return `Complete "${undoneGoals[0].title || undoneGoals[0].text}"`
+    const tasks: StudyTask[] = JSON.parse(localStorage.getItem("study_tasks_v1") || "[]")
+    const undone = tasks.filter(t => !t.done)
+    if (undone.length > 0) return `Complete ${undone[0].text || "pending task"}`
+    const goals: Goal[] = JSON.parse(localStorage.getItem("goals:" + new Date().toISOString().slice(0, 10)) || "[]")
+    const undoneGoals = goals.filter(g => !g.done)
+    if (undoneGoals.length > 0) return `Complete "${undoneGoals[0].text}"`
     return "Plan your next priority"
   } catch {
     return "Set today's top priority"
@@ -238,9 +241,9 @@ export function computeMomentum(): { daily: number; weekly: number; monthly: num
   if (!data) return { daily: 0, weekly: 0, monthly: 0 }
 
   try {
-    const goalsToday = JSON.parse(data.getItem("goals:" + new Date().toISOString().slice(0, 10)) || "[]")
+    const goalsToday: Goal[] = JSON.parse(data.getItem("goals:" + new Date().toISOString().slice(0, 10)) || "[]")
     const total = goalsToday.length
-    const done = goalsToday.filter((g: any) => g.done).length
+    const done = goalsToday.filter(g => g.done).length
     const daily = total > 0 ? Math.round(done / total * 100) : 0
 
     // Weekly: last 7 days
@@ -249,9 +252,9 @@ export function computeMomentum(): { daily: number; weekly: number; monthly: num
     for (let i = 0; i < 7; i++) {
       const d = new Date(Date.now() - i * 86400000).toISOString().slice(0, 10)
       try {
-        const dayGoals = JSON.parse(data.getItem("goals:" + d) || "[]")
+        const dayGoals: Goal[] = JSON.parse(data.getItem("goals:" + d) || "[]")
         weeklyTotal += dayGoals.length
-        weeklyDone += dayGoals.filter((g: any) => g.done).length
+        weeklyDone += dayGoals.filter(g => g.done).length
       } catch {}
     }
     const weekly = weeklyTotal > 0 ? Math.round(weeklyDone / weeklyTotal * 100) : 0

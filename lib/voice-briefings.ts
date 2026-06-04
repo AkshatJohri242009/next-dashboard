@@ -32,6 +32,7 @@ export interface MonthlyBriefing {
   overallScore: number
 }
 
+import type { Goal, Habit, JournalEntry } from "./types"
 import { loadJSON } from "./utils"
 
 function getTimeOfDay(): "morning" | "afternoon" | "evening" {
@@ -46,8 +47,8 @@ export function generateMorningBriefing(username = "Akshat"): DailyBriefing {
   const sections: BriefingSection[] = []
   const today = new Date().toISOString().slice(0, 10)
 
-  const goals = loadJSON(`goals:${today}`) || []
-  const done = goals.filter((g: any) => g.done).length
+  const goals: Goal[] = loadJSON(`goals:${today}`) || []
+  const done = goals.filter(g => g.done).length
   const total = goals.length
   sections.push({
     title: "Today's Goals",
@@ -69,9 +70,9 @@ export function generateMorningBriefing(username = "Akshat"): DailyBriefing {
     })
   }
 
-  const habits = loadJSON("lifeos_habits") || []
-  const activeHabits = habits.filter((h: any) => h.logs?.includes(today))
-  const longestStreak = Math.max(...habits.map((h: any) => h.streak || 0), 0)
+  const habits: Habit[] = loadJSON("lifeos_habits") || []
+  const activeHabits = habits.filter(h => h.logs?.includes(today))
+  const longestStreak = Math.max(...habits.map(h => h.streak || 0), 0)
   sections.push({
     title: "Habit Tracker",
     icon: "🔥",
@@ -84,7 +85,7 @@ export function generateMorningBriefing(username = "Akshat"): DailyBriefing {
 
   const gymData = loadJSON("gym_dashboard_v1")
   const gymLogs = gymData?.logs || []
-  const recentGym = gymLogs.filter((l: any) => {
+  const recentGym = gymLogs.filter((l: { date: string }) => {
     const d = new Date(l.date).getTime()
     return d > Date.now() - 7 * 86400000
   }).length
@@ -117,8 +118,8 @@ export function generateMorningBriefing(username = "Akshat"): DailyBriefing {
 export function generateEveningReview(username = "Akshat"): DailyBriefing {
   const sections: BriefingSection[] = []
   const today = new Date().toISOString().slice(0, 10)
-  const goals = loadJSON(`goals:${today}`) || []
-  const done = goals.filter((g: any) => g.done).length
+  const goals: Goal[] = loadJSON(`goals:${today}`) || []
+  const done = goals.filter(g => g.done).length
   const total = goals.length
   const rate = total > 0 ? Math.round(done / total * 100) : 0
   sections.push({
@@ -128,8 +129,8 @@ export function generateEveningReview(username = "Akshat"): DailyBriefing {
     type: rate >= 80 ? "positive" : rate >= 50 ? "neutral" : "negative",
   })
 
-  const habits = loadJSON("lifeos_habits") || []
-  const doneHabits = habits.filter((h: any) => h.logs?.includes(today)).length
+  const habits: Habit[] = loadJSON("lifeos_habits") || []
+  const doneHabits = habits.filter(h => h.logs?.includes(today)).length
   sections.push({
     title: "Habits",
     icon: "🔥",
@@ -138,7 +139,7 @@ export function generateEveningReview(username = "Akshat"): DailyBriefing {
   })
 
   const gymData = loadJSON("gym_dashboard_v1")
-  const gymToday = gymData?.logs?.filter((l: any) => l.date === today).length || 0
+  const gymToday = gymData?.logs?.filter((l: { date: string }) => l.date === today).length || 0
   sections.push({
     title: "Activity",
     icon: "⚡",
@@ -147,7 +148,7 @@ export function generateEveningReview(username = "Akshat"): DailyBriefing {
   })
 
   const journal = loadJSON("lifeos_journal") || []
-  const todayEntry = Array.isArray(journal) ? journal.find((e: any) => e.date?.startsWith(today)) : null
+  const todayEntry = Array.isArray(journal) ? journal.find((e: JournalEntry) => e.date?.startsWith(today)) : null
   if (!todayEntry) {
     sections.push({
       title: "Reflection",
@@ -195,30 +196,30 @@ export function generateWeeklyBriefing(): WeeklyBriefing {
   let doneGoals = 0
   for (let i = 0; i < 7; i++) {
     const d = new Date(now - i * day).toISOString().slice(0, 10)
-    const g = loadJSON(`goals:${d}`) || []
+    const g: Goal[] = loadJSON(`goals:${d}`) || []
     totalGoals += g.length
-    doneGoals += g.filter((x: any) => x.done).length
+    doneGoals += g.filter(x => x.done).length
   }
   const rate = totalGoals > 0 ? Math.round(doneGoals / totalGoals * 100) : 0
 
   const gymData = loadJSON("gym_dashboard_v1")
-  const gymWeek = (gymData?.logs || []).filter((l: any) => new Date(l.date).getTime() > weekAgo).length
+  const gymWeek = (gymData?.logs || []).filter((l: { date: string }) => new Date(l.date).getTime() > weekAgo).length
 
   const journal = loadJSON("lifeos_journal") || []
-  const weekEntries = Array.isArray(journal) ? journal.filter((e: any) => e.createdAt > weekAgo) : []
-  const goodDays = weekEntries.filter((e: any) => e.mood === "great" || e.mood === "good").length
+  const weekEntries = Array.isArray(journal) ? journal.filter((e: JournalEntry) => e.createdAt > weekAgo) : []
+  const goodDays = weekEntries.filter(e => e.mood === "great" || e.mood === "good").length
   const moodRate = weekEntries.length > 0 ? Math.round(goodDays / weekEntries.length * 100) : 0
 
   const habits = loadJSON("lifeos_habits") || []
   let habitDays = 0
-  habits.forEach((h: any) => {
+  habits.forEach((h: Habit) => {
     const weekLogs = (h.logs || []).filter((d: string) => new Date(d).getTime() > weekAgo).length
     if (weekLogs >= 5) habitDays++
   })
 
   const sleepLog = loadJSON("sleep_log") || {}
-  const entries = Object.values(sleepLog as Record<string, any>).filter((e: any) => e?.date && new Date(e.date).getTime() > weekAgo)
-  const avgSleep = entries.length > 0 ? entries.reduce((a: number, e: any) => a + (parseFloat(e.hours) || 0), 0) / entries.length : 0
+  const entries = Object.values(sleepLog as Record<string, { date: string; hours: string }>).filter(e => e?.date && new Date(e.date).getTime() > weekAgo)
+  const avgSleep = entries.length > 0 ? entries.reduce((a: number, e) => a + (parseFloat(e.hours) || 0), 0) / entries.length : 0
 
   const achievements: string[] = []
   if (rate >= 70) achievements.push(`Completed ${rate}% of goals`)
@@ -258,24 +259,24 @@ export function generateMonthlyBriefing(): MonthlyBriefing {
   const monthLabel = new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" })
 
   const gymData = loadJSON("gym_dashboard_v1")
-  const gymMonth = (gymData?.logs || []).filter((l: any) => new Date(l.date).getTime() > monthAgo).length
-  const gymPrev = (gymData?.logs || []).filter((l: any) => {
+  const gymMonth = (gymData?.logs || []).filter((l: { date: string }) => new Date(l.date).getTime() > monthAgo).length
+  const gymPrev = (gymData?.logs || []).filter((l: { date: string }) => {
     const t = new Date(l.date).getTime()
     return t > monthAgo - 30 * 86400000 && t <= monthAgo
   }).length
 
   const journal = loadJSON("lifeos_journal") || []
-  const monthEntries = Array.isArray(journal) ? journal.filter((e: any) => e.createdAt > monthAgo) : []
-  const prevEntries = Array.isArray(journal) ? journal.filter((e: any) => e.createdAt > monthAgo - 30 * 86400000 && e.createdAt <= monthAgo) : []
-  const goodMonth = monthEntries.filter((e: any) => e.mood === "great" || e.mood === "good").length
+  const monthEntries = Array.isArray(journal) ? journal.filter((e: JournalEntry) => e.createdAt > monthAgo) : []
+  const prevEntries = Array.isArray(journal) ? journal.filter((e: JournalEntry) => e.createdAt > monthAgo - 30 * 86400000 && e.createdAt <= monthAgo) : []
+  const goodMonth = monthEntries.filter(e => e.mood === "great" || e.mood === "good").length
   const monthPositivity = monthEntries.length > 0 ? Math.round(goodMonth / monthEntries.length * 100) : 0
 
   const sleepLog = loadJSON("sleep_log") || {}
-  const monthSleep = Object.values(sleepLog as Record<string, any>).filter((e: any) => e?.date && new Date(e.date).getTime() > monthAgo)
-  const avgSleep = monthSleep.length > 0 ? monthSleep.reduce((a: number, e: any) => a + (parseFloat(e.hours) || 0), 0) / monthSleep.length : 0
+  const monthSleep = Object.values(sleepLog as Record<string, { date: string; hours: string }>).filter(e => e?.date && new Date(e.date).getTime() > monthAgo)
+  const avgSleep = monthSleep.length > 0 ? monthSleep.reduce((a: number, e) => a + (parseFloat(e.hours) || 0), 0) / monthSleep.length : 0
 
-  const habits = loadJSON("lifeos_habits") || []
-  const habitDensity = habits.length > 0 ? Math.round(habits.filter((h: any) => (h.logs || []).filter((d: string) => new Date(d).getTime() > monthAgo).length >= 20).length / habits.length * 100) : 0
+  const habits: Habit[] = loadJSON("lifeos_habits") || []
+  const habitDensity = habits.length > 0 ? Math.round(habits.filter(h => (h.logs || []).filter((d: string) => new Date(d).getTime() > monthAgo).length >= 20).length / habits.length * 100) : 0
 
   const growthAreas: string[] = []
   if (gymMonth > gymPrev) growthAreas.push(`Gym: ${gymPrev} → ${gymMonth} sessions (${Math.round((gymMonth - gymPrev) / (gymPrev || 1) * 100)}% increase)`)

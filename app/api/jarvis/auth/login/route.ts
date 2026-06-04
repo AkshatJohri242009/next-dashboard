@@ -8,12 +8,13 @@ const HARDCODED_PASS = "DPS2405$"
 
 export async function POST(req: Request) {
   try {
-    const { username, password } = await req.json()
+    const { username, password, rememberMe } = await req.json()
     if (!username || !password) {
       return NextResponse.json({ error: "Username and password required" }, { status: 400 })
     }
 
     const trimmed = username.trim().toLowerCase()
+    const maxAge = rememberMe ? 60 * 60 * 24 * 30 : 60 * 60 * 24 * 7
 
     if (trimmed === HARDCODED_USER && password === HARDCODED_PASS) {
       const token = await createSessionToken("aki_hardcoded_user_id")
@@ -24,7 +25,7 @@ export async function POST(req: Request) {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
-        maxAge: 60 * 60 * 24 * 7,
+        maxAge,
         path: "/",
       })
       return res
@@ -48,7 +49,7 @@ export async function POST(req: Request) {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 7,
+      maxAge,
       path: "/",
     })
     return res

@@ -29,10 +29,23 @@ const config: Config = {
           800: "#f08c00", 900: "#e67700", 950: "#7a3d00",
         },
         theme: {
-          bg: "var(--bg)", "bg-secondary": "var(--bg-secondary)",
+          bg: "var(--bg)", "bg-secondary": "var(--bg-secondary)", "bg-elevated": "var(--bg-elevated)",
           text: "var(--text)", "text-secondary": "var(--text-secondary)",
-          "text-muted": "var(--text-tertiary)", border: "var(--border)",
+          "text-muted": "var(--text-tertiary)", border: "var(--border)", "border-strong": "var(--border-strong)",
         },
+        "text": {
+          primary: "var(--text)",
+          secondary: "var(--text-secondary)",
+          tertiary: "var(--text-tertiary)",
+          muted: "var(--text-muted)",
+        },
+        "semantic": {
+          success: "var(--success)",
+          warning: "var(--warning)",
+          danger: "var(--danger)",
+          info: "var(--info)",
+        },
+
       },
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],

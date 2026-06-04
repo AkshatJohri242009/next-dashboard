@@ -6,6 +6,9 @@ export interface Goal {
   doneAt?: number
   reminderMin?: number
   progress?: number
+  priority?: "low" | "medium" | "high"
+  dueDate?: string
+  estimatedMinutes?: number
 }
 
 export interface Reminder {
@@ -123,4 +126,71 @@ export interface ThemeConfig {
   mode: "dark" | "light"
   brandColor: string
   accentColor: string
+}
+
+export interface JournalEntry {
+  id: string
+  date: string
+  content: string
+  mood: "great" | "good" | "okay" | "bad" | "awful"
+  tags: string[]
+  createdAt: number
+}
+
+export interface Chapter {
+  id: string
+  subject: string
+  name: string
+  completed: boolean
+  score: number | null
+  date: string | null
+}
+
+export interface Mission {
+  id: string
+  title: string
+  description: string
+  milestones: { title: string; done: boolean }[]
+  status: "active" | "completed" | "paused"
+  deadline: string | null
+  createdAt: number
+}
+
+export interface Decision {
+  id: string
+  title: string
+  context: string
+  options: string[]
+  chosen: string
+  outcome: "positive" | "neutral" | "negative"
+  reflection: string
+  tags: string[]
+  createdAt: number
+}
+
+export interface Idea {
+  id: string
+  title: string
+  description: string
+  connections: string[]
+  tags: string[]
+  createdAt: number
+}
+
+export interface TimelineEvent {
+  id: string
+  date: string
+  title: string
+  description: string
+  category: "career" | "education" | "relationship" | "move" | "achievement" | "other"
+  createdAt: number
+}
+
+export interface Habit {
+  id: string
+  name: string
+  category: "health" | "learning" | "productivity" | "mindfulness"
+  streak: number
+  logs: string[]
+  createdAt: number
 }

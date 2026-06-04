@@ -77,7 +77,7 @@ export function CommuteTimer() {
   return (
     <div className="glass rounded-2xl p-4 sm:p-6 space-y-4">
       <div className="flex items-center justify-between">
-        <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase">
+        <span className="section-label">
           Commute Timer
         </span>
         <Plane className="w-4 h-4 text-white/30" />
@@ -85,7 +85,7 @@ export function CommuteTimer() {
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase block mb-1.5">
+          <label className="text-xs font-mono font-extrabold tracking-widest text-white/30 uppercase block mb-1.5">
             From
           </label>
           <select
@@ -99,7 +99,7 @@ export function CommuteTimer() {
           </select>
         </div>
         <div>
-          <label className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase block mb-1.5">
+          <label className="text-xs font-mono font-extrabold tracking-widest text-white/30 uppercase block mb-1.5">
             To
           </label>
           <select

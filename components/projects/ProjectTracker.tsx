@@ -74,7 +74,7 @@ export function ProjectTracker() {
         </div>
         <button
           onClick={() => setShowAll(!showAll)}
-          className="h-9 sm:h-10 px-3 sm:px-4 rounded-xl bg-white/[0.04] border border-white/[0.06] text-[10px] sm:text-xs font-bold text-white/50 hover:text-white/80 hover:bg-white/[0.08] transition-colors"
+          className="h-9 sm:h-10 px-3 sm:px-4 rounded-xl bg-white/[0.04] border border-white/[0.06] text-xs sm:text-xs font-bold text-white/50 hover:text-white/80 hover:bg-white/[0.08] transition-colors"
         >
           {showAll ? "Show Featured" : "Show All"}
         </button>
@@ -88,7 +88,7 @@ export function ProjectTracker() {
         >
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <div className="min-w-0 flex-1">
-              <span className="text-[9px] sm:text-[10px] font-mono font-extrabold tracking-widest text-brand-400/70 uppercase">Tracking</span>
+              <span className="text-[11px] sm:text-xs font-mono font-extrabold tracking-widest text-brand-400/70 uppercase">Tracking</span>
               <div className="flex items-baseline gap-2 mt-1 flex-wrap">
                 <span className="text-base sm:text-lg font-bold text-white/90 truncate">{activeTracked.name}</span>
                 <span className="text-2xl sm:text-[28px] font-bold tabular-nums text-brand-400">{timeFmt(totalActiveMins)}</span>
@@ -96,7 +96,7 @@ export function ProjectTracker() {
             </div>
             <button
               onClick={stopTracking}
-              className="h-9 sm:h-10 px-4 sm:px-5 rounded-xl bg-red-500/20 text-red-400 text-[10px] sm:text-xs font-bold border border-red-500/30 flex items-center gap-1.5 hover:bg-red-500/30 transition-colors shrink-0"
+              className="h-9 sm:h-10 px-4 sm:px-5 rounded-xl bg-red-500/20 text-red-400 text-xs sm:text-xs font-bold border border-red-500/30 flex items-center gap-1.5 hover:bg-red-500/30 transition-colors shrink-0"
             >
               <Square className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
               Stop
@@ -109,7 +109,7 @@ export function ProjectTracker() {
         <div className="glass-strong rounded-xl p-4">
           <div className="flex items-center gap-2 mb-3">
             <Clock className="w-3.5 h-3.5 text-accent-400" />
-            <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase">Time per project</span>
+            <span className="section-label">Time per project</span>
           </div>
           <ResponsiveContainer width="100%" height={isMobile ? 160 : 220}>
             <BarChart data={chartData} layout="vertical" margin={{ top: 4, right: 8, left: 0, bottom: 4 }}>
@@ -183,7 +183,7 @@ export function ProjectTracker() {
                 <p className="text-xs text-white/40 mb-3 line-clamp-2">{repo.description}</p>
               )}
 
-              <div className="flex items-center gap-3 text-[10px] sm:text-[11px] text-white/30 font-mono mb-3 flex-wrap">
+              <div className="flex items-center gap-3 text-xs sm:text-[11px] text-white/30 font-mono mb-3 flex-wrap">
                 {repo.language && (
                   <span className="flex items-center gap-1">
                     <span className="w-2 h-2 rounded-full bg-brand-400" />
@@ -201,7 +201,7 @@ export function ProjectTracker() {
               </div>
 
               {tracked && tracked.totalMinutes > 0 && (
-                <div className="text-[10px] font-mono text-white/30 mb-2 flex items-center gap-1">
+                <div className="text-xs font-mono text-white/30 mb-2 flex items-center gap-1">
                   <Clock className="w-3 h-3" />
                   {timeFmt(tracked.totalMinutes)} total
                 </div>
@@ -211,7 +211,7 @@ export function ProjectTracker() {
                 <button
                   onClick={() => setCurrentProject(repo.name)}
                   className={cn(
-                    "flex-1 h-8 sm:h-9 rounded-xl text-[10px] sm:text-xs font-bold transition-colors",
+                    "flex-1 h-8 sm:h-9 rounded-xl text-xs sm:text-xs font-bold transition-colors",
                     isCurrent
                       ? "bg-brand-500/20 text-brand-300 border border-brand-500/30"
                       : "bg-white/[0.04] text-white/40 border border-white/[0.06] hover:text-white/70 hover:bg-white/[0.08]",

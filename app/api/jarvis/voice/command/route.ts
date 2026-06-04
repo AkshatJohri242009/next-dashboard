@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server"
 import { applyRateLimit } from "@/lib/rate-limit"
 
+const OPENJARVIS_URL = process.env.OPENJARVIS_URL || "http://127.0.0.1:8000"
+
 const SYSTEM_PROMPT = `You are J.A.R.V.I.S., the AI intelligence layer for LifeOS. You understand natural language and execute operations on the user's LifeOS.
 
 You have access to the user's real-time life context below. Use it to answer questions and execute actions.
@@ -38,6 +40,15 @@ RULES:
 CURRENT USER CONTEXT:
 {lifeContext}`
 
+async function ojIsAvailable(): Promise<boolean> {
+  try {
+    const res = await fetch(`${OPENJARVIS_URL}/v1/models`, { signal: AbortSignal.timeout(2000) })
+    return res.ok
+  } catch {
+    return false
+  }
+}
+
 export async function POST(req: Request) {
   const rateLimitResponse = applyRateLimit(req, { maxRequests: 30, windowMs: 60000 })
   if (rateLimitResponse) return rateLimitResponse
@@ -48,18 +59,21 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "text required" }, { status: 400 })
     }
 
-    const endpointUrl = process.env.JARVIS_DEFAULT_ENDPOINT || "https://api.groq.com/openai/v1"
     const model = process.env.JARVIS_DEFAULT_MODEL || "llama-3.3-70b-versatile"
     const apiKey = process.env.JARVIS_GROQ_KEY || process.env.JARVIS_OPENAI_KEY || process.env.OPENAI_API_KEY || ""
-
     const systemPrompt = SYSTEM_PROMPT.replace("{lifeContext}", lifeContext || "No context available yet.")
 
-    const response = await fetch(`${endpointUrl}/chat/completions`, {
+    const ojAvailable = await ojIsAvailable()
+    const targetUrl = ojAvailable
+      ? `${OPENJARVIS_URL}/v1/chat/completions`
+      : `${process.env.JARVIS_DEFAULT_ENDPOINT || "https://api.groq.com/openai/v1"}/chat/completions`
+
+    const fetchHeaders: Record<string, string> = { "Content-Type": "application/json" }
+    if (!ojAvailable) fetchHeaders["Authorization"] = `Bearer ${apiKey}`
+
+    const response = await fetch(targetUrl, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
+      headers: fetchHeaders,
       body: JSON.stringify({
         model,
         messages: [
@@ -79,7 +93,6 @@ export async function POST(req: Request) {
     const data = await response.json()
     const fullText = data.choices?.[0]?.message?.content || ""
 
-    // Parse action tag from response
     const actionMatch = fullText.match(/⟪action:(\{.*?\})⟫/)
     let action = null
     let message = fullText
@@ -92,7 +105,7 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ message, action })
-  } catch (e: any) {
-    return NextResponse.json({ error: e.message }, { status: 500 })
+  } catch (e) {
+    return NextResponse.json({ error: (e as Error).message }, { status: 500 })
   }
 }

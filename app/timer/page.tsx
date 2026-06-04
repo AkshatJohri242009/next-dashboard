@@ -62,7 +62,7 @@ export default function TimerPage() {
         </div>
         <div>
           <h1 className="text-xl font-bold text-gradient">Timer</h1>
-          <p className="text-sm text-white/40">Countdown & stopwatch</p>
+          <p className="text-sm text-text-tertiary">Countdown & stopwatch</p>
         </div>
       </div>
 
@@ -73,7 +73,7 @@ export default function TimerPage() {
           <div className="flex justify-center gap-2">
             {(["countdown", "stopwatch"] as const).map(m => (
               <button key={m} onClick={() => { setRunning(false); setMode(m); setStopwatchMs(0) }}
-                className={cn("h-9 px-4 rounded-xl text-xs font-medium transition-all", mode === m ? "bg-white/10 text-white" : "bg-white/[0.04] text-white/40 hover:text-white/60")}
+                className={cn("h-9 px-4 rounded-xl text-xs font-medium transition-all", mode === m ? "bg-white/10 text-white" : "bg-white/[0.04] text-text-tertiary hover:text-white/60")}
               >
                 {m === "countdown" ? <Clock className="w-3.5 h-3.5 inline mr-1.5" /> : <Timer className="w-3.5 h-3.5 inline mr-1.5" />}
                 {m.charAt(0).toUpperCase() + m.slice(1)}
@@ -101,7 +101,7 @@ export default function TimerPage() {
             <button onClick={reset}
               className="h-12 w-12 rounded-full bg-white/[0.04] border border-white/[0.06] flex items-center justify-center hover:bg-white/[0.08] transition-colors"
             >
-              <RotateCcw className="w-4 h-4 text-white/40" />
+              <RotateCcw className="w-4 h-4 text-text-tertiary" />
             </button>
           </div>
 
@@ -109,7 +109,7 @@ export default function TimerPage() {
             <div className="flex justify-center gap-2 flex-wrap">
               {PRESETS.map(m => (
                 <button key={m} onClick={() => setPreset(m)}
-                  className={cn("h-9 px-3 rounded-xl text-xs font-medium transition-all", total === m * 60 ? "bg-white/10 text-white" : "bg-white/[0.04] text-white/40 hover:text-white/60")}
+                  className={cn("h-9 px-3 rounded-xl text-xs font-medium transition-all", total === m * 60 ? "bg-white/10 text-white" : "bg-white/[0.04] text-text-tertiary hover:text-white/60")}
                 >
                   {m}m
                 </button>

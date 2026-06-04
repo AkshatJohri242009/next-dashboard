@@ -22,7 +22,7 @@ export default function BrainPage() {
   useEffect(() => {
     try {
       const ideas = JSON.parse(localStorage.getItem("lifeos_brain") || "[]")
-      const totalConnections = ideas.reduce((a: number, i: any) => a + (i.connections?.length || 0), 0)
+      const totalConnections = ideas.reduce((a: number, i: { connections?: string[] }) => a + (i.connections?.length || 0), 0)
       setStats({ total: ideas.length, connections: totalConnections })
     } catch {}
   }, [])

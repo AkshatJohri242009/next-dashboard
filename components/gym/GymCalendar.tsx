@@ -98,18 +98,18 @@ export function GymCalendar() {
         <div className="rounded-xl p-4 bg-white/[0.02] border border-white/[0.06]">
           <div className="flex items-center gap-2 mb-1">
             <Flame className="w-4 h-4 text-brand-400" />
-            <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase">Streak</span>
+            <span className="section-label">Streak</span>
           </div>
           <span className="text-[32px] font-bold tabular-nums text-white/90">{streak}</span>
           <span className="text-xs text-white/40 ml-1">days</span>
         </div>
         <div className="rounded-xl p-4 bg-white/[0.02] border border-white/[0.06]">
-          <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase block mb-1">Past 30 Days</span>
+          <span className="text-xs font-mono font-extrabold tracking-widest text-white/30 uppercase block mb-1">Past 30 Days</span>
           <span className="text-[32px] font-bold tabular-nums text-white/90">{total30}</span>
           <span className="text-xs text-white/40 ml-1">workouts</span>
         </div>
         <div className="rounded-xl p-4 bg-white/[0.02] border border-white/[0.06] sm:col-span-2">
-          <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase block mb-1">Consistency</span>
+          <span className="text-xs font-mono font-extrabold tracking-widest text-white/30 uppercase block mb-1">Consistency</span>
           <span className="text-[32px] font-bold tabular-nums">{logs.length > 0 ? "Active" : "No data"}</span>
         </div>
       </div>
@@ -118,12 +118,12 @@ export function GymCalendar() {
         <div className="flex items-end gap-[3px]" style={{ minWidth: 248 }}>
           <div className="flex flex-col gap-[3px] mr-1 pt-5">
             {DAYS.map((d, i) => (
-              <div key={i} className="h-[14px] text-[10px] text-white/30 font-mono leading-[14px]">{d}</div>
+              <div key={i} className="h-[14px] text-xs text-white/30 font-mono leading-[14px]">{d}</div>
             ))}
           </div>
           {Array.from({ length: 12 }).map((_, w) => (
             <div key={w} className="flex flex-col gap-[3px]">
-              <div className="h-[14px] text-[10px] text-white/40 font-mono text-center leading-[14px]">
+              <div className="h-[14px] text-xs text-white/40 font-mono text-center leading-[14px]">
                 {monthLabels.find(m => m.col === w)?.label || ""}
               </div>
               {Array.from({ length: 7 }).map((_, d) => {
@@ -147,13 +147,13 @@ export function GymCalendar() {
           ))}
         </div>
         <div className="flex items-center gap-2 mt-3 justify-end">
-          <span className="text-[10px] text-white/30">Less</span>
+          <span className="text-xs text-white/30">Less</span>
           <div className="w-[14px] h-[14px] rounded-[3px] bg-white/[0.04]" />
           <div className="w-[14px] h-[14px] rounded-[3px] bg-brand-900/40" />
           <div className="w-[14px] h-[14px] rounded-[3px] bg-brand-700/50" />
           <div className="w-[14px] h-[14px] rounded-[3px] bg-brand-500/60" />
           <div className="w-[14px] h-[14px] rounded-[3px] bg-brand-400/80" />
-          <span className="text-[10px] text-white/30">More</span>
+          <span className="text-xs text-white/30">More</span>
         </div>
       </div>
     </div>

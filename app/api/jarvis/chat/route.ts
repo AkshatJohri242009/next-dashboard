@@ -1,6 +1,17 @@
 import { NextResponse } from "next/server"
 import { requireJarvisUser } from "@/lib/jarvis-auth"
-import { getSession, updateSession, listMessages, addMessage, updateMessageSessionCount } from "@/lib/jarvis-db"
+import { getSession, createSession, updateSession, listMessages, addMessage, updateMessageSessionCount } from "@/lib/jarvis-db"
+
+const OPENJARVIS_URL = process.env.OPENJARVIS_URL || "http://127.0.0.1:8000"
+
+async function ojIsAvailable(): Promise<boolean> {
+  try {
+    const res = await fetch(`${OPENJARVIS_URL}/v1/models`, { signal: AbortSignal.timeout(2000) })
+    return res.ok
+  } catch {
+    return false
+  }
+}
 
 export async function POST(req: Request) {
   const { user, error } = await requireJarvisUser()
@@ -14,7 +25,7 @@ export async function POST(req: Request) {
 
     let session = await getSession(sessionId)
     if (!session) {
-      return NextResponse.json({ error: "Session not found" }, { status: 404 })
+      session = await createSession(user.userId, { id: sessionId, name: "New Chat" })
     }
 
     await addMessage({ session_id: sessionId, role: "user", content: message })
@@ -31,25 +42,33 @@ export async function POST(req: Request) {
       llmMessages.push({ role: m.role, content: m.content })
     }
 
-    const ep = endpointUrl || process.env.JARVIS_DEFAULT_ENDPOINT || "https://api.groq.com/openai/v1"
     const mod = model || process.env.JARVIS_DEFAULT_MODEL || "llama-3.3-70b-versatile"
-
     const resolvedApiKey = apiKey ||
       process.env.JARVIS_GROQ_KEY ||
       process.env.JARVIS_OPENAI_KEY ||
       process.env.OPENAI_API_KEY ||
       ""
 
+    // Route through OpenJarvis if available, otherwise direct to Groq
+    const ojAvailable = await ojIsAvailable()
+    const targetUrl = ojAvailable
+      ? `${OPENJARVIS_URL}/v1/chat/completions`
+      : `${endpointUrl || process.env.JARVIS_DEFAULT_ENDPOINT || "https://api.groq.com/openai/v1"}/chat/completions`
+
     const encoder = new TextEncoder()
     const stream = new ReadableStream({
       async start(controller) {
         try {
-          const response = await fetch(`${ep}/chat/completions`, {
+          const fetchHeaders: Record<string, string> = {
+            "Content-Type": "application/json",
+          }
+          if (!ojAvailable) {
+            fetchHeaders["Authorization"] = `Bearer ${resolvedApiKey}`
+          }
+
+          const response = await fetch(targetUrl, {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${resolvedApiKey}`,
-            },
+            headers: fetchHeaders,
             body: JSON.stringify({
               model: mod,
               messages: llmMessages,
@@ -101,8 +120,8 @@ export async function POST(req: Request) {
             last_accessed_at: new Date().toISOString(),
           } as any)
           await updateMessageSessionCount(sessionId)
-        } catch (err: any) {
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: err.message })}\n\n`))
+        } catch (err) {
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: (err as Error).message })}\n\n`))
           controller.enqueue(encoder.encode("data: [DONE]\n\n"))
           controller.close()
         }
@@ -116,7 +135,7 @@ export async function POST(req: Request) {
         "Connection": "keep-alive",
       },
     })
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message || "Chat failed" }, { status: 500 })
+  } catch (err) {
+    return NextResponse.json({ error: (err as Error).message || "Chat failed" }, { status: 500 })
   }
 }

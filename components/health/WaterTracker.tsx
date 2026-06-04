@@ -24,7 +24,7 @@ export function WaterTracker() {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-2">
         {fields.map(f => (
           <label key={f.id} className="flex flex-col gap-1">
-            <span className="text-[10px] font-mono font-extrabold tracking-wider text-white/30 uppercase">{f.label}</span>
+            <span className="text-xs font-mono font-extrabold tracking-wider text-white/30 uppercase">{f.label}</span>
             <input
               type="number"
               min={f.min} max={f.max} step={f.step}

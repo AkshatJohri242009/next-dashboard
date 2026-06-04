@@ -138,7 +138,7 @@ export function VoiceJournalModal() {
               {parsed.tags.length > 0 && (
                 <div className="flex gap-1.5 flex-wrap">
                   {parsed.tags.map((tag: string) => (
-                    <span key={tag} className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-white/[0.04] text-white/40 border border-white/[0.06] flex items-center gap-1">
+                    <span key={tag} className="px-2 py-0.5 rounded-full text-xs font-medium bg-white/[0.04] text-white/40 border border-white/[0.06] flex items-center gap-1">
                       <Tag className="w-3 h-3" />{tag}
                     </span>
                   ))}

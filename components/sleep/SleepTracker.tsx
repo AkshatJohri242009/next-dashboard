@@ -44,7 +44,7 @@ export function SleepTracker() {
         <div className="glass-strong rounded-xl p-4">
           <div className="flex items-center gap-2 mb-2">
             <Moon className="w-3.5 h-3.5 text-accent-400" />
-            <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase">Latest</span>
+            <span className="section-label">Latest</span>
           </div>
           {latest ? (
             <div>
@@ -59,7 +59,7 @@ export function SleepTracker() {
         <div className="glass-strong rounded-xl p-4">
           <div className="flex items-center gap-2 mb-2">
             <Clock className="w-3.5 h-3.5 text-brand-400" />
-            <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase">7-day Avg</span>
+            <span className="section-label">7-day Avg</span>
           </div>
           {last7.length > 0 ? (
             <div>
@@ -74,7 +74,7 @@ export function SleepTracker() {
         <div className="glass-strong rounded-xl p-4">
           <div className="flex items-center gap-2 mb-2">
             <TrendingUp className="w-3.5 h-3.5 text-brand-400" />
-            <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase">Consistency</span>
+            <span className="section-label">Consistency</span>
           </div>
           {last7.length > 0 ? (
             <div>
@@ -91,7 +91,7 @@ export function SleepTracker() {
         <div className="glass-strong rounded-xl p-4">
           <div className="flex items-center gap-2 mb-2">
             <Brain className="w-3.5 h-3.5 text-amber-400" />
-            <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase">AI Advice</span>
+            <span className="section-label">AI Advice</span>
           </div>
           <button
             onClick={() => setAIPanel(true)}

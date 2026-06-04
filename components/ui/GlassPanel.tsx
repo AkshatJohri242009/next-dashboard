@@ -31,7 +31,7 @@ export function GlassPanel({
         variant === "strong" ? "glass-strong" : "glass",
         hover && "card-hover",
         glowMap[glow],
-        "rounded-2xl p-5",
+        "rounded-2xl p-4 sm:p-6",
         className,
       )}
     >

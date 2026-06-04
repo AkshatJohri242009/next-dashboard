@@ -32,22 +32,22 @@ export function TopNav() {
   }, [themeOpen])
 
   return (
-    <header className="sticky top-0 z-20 h-14 flex items-center justify-between px-4 md:px-6 border-b border-white/[0.06] bg-[#050506]/80 backdrop-blur-xl">
+    <header className="sticky top-0 z-20 h-14 flex items-center justify-between px-4 md:px-6 glass-sm rounded-none border-b-0">
       <div className="flex items-center gap-3">
         <button
           onClick={() => setMobileMenu(!mobileMenuOpen)}
-          className="lg:hidden h-9 w-9 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-white/50 hover:bg-white/[0.08] hover:text-white/70 transition-colors"
+          className="lg:hidden h-9 w-9 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-text-tertiary hover:bg-white/[0.08] hover:text-text-secondary transition-colors"
         >
           {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
         </button>
         <Link href="/" className="text-sm font-bold text-gradient hidden sm:block mr-2">LifeOS</Link>
-        <span className="text-xs text-white/30 font-mono">{dateStr}</span>
+        <span className="text-xs text-text-tertiary font-mono">{dateStr}</span>
       </div>
 
       <div className="flex items-center gap-2">
         <ModeToggle />
         <button onClick={() => focus.open()}
-          className="h-9 px-3 rounded-xl bg-white/5 border border-white/10 flex items-center gap-2 text-xs text-white/50 hover:text-white/70 hover:bg-white/10 transition-all active:scale-95"
+          className="h-9 px-3 rounded-xl bg-white/5 border border-white/10 flex items-center gap-2 text-xs text-text-tertiary hover:text-text-secondary hover:bg-white/10 transition-all active:scale-95"
         >
           <Target className="w-3.5 h-3.5" />
           Focus
@@ -56,13 +56,13 @@ export function TopNav() {
 
         <button
           onClick={() => setCommandPalette(true)}
-          className="flex items-center gap-2 h-9 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-white/40 text-xs hover:bg-white/[0.08] hover:text-white/60 hover:scale-105 active:scale-95 transition-all"
+          className="flex items-center gap-2 h-9 px-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-text-tertiary text-xs hover:bg-white/[0.08] hover:text-text-secondary hover:scale-105 active:scale-95 transition-all"
         >
           <Search className="w-3.5 h-3.5" />
           <span className="hidden sm:inline">Search</span>
           <div className="hidden sm:flex items-center gap-0.5">
-            <kbd className="kbd text-[9px]">⌘</kbd>
-            <kbd className="kbd text-[9px]">K</kbd>
+            <kbd className="kbd text-[11px]">⌘</kbd>
+            <kbd className="kbd text-[11px]">K</kbd>
           </div>
         </button>
 
@@ -76,7 +76,7 @@ export function TopNav() {
         <div ref={themeRef} className="relative">
           <button
             onClick={() => setThemeOpen(!themeOpen)}
-            className="h-9 w-9 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-white/40 hover:bg-white/[0.08] hover:text-white/60 hover:scale-105 active:scale-95 transition-all"
+            className="h-9 w-9 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-text-tertiary hover:bg-white/[0.08] hover:text-text-secondary hover:scale-105 active:scale-95 transition-all"
           >
             <Palette className="w-4 h-4" />
           </button>

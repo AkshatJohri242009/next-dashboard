@@ -42,7 +42,7 @@ export default function SleepPage() {
       <GlassPanel variant="strong" glow="accent">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-1 h-4 rounded-full bg-accent-400" />
-          <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase">Sleep Timer</span>
+          <span className="section-label">Sleep Timer</span>
         </div>
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
           {sleepTimerStart ? (
@@ -57,7 +57,7 @@ export default function SleepPage() {
                 </div>
               </div>
               <button onClick={stopSleepTimer}
-                className="h-10 px-5 rounded-xl bg-danger/20 hover:bg-danger/30 border border-danger/30 text-danger text-sm font-medium transition-all flex items-center gap-2"
+                className="h-11 px-5 rounded-xl bg-danger/20 hover:bg-danger/30 border border-danger/30 text-danger text-sm font-medium transition-all flex items-center gap-2"
               >
                 <Square className="w-4 h-4" /> Wake Up
               </button>
@@ -69,7 +69,7 @@ export default function SleepPage() {
                 <p className="text-sm">No timer active. Start tracking when you go to bed.</p>
               </div>
               <button onClick={handleStart} disabled={starting}
-                className="h-10 px-5 rounded-xl bg-accent/20 hover:bg-accent/30 border border-accent/30 text-accent text-sm font-medium transition-all flex items-center gap-2 disabled:opacity-40"
+                className="h-11 px-5 rounded-xl bg-accent/20 hover:bg-accent/30 border border-accent/30 text-accent text-sm font-medium transition-all flex items-center gap-2 disabled:opacity-40"
               >
                 <Play className="w-4 h-4" /> {starting ? "Starting..." : "Start Sleep Timer"}
               </button>
@@ -81,7 +81,7 @@ export default function SleepPage() {
       <GlassPanel variant="strong" glow="accent">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-1 h-4 rounded-full bg-accent-400" />
-          <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase">Sleep Log</span>
+          <span className="section-label">Sleep Log</span>
         </div>
         <SleepTracker />
       </GlassPanel>

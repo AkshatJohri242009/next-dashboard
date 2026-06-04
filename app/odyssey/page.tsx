@@ -25,11 +25,11 @@ export default function JARVISPage() {
         </div>
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-gradient">J.A.R.V.I.S</h1>
-          <p className="text-xs text-white/40">Your AI strategist, coach, and mentor</p>
+          <p className="text-xs text-text-tertiary">Your AI strategist, coach, and mentor</p>
         </div>
       </div>
 
-      <div className="h-[calc(100dvh-280px)] rounded-2xl overflow-hidden border border-white/[0.06] glass-strong">
+      <div className="h-[calc(100dvh-200px)] sm:h-[calc(100dvh-280px)] rounded-2xl overflow-hidden border border-white/[0.06] glass-strong">
         <JarvisChat />
       </div>
     </motion.div>

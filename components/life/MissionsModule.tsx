@@ -76,7 +76,7 @@ export function MissionsModule() {
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-2.5">
           <Flag className="w-4 h-4 text-brand" />
-          <h3 className="section-title text-sm">Missions</h3>
+          <h3 className="section-heading">Missions</h3>
         </div>
         <button onClick={() => setShowForm(!showForm)}
           className="h-8 px-3 rounded-lg bg-brand/20 hover:bg-brand/30 text-brand text-[11px] font-medium transition-colors"
@@ -99,7 +99,7 @@ export function MissionsModule() {
               {milestones.length > 0 && (
                 <div className="flex flex-wrap gap-1.5">
                   {milestones.map((m, i) => (
-                    <span key={i} className="px-2 py-0.5 rounded-full bg-white/5 text-[10px] text-white/50 flex items-center gap-1">
+                    <span key={i} className="px-2 py-0.5 rounded-full bg-white/5 text-xs text-white/50 flex items-center gap-1">
                       {m}
                       <button onClick={() => setMilestones(milestones.filter((_, j) => j !== i))} className="text-white/20 hover:text-white/50">&times;</button>
                     </span>
@@ -139,13 +139,13 @@ export function MissionsModule() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
                     <span className="text-xs font-semibold text-white/80">{m.title}</span>
-                    <span className="text-[10px] px-1.5 py-0.5 rounded capitalize"
+                    <span className="text-xs px-1.5 py-0.5 rounded capitalize"
                       style={{ backgroundColor: `${statusColor(m.status)}20`, color: statusColor(m.status) }}
                     >
                       {m.status}
                     </span>
                     {m.deadline && (
-                      <span className="text-[9px] text-white/30 flex items-center gap-1">
+                      <span className="text-[11px] text-white/30 flex items-center gap-1">
                         <Clock className="w-2.5 h-2.5" />
                         {new Date(m.deadline).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
                       </span>
@@ -157,7 +157,7 @@ export function MissionsModule() {
                       <div className="flex-1 h-1 rounded-full bg-white/10 overflow-hidden">
                         <div className="h-full rounded-full bg-brand transition-all" style={{ width: `${Math.round((doneCount / totalCount) * 100)}%` }} />
                       </div>
-                      <span className="text-[10px] text-white/30">{doneCount}/{totalCount}</span>
+                      <span className="text-xs text-white/30">{doneCount}/{totalCount}</span>
                     </div>
                   )}
                 </div>

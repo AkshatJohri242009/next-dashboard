@@ -29,7 +29,7 @@ export function StudyTasks() {
   return (
     <div className="glass rounded-2xl p-4 sm:p-6 space-y-4">
       <div className="flex items-center justify-between">
-        <span className="text-[10px] font-mono font-extrabold tracking-widest text-white/30 uppercase">
+        <span className="section-label">
           Study Tasks
         </span>
       </div>
@@ -38,17 +38,17 @@ export function StudyTasks() {
         <div className="glass rounded-xl p-3 text-center space-y-1">
           <Target className="w-4 h-4 text-brand-400 mx-auto" />
           <span className="block text-lg font-extrabold tabular-nums text-white/80">{total}</span>
-          <span className="text-[10px] font-mono text-white/30">Total</span>
+          <span className="text-xs font-mono text-white/30">Total</span>
         </div>
         <div className="glass rounded-xl p-3 text-center space-y-1">
           <CheckCheck className="w-4 h-4 text-blue-400 mx-auto" />
           <span className="block text-lg font-extrabold tabular-nums text-white/80">{donePct}%</span>
-          <span className="text-[10px] font-mono text-white/30">Done</span>
+          <span className="text-xs font-mono text-white/30">Done</span>
         </div>
         <div className="glass rounded-xl p-3 text-center space-y-1">
           <Flame className="w-4 h-4 text-amber-400 mx-auto" />
           <span className="block text-lg font-extrabold tabular-nums text-white/80">{studyStreak}</span>
-          <span className="text-[10px] font-mono text-white/30">Streak</span>
+          <span className="text-xs font-mono text-white/30">Streak</span>
         </div>
       </div>
 

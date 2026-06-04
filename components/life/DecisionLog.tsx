@@ -75,7 +75,7 @@ export function DecisionLog() {
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-2.5">
           <GitBranch className="w-4 h-4 text-accent" />
-          <h3 className="section-title text-sm">Decision Log</h3>
+          <h3 className="section-heading">Decision Log</h3>
         </div>
         <button onClick={() => setShowForm(!showForm)}
           className="h-8 px-3 rounded-lg bg-accent/20 hover:bg-accent/30 text-accent text-[11px] font-medium transition-colors"
@@ -89,7 +89,7 @@ export function DecisionLog() {
         <div className="flex flex-wrap items-center gap-2 sm:gap-4 p-3 rounded-xl bg-white/5">
           <div className="flex items-center gap-2">
             <GitBranch className="w-3.5 h-3.5 text-white/40" />
-            <span className="text-[10px] text-white/40 font-medium">{decisions.length} Decisions</span>
+            <span className="text-xs text-white/40 font-medium">{decisions.length} Decisions</span>
           </div>
           {(["positive", "neutral", "negative"] as const).map(o => {
             const count = decisions.filter(d => d.outcome === o).length
@@ -98,13 +98,13 @@ export function DecisionLog() {
             return (
               <div key={o} className="flex items-center gap-1">
                 <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: color }} />
-                <span className="text-[10px] font-mono text-white/50">{pct}%</span>
-                <span className="text-[9px] text-white/30 capitalize">{o}</span>
+                <span className="text-xs font-mono text-white/50">{pct}%</span>
+                <span className="text-[11px] text-white/30 capitalize">{o}</span>
               </div>
             )
           })}
           <div className="hidden sm:block w-px h-4 bg-white/10" />
-          <span className="text-[10px] font-medium" style={{
+          <span className="text-xs font-medium" style={{
             color: decisions.filter(d => d.outcome === "positive").length > decisions.filter(d => d.outcome === "negative").length
               ? "var(--success)" : "var(--warning)"
           }}>
@@ -129,7 +129,7 @@ export function DecisionLog() {
                 {options.length > 0 && (
                   <div className="flex flex-wrap gap-1.5 mb-2">
                     {options.map((o, i) => (
-                      <span key={i} className="px-2 py-0.5 rounded-full bg-white/5 text-[10px] text-white/50 flex items-center gap-1">
+                      <span key={i} className="px-2 py-0.5 rounded-full bg-white/5 text-xs text-white/50 flex items-center gap-1">
                         <button onClick={() => { setChosen(o); setOutcome(o === chosen ? outcome : "neutral") }}
                           className={`${chosen === o ? "text-brand" : "text-white/30 hover:text-white/70"}`}
                           aria-label={`Select ${o}`}
@@ -142,7 +142,7 @@ export function DecisionLog() {
                     ))}
                   </div>
                 )}
-                {chosen && <p className="text-[10px] text-brand">Chosen: {chosen}</p>}
+                {chosen && <p className="text-xs text-brand">Chosen: {chosen}</p>}
               </div>
 
               <div className="flex flex-wrap gap-2">
@@ -177,7 +177,7 @@ export function DecisionLog() {
               {tags.length > 0 && (
                 <div className="flex flex-wrap gap-1.5">
                   {tags.map(t => (
-                    <span key={t} className="px-2 py-0.5 rounded-full bg-white/5 text-[10px] text-white/50">
+                    <span key={t} className="px-2 py-0.5 rounded-full bg-white/5 text-xs text-white/50">
                       #{t} <button onClick={() => setTags(tags.filter(x => x !== t))} className="text-white/20 hover:text-white/50">&times;</button>
                     </span>
                   ))}
@@ -201,7 +201,7 @@ export function DecisionLog() {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1 flex-wrap">
                   <span className="text-xs font-semibold text-white/80">{d.title}</span>
-                  <span className="flex items-center gap-1 text-[10px]"
+                  <span className="flex items-center gap-1 text-xs"
                     style={{ color: d.outcome === "positive" ? "var(--success)" : d.outcome === "negative" ? "var(--danger)" : "var(--warning)" }}
                   >
                     {outcomeIcon(d.outcome)} {d.outcome}
@@ -211,17 +211,17 @@ export function DecisionLog() {
                 {d.options.length > 0 && (
                   <div className="flex flex-wrap gap-1 mb-1">
                     {d.options.map((o, i) => (
-                      <span key={i} className={`px-1.5 py-0.5 rounded text-[10px] ${o === d.chosen ? "bg-brand/20 text-brand" : "bg-white/5 text-white/30"}`}>
+                      <span key={i} className={`px-1.5 py-0.5 rounded text-xs ${o === d.chosen ? "bg-brand/20 text-brand" : "bg-white/5 text-white/30"}`}>
                         {o}
                       </span>
                     ))}
                   </div>
                 )}
-                {d.reflection && <p className="text-[10px] text-white/30 italic">{d.reflection}</p>}
+                {d.reflection && <p className="text-xs text-white/30 italic">{d.reflection}</p>}
                 <div className="flex items-center gap-2 mt-1.5 flex-wrap">
                   <Clock className="w-2.5 h-2.5 text-white/20" />
-                  <span className="text-[9px] text-white/20">{new Date(d.createdAt).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}</span>
-                  {d.tags.map(t => <span key={t} className="text-[9px] text-white/20">#{t}</span>)}
+                  <span className="text-[11px] text-white/20">{new Date(d.createdAt).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}</span>
+                  {d.tags.map(t => <span key={t} className="text-[11px] text-white/20">#{t}</span>)}
                 </div>
               </div>
               <button onClick={() => deleteDecision(d.id)}

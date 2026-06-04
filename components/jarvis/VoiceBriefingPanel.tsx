@@ -103,7 +103,7 @@ export function VoiceBriefingPanel() {
                     <Icon className="w-4 h-4 shrink-0 text-white/50" />
                     <span className="text-sm font-medium text-white/70">{section.title}</span>
                     <span className={cn(
-                      "ml-auto text-[10px] font-medium px-2 py-0.5 rounded-full",
+                      "ml-auto text-xs font-medium px-2 py-0.5 rounded-full",
                       section.type === "positive" ? "bg-success/10 text-success" :
                       section.type === "negative" ? "bg-danger/10 text-danger" :
                       section.type === "action" ? "bg-warning/10 text-warning" :
