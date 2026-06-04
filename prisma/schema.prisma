@@ -1,0 +1,407 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  username      String?   @unique
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts        Account[]
+  sessions        Session[]
+  profile         UserProfile?
+  settings        UserSettings?
+  goals           Goal[]
+  health          Health?
+  gym             Gym?
+  habits          Habit[]
+  journalEntries  JournalEntry[]
+  chapters        Chapter[]
+  missions        Mission[]
+  decisions       Decision[]
+  ideas           Idea[]
+  timelineEvents  TimelineEvent[]
+  sleepLogs       SleepEntry[]
+  weightEntries   WeightEntry[]
+  studyTasks      StudyTask[]
+  studyFiles      StudyFile[]
+  studyScores     StudyScore[]
+  examDates       ExamDate[]
+  stockHoldings   StockHolding[]
+  stockQuotes     StockQuote[]
+  trackedProjects TrackedProject[]
+  reminders       Reminder[]
+  notifications   Notification[]
+  waterLogs       WaterLog[]
+}
+
+model UserProfile {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  displayName    String?
+  bio            String?
+  timezone       String   @default("UTC")
+  onboardingDone Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model UserSettings {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  theme         String   @default("dark")
+  mode          String   @default("work")
+  lastWorkPath  String?
+  lastStudyPath String?
+  sidebarOpen   Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Goal {
+  id               String    @id @default(cuid())
+  userId           String
+  text             String
+  done             Boolean   @default(false)
+  queued           Boolean   @default(false)
+  pushedCount      Int       @default(0)
+  doneAt           DateTime?
+  reminderMin      Int?
+  progress         Int       @default(0)
+  priority         String    @default("medium")
+  dueDate          DateTime?
+  estimatedMinutes Int?
+  sortOrder        Int       @default(0)
+  date             DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, date])
+}
+
+model Health {
+  id         String   @id @default(cuid())
+  userId     String   @unique
+  weight     Float?
+  age        Int?
+  activity   Int?
+  caffeine   Int?
+  stimulants Int?
+  waterMl    Float?
+  done       Json?
+  low        Json?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model WaterLog {
+  id       String   @id @default(cuid())
+  userId   String
+  amount   Float
+  loggedAt DateTime @default(now())
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, loggedAt])
+}
+
+model Gym {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  data      Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Habit {
+  id        String   @id @default(cuid())
+  userId    String
+  name      String
+  logs      Json?
+  streak    Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model JournalEntry {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String?
+  content   String?
+  mood      String?
+  tags      Json?
+  date      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, date])
+}
+
+model SleepEntry {
+  id       String   @id @default(cuid())
+  userId   String
+  date     String?
+  hours    Float?
+  quality  Int?
+  bedtime  String?
+  wakeTime String?
+  notes    String?
+  loggedAt DateTime @default(now())
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, date])
+}
+
+model WeightEntry {
+  id       String   @id @default(cuid())
+  userId   String
+  date     String?
+  weight   Float
+  notes    String?
+  loggedAt DateTime @default(now())
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, date])
+}
+
+model Reminder {
+  id        String   @id @default(cuid())
+  userId    String
+  text      String
+  type      String   @default("task")
+  dueAt     DateTime?
+  completed Boolean  @default(false)
+  goalIdx   Int?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  body      String?
+  type      String   @default("info")
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read])
+}
+
+model Chapter {
+  id        String   @id @default(cuid())
+  userId    String
+  subject   String?
+  title     String?
+  content   String?
+  completed Boolean  @default(false)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Mission {
+  id          String   @id @default(cuid())
+  userId      String
+  title       String?
+  description String?
+  status      String   @default("active")
+  priority    String   @default("medium")
+  dueDate     DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Decision {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String?
+  context   String?
+  options   Json?
+  chosen    String?
+  outcome   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Idea {
+  id          String   @id @default(cuid())
+  userId      String
+  title       String?
+  description String?
+  tags        Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model TimelineEvent {
+  id          String   @id @default(cuid())
+  userId      String
+  title       String?
+  description String?
+  date        DateTime?
+  category    String?
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, date])
+}
+
+model StudyTask {
+  id        String   @id @default(cuid())
+  userId    String
+  text      String?
+  done      Boolean  @default(false)
+  subject   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model StudyFile {
+  id        String   @id @default(cuid())
+  userId    String
+  name      String?
+  url       String?
+  size      Int?
+  type      String?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model StudyScore {
+  id        String   @id @default(cuid())
+  userId    String
+  score     Int?
+  subject   String?
+  date      String?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model ExamDate {
+  id        String   @id @default(cuid())
+  userId    String
+  subject   String?
+  date      DateTime?
+  notes     String?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model StockHolding {
+  id        String   @id @default(cuid())
+  userId    String
+  symbol    String
+  shares    Float?
+  buyPrice  Float?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, symbol])
+}
+
+model StockQuote {
+  id        String   @id @default(cuid())
+  userId    String
+  symbol    String
+  price     Float?
+  change    Float?
+  changePct Float?
+  volume    Int?
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, symbol])
+}
+
+model TrackedProject {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String?
+  description String?
+  url         String?
+  stars       Int?
+  language    String?
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}

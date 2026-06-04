@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from "next"
+import dynamic from "next/dynamic"
 import ClientLayout from "./ClientLayout"
 import "./globals.css"
+
+const AuthProvider = dynamic(() => import("@/components/AuthProvider"), { ssr: false })
 
 export const metadata: Metadata = {
   title: {
@@ -32,7 +35,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
-        <ClientLayout>{children}</ClientLayout>
+        <AuthProvider>
+          <ClientLayout>{children}</ClientLayout>
+        </AuthProvider>
       </body>
     </html>
   )

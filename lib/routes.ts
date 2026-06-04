@@ -1,13 +1,17 @@
+import { Sparkles } from "lucide-react"
+
 export const ROUTES = {
-  // Core
   HOME: "/",
+  LOGIN: "/login",
+  SIGNUP: "/signup",
+  FORGOT_PASSWORD: "/forgot-password",
+  RESET_PASSWORD: "/reset-password",
+  PROFILE: "/profile",
+  SETTINGS: "/settings",
   ODYSSEY: "/odyssey",
   FOCUS: "/focus",
-  SETTINGS: "/settings",
   TIMER: "/timer",
   POMODORO: "/pomodoro",
-
-  // Life OS
   HABITS: "/habits",
   JOURNAL: "/journal",
   LEARNING: "/learning",
@@ -16,19 +20,13 @@ export const ROUTES = {
   DECISIONS: "/decisions",
   REVIEWS: "/reviews",
   BRAIN: "/brain",
-
-  // Health
   HEALTH: "/health",
   GYM: "/gym",
   WEIGHT: "/weight",
   SLEEP: "/sleep",
-
-  // Data
   STOCKS: "/stocks",
   PROJECTS: "/projects",
   OPENCODE: "/opencode",
-
-  // Study Mode
   STUDY: "/study",
   STUDY_STATS: "/study/stats",
   STUDY_TASKS: "/study/tasks",
@@ -36,8 +34,6 @@ export const ROUTES = {
   STUDY_FILES: "/study/files",
   STUDY_SOUNDS: "/study/sounds",
   STUDY_COMMUTE: "/study/commute",
-
-  // JARVIS 2.0 Intelligence
   VOICE: "/voice",
   BRIEFINGS: "/briefings",
   MEMORY: "/memory",
@@ -46,4 +42,6 @@ export const ROUTES = {
   REPORT: "/report",
 } as const
 
-export type RouteKey = keyof typeof ROUTES
+export const NAV_ITEMS = [
+  { label: "Profile", path: ROUTES.PROFILE, icon: Sparkles },
+]
