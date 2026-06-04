@@ -7,13 +7,13 @@ import { TrendingUp } from "lucide-react"
 export default function FuturePage() {
   return (
     <div className="space-y-6 relative">
-      <div className="fixed top-1/2 right-[-180px] w-[500px] h-[500px] rounded-full bg-gradient-to-br from-brand/15 to-accent/5 blur-[120px] opacity-20 pointer-events-none animate-breathing" />
+      <div className="fixed top-1/2 right-[-180px] w-[500px] h-[500px] rounded-full bg-gradient-to-br from-brand/15 to-accent/5 blur-[120px] opacity-20 pointer-events-none " />
       <div className="flex items-center gap-3 mb-2">
-        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-brand-400 to-accent-500 flex items-center justify-center">
-          <TrendingUp className="w-4 h-4 text-white" />
+        <div className="w-8 h-8 rounded-xl bg-brand/20 flex items-center justify-center">
+          <TrendingUp className="w-4 h-4 text-brand" />
         </div>
         <div>
-          <h1 className="text-xl font-bold text-gradient">Future Self Engine</h1>
+          <h1 className="page-title">Future Self Engine</h1>
           <p className="text-sm text-text-tertiary">Trajectory projections — see where your habits are taking you</p>
         </div>
       </div>

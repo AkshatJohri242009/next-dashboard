@@ -129,7 +129,7 @@ export function KnowledgeGraph() {
         {ideas.length === 0 ? (
           <div className="text-center py-10">
             <Brain className="w-8 h-8 text-white/10 mx-auto mb-2" />
-            <p className="text-xs text-text-tertiary">Your Second Brain is empty. Start adding ideas to build your knowledge graph.</p>
+            <p className="text-sm text-text-tertiary">Second Brain is empty</p><p className="text-xs text-text-muted mt-1">Start adding ideas from the Brain page to build your knowledge graph.</p>
           </div>
         ) : (
           <>

@@ -28,11 +28,11 @@ export default function FocusPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3 mb-2">
-        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-brand-400 to-accent-500 flex items-center justify-center">
-          <Zap className="w-4 h-4 text-white" />
+        <div className="w-8 h-8 rounded-xl bg-brand/20 flex items-center justify-center">
+          <Zap className="w-4 h-4 text-brand" />
         </div>
         <div>
-          <h1 className="text-xl font-bold text-gradient">Focus Mode</h1>
+          <h1 className="page-title">Focus Mode</h1>
           <p className="text-sm text-text-tertiary">Deep work. No distractions.</p>
         </div>
       </div>
@@ -55,7 +55,7 @@ export default function FocusPage() {
           <div className="flex gap-1 ml-2">
             {[5, 15, 25, 30, 60].map(m => (
               <button key={m} onClick={() => { setTimer(m * 60); setRunning(false) }}
-                className={`h-9 px-3 rounded-xl text-xs font-medium transition-colors ${timer === m * 60 ? "bg-white/10 text-white" : "bg-white/5 text-text-tertiary hover:text-white/60"}`}
+                className={`h-9 px-3 rounded-xl text-xs font-medium transition-colors ${timer === m * 60 ? "bg-white/10 text-brand" : "bg-white/5 text-text-tertiary hover:text-white/60"}`}
               >
                 {m}m
               </button>

@@ -34,7 +34,7 @@ export default function TimerPage() {
       }, 100)
     }
     return () => clearInterval(intervalRef.current)
-  }, [running, mode])
+  }, [running, mode, stopwatchMs])
 
   const toggle = () => setRunning(!running)
   const reset = () => {
@@ -57,11 +57,11 @@ export default function TimerPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3 mb-2">
-        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-brand-400 to-accent-500 flex items-center justify-center">
-          <Timer className="w-4 h-4 text-white" />
+        <div className="w-8 h-8 rounded-xl bg-brand/20 flex items-center justify-center">
+          <Timer className="w-4 h-4 text-brand" />
         </div>
         <div>
-          <h1 className="text-xl font-bold text-gradient">Timer</h1>
+          <h1 className="page-title">Timer</h1>
           <p className="text-sm text-text-tertiary">Countdown & stopwatch</p>
         </div>
       </div>
@@ -73,7 +73,7 @@ export default function TimerPage() {
           <div className="flex justify-center gap-2">
             {(["countdown", "stopwatch"] as const).map(m => (
               <button key={m} onClick={() => { setRunning(false); setMode(m); setStopwatchMs(0) }}
-                className={cn("h-9 px-4 rounded-xl text-xs font-medium transition-all", mode === m ? "bg-white/10 text-white" : "bg-white/[0.04] text-text-tertiary hover:text-white/60")}
+                className={cn("h-9 px-4 rounded-xl text-xs font-medium transition-all", mode === m ? "bg-white/10 text-brand" : "bg-white/[0.04] text-text-tertiary hover:text-white/60")}
               >
                 {m === "countdown" ? <Clock className="w-3.5 h-3.5 inline mr-1.5" /> : <Timer className="w-3.5 h-3.5 inline mr-1.5" />}
                 {m.charAt(0).toUpperCase() + m.slice(1)}
@@ -109,7 +109,7 @@ export default function TimerPage() {
             <div className="flex justify-center gap-2 flex-wrap">
               {PRESETS.map(m => (
                 <button key={m} onClick={() => setPreset(m)}
-                  className={cn("h-9 px-3 rounded-xl text-xs font-medium transition-all", total === m * 60 ? "bg-white/10 text-white" : "bg-white/[0.04] text-text-tertiary hover:text-white/60")}
+                  className={cn("h-9 px-3 rounded-xl text-xs font-medium transition-all", total === m * 60 ? "bg-white/10 text-brand" : "bg-white/[0.04] text-text-tertiary hover:text-white/60")}
                 >
                   {m}m
                 </button>

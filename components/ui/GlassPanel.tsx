@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils"
 interface GlassPanelProps {
   children: React.ReactNode
   className?: string
-  variant?: "default" | "strong" | "elevated" | "tinted" | "ultraThin" | "thin"
+  variant?: "default" | "strong" | "elevated" | "tinted" | "accent" | "vibrant" | "strongVibrant" | "ultraThin" | "thin"
   glow?: "brand" | "accent" | "none"
   hover?: boolean
   rounded?: "sm" | "md" | "lg" | "xl"
@@ -23,7 +23,10 @@ export function GlassPanel({
     strong: "glass-strong",
     elevated: "glass-elevated",
     tinted: "glass-tinted",
-    ultraThin: "glass-sm",
+    accent: "glass-accent",
+    vibrant: "glass-vibrant",
+    strongVibrant: "glass-strong-vibrant",
+    ultraThin: "glass-ultrathin",
     thin: "glass-sm",
   }
 

@@ -192,7 +192,7 @@ export function DecisionLog() {
         {decisions.length === 0 && (
           <div className="text-center py-8">
             <GitBranch className="w-6 h-6 text-white/10 mx-auto mb-2" />
-            <p className="text-xs text-text-tertiary">No decisions logged yet. Every major choice is a data point.</p>
+            <p className="text-sm text-text-tertiary">No decisions logged yet</p><p className="text-xs text-text-muted mt-1">Every major choice is a data point for future pattern analysis.</p>
           </div>
         )}
         {decisions.map(d => (

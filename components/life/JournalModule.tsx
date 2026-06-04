@@ -180,9 +180,9 @@ export function JournalModule() {
 
       <div className="space-y-2 max-h-64 overflow-y-auto">
         {recentEntries.length === 0 && !showEditor && (
-          <div className="text-center py-6">
-            <PenSquare className="w-6 h-6 text-white/10 mx-auto mb-2" />
-            <p className="text-xs text-text-tertiary">No entries yet. Start journaling to see patterns.</p>
+          <div className="text-center py-10">
+            <PenSquare className="w-8 h-8 text-white/10 mx-auto mb-3" />
+            <p className="text-sm text-text-tertiary">No entries yet</p><p className="text-xs text-text-muted mt-1">Start journaling to discover patterns in your mood and productivity.</p>
           </div>
         )}
         {recentEntries.filter(e => !e.date.startsWith(today)).map((entry) => (

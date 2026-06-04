@@ -146,7 +146,7 @@ export function Sidebar() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={() => setMobileMenu(false)}
-          className="fixed inset-0 z-30 bg-black/60"
+          className="fixed inset-0 z-30 bg-[var(--bg)]/80 backdrop-blur-md"
         />
       )}
 
@@ -200,10 +200,10 @@ export function Sidebar() {
                     <Link key={item.href} href={item.href}>
                         <motion.div
                         className={cn(
-                          "relative flex items-center gap-3 px-3 h-9 rounded-xl text-sm font-medium transition-colors",
+                          "relative flex items-center gap-3 px-3 h-9 rounded-xl text-sm font-medium interactive-scale",
                           active
                             ? "text-white bg-brand-500/10 border border-brand-500/20"
-                            : "text-text-tertiary hover:text-text-primary hover:bg-white/[0.04] hover:translate-x-0.5",
+                            : "text-text-tertiary hover:text-text-secondary hover:bg-white/[0.04]",
                         )}
                       >
                         {active && (
@@ -230,7 +230,7 @@ export function Sidebar() {
               initial={{ opacity: 0 }}
               animate={{ opacity: sidebarOpen ? 1 : 0 }}
               onClick={() => setAIPanel(!aiPanelOpen)}
-              className="flex items-center gap-3 px-3 h-9 w-full rounded-xl text-sm font-medium text-text-tertiary hover:text-text-primary hover:bg-white/[0.04] transition-colors"
+              className="flex items-center gap-3 px-3 h-9 w-full rounded-xl text-sm font-medium text-text-tertiary hover:text-text-secondary hover:bg-white/[0.04] interactive-scale"
             >
               <Sparkles className="w-4 h-4 shrink-0" />
               {sidebarOpen && <span>AI Assistant</span>}

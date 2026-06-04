@@ -67,7 +67,7 @@ export function FocusOverlay({ show, onClose }: { show: boolean; onClose: () => 
           position: "fixed",
           inset: 0,
           zIndex: 99999,
-          backgroundColor: "#050506",
+          backgroundColor: "var(--bg)",
           display: "flex",
           flexDirection: "column",
           color: "#fff",

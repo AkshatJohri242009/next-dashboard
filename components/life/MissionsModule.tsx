@@ -122,9 +122,9 @@ export function MissionsModule() {
 
       <div className="space-y-2 max-h-96 overflow-y-auto">
         {missions.length === 0 && (
-          <div className="text-center py-8">
-            <Flag className="w-6 h-6 text-white/10 mx-auto mb-2" />
-            <p className="text-xs text-text-tertiary">No missions yet. Define something meaningful.</p>
+          <div className="text-center py-10">
+            <Flag className="w-8 h-8 text-white/10 mx-auto mb-3" />
+            <p className="text-sm text-text-tertiary">No missions yet</p><p className="text-xs text-text-muted mt-1">Define something meaningful and start tracking your progress.</p>
           </div>
         )}
         {missions.map(m => {

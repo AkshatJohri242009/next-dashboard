@@ -26,7 +26,7 @@
   --system-gray5: #2C2C2E;
   --system-gray6: #1C1C1E;
 
-  /* Base backgrounds — deep iOS black */
+  /* Base backgrounds — deep black canvas for glass contrast */
   --bg: #000000;
   --bg-secondary: #08080A;
   --bg-elevated: #0A0A0D;
@@ -38,30 +38,53 @@
   --text-muted: rgba(255,255,255,0.2);
   --text-quaternary: rgba(255,255,255,0.1);
 
-  /* Borders — iOS separator style */
+  /* Borders */
   --border: rgba(255,255,255,0.06);
   --border-strong: rgba(255,255,255,0.12);
 
-  /* Glass — iOS frosted glass */
-  --glass-bg: rgba(30,30,35,0.65);
+  /* ────────────────────────────────────────────
+     LIQUID GLASS — frosted layered system
+     Each layer is more opaque as it rises.
+     The top edge catches light (brighter),
+     the bottom edge is grounded (darker).
+     ──────────────────────────────────────────── */
+
+  /* Ultra-thin: sits close to content — nearly transparent, soft blur */
+  --glass-ultrathin-bg: rgba(255,255,255,0.04);
+  --glass-ultrathin-blur: 12px;
+
+  /* Thin: for nav bars, subtle overlays */
+  --glass-thin-bg: rgba(30,30,35,0.55);
+  --glass-thin-blur: 24px;
+
+  /* Default: standard card depth — clearly frosted, background visible */
+  --glass-bg: rgba(30,30,36,0.62);
   --glass-blur: 40px;
-  --glass-border: 0.5px solid rgba(255,255,255,0.06);
-  --glass-shadow: 0 4px 24px rgba(0,0,0,0.5), 0 0 1px rgba(255,255,255,0.04) inset;
+  --glass-edge: 0 0 0 0.5px rgba(255,255,255,0.08), inset 0 0.5px 0 rgba(255,255,255,0.10);
+  --glass-shadow: 0 4px 24px rgba(0,0,0,0.5), 0 1px 0 rgba(0,0,0,0.3);
 
-  --glass-strong-bg: rgba(40,40,48,0.78);
+  /* Strong: panels that need to lift above — sidebars, dialogs */
+  --glass-strong-bg: rgba(38,38,44,0.72);
   --glass-strong-blur: 60px;
-  --glass-strong-border: 0.5px solid rgba(255,255,255,0.10);
-  --glass-strong-shadow: 0 8px 40px rgba(0,0,0,0.55), 0 0 1px rgba(255,255,255,0.06) inset;
+  --glass-strong-edge: 0 0 0 0.5px rgba(255,255,255,0.10), inset 0 0.5px 0 rgba(255,255,255,0.12);
+  --glass-strong-shadow: 0 8px 40px rgba(0,0,0,0.55), 0 1px 0 rgba(0,0,0,0.35);
 
-  --glass-elevated-bg: rgba(50,50,58,0.85);
+  /* Elevated: modals, flyouts — highest depth, most opaque */
+  --glass-elevated-bg: rgba(48,48,55,0.82);
   --glass-elevated-blur: 80px;
-  --glass-elevated-border: 0.5px solid rgba(255,255,255,0.12);
-  --glass-elevated-shadow: 0 16px 64px rgba(0,0,0,0.6), 0 0 1px rgba(255,255,255,0.08) inset;
+  --glass-elevated-edge: 0 0 0 0.5px rgba(255,255,255,0.12), inset 0 0.5px 0 rgba(255,255,255,0.14);
+  --glass-elevated-shadow: 0 16px 64px rgba(0,0,0,0.6), 0 2px 0 rgba(0,0,0,0.4);
 
-  --glass-tinted-bg: rgba(48,209,88,0.15);
+  /* Tinted: brand-colored glass for emphasis */
+  --glass-tinted-bg: rgba(48,209,88,0.14);
   --glass-tinted-blur: 60px;
-  --glass-tinted-border: 0.5px solid rgba(48,209,88,0.2);
-  --glass-tinted-shadow: 0 8px 40px rgba(0,0,0,0.55), 0 0 60px rgba(48,209,88,0.06), 0 0 1px rgba(255,255,255,0.04) inset;
+  --glass-tinted-edge: 0 0 0 0.5px rgba(48,209,88,0.18), inset 0 0.5px 0 rgba(48,209,88,0.20);
+  --glass-tinted-shadow: 0 8px 40px rgba(0,0,0,0.55), 0 0 60px rgba(48,209,88,0.06), 0 1px 0 rgba(0,0,0,0.3);
+
+  /* Accent-tinted glass */
+  --glass-accent-bg: rgba(10,132,255,0.14);
+  --glass-accent-edge: 0 0 0 0.5px rgba(10,132,255,0.18), inset 0 0.5px 0 rgba(10,132,255,0.20);
+  --glass-accent-shadow: 0 8px 40px rgba(0,0,0,0.55), 0 0 60px rgba(10,132,255,0.06), 0 1px 0 rgba(0,0,0,0.3);
 
   /* Card radius */
   --radius-sm: 10px;
@@ -87,8 +110,6 @@
   --brand-500: #28A745;
   --accent: #007AFF;
   --accent-500: #0062CC;
-
-  /* iOS Light System Colors */
   --system-blue: #007AFF;
   --system-green: #34C759;
   --system-orange: #FF9500;
@@ -99,42 +120,43 @@
   --system-indigo: #5856D6;
   --system-yellow: #FFCC00;
 
-  /* iOS Light backgrounds */
+  /* iOS Light backgrounds — warm base for glass pop */
   --bg: #F2F2F7;
   --bg-secondary: #FFFFFF;
   --bg-elevated: #FFFFFF;
 
-  /* iOS Light labels */
   --text: #1C1C1E;
   --text-secondary: rgba(60,60,67,0.6);
   --text-tertiary: rgba(60,60,67,0.3);
   --text-muted: rgba(60,60,67,0.15);
   --text-quaternary: rgba(60,60,67,0.08);
 
-  /* Light borders */
   --border: rgba(60,60,67,0.07);
   --border-strong: rgba(60,60,67,0.15);
 
-  /* Light glass — warm white frosted */
-  --glass-bg: rgba(255,255,255,0.7);
-  --glass-blur: 40px;
-  --glass-border: 0.5px solid rgba(60,60,67,0.08);
-  --glass-shadow: 0 4px 24px rgba(0,0,0,0.04), 0 0 1px rgba(255,255,255,0.8) inset;
+  /* Light glass — bright, warm frosted white */
+  --glass-ultrathin-bg: rgba(255,255,255,0.5);
+  --glass-thin-bg: rgba(255,255,255,0.6);
 
-  --glass-strong-bg: rgba(255,255,255,0.82);
-  --glass-strong-blur: 60px;
-  --glass-strong-border: 0.5px solid rgba(60,60,67,0.12);
-  --glass-strong-shadow: 0 8px 40px rgba(0,0,0,0.06), 0 0 1px rgba(255,255,255,0.9) inset;
+  --glass-bg: rgba(255,255,255,0.65);
+  --glass-edge: 0 0 0 0.5px rgba(60,60,67,0.08), inset 0 0.5px 0 rgba(255,255,255,0.9);
+  --glass-shadow: 0 4px 24px rgba(0,0,0,0.04), 0 1px 0 rgba(0,0,0,0.02);
+
+  --glass-strong-bg: rgba(255,255,255,0.78);
+  --glass-strong-edge: 0 0 0 0.5px rgba(60,60,67,0.10), inset 0 0.5px 0 rgba(255,255,255,0.95);
+  --glass-strong-shadow: 0 8px 40px rgba(0,0,0,0.06), 0 1px 0 rgba(0,0,0,0.03);
 
   --glass-elevated-bg: rgba(255,255,255,0.88);
-  --glass-elevated-blur: 80px;
-  --glass-elevated-border: 0.5px solid rgba(60,60,67,0.15);
-  --glass-elevated-shadow: 0 16px 64px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.95) inset;
+  --glass-elevated-edge: 0 0 0 0.5px rgba(60,60,67,0.12), inset 0 0.5px 0 rgba(255,255,255,1);
+  --glass-elevated-shadow: 0 16px 64px rgba(0,0,0,0.08), 0 2px 0 rgba(0,0,0,0.04);
 
-  --glass-tinted-bg: rgba(52,199,89,0.12);
-  --glass-tinted-blur: 60px;
-  --glass-tinted-border: 0.5px solid rgba(52,199,89,0.2);
-  --glass-tinted-shadow: 0 8px 40px rgba(0,0,0,0.06), 0 0 60px rgba(52,199,89,0.04), 0 0 1px rgba(255,255,255,0.8) inset;
+  --glass-tinted-bg: rgba(52,199,89,0.10);
+  --glass-tinted-edge: 0 0 0 0.5px rgba(52,199,89,0.15), inset 0 0.5px 0 rgba(52,199,89,0.12);
+  --glass-tinted-shadow: 0 8px 40px rgba(0,0,0,0.05), 0 0 60px rgba(52,199,89,0.04), 0 1px 0 rgba(0,0,0,0.02);
+
+  --glass-accent-bg: rgba(0,122,255,0.10);
+  --glass-accent-edge: 0 0 0 0.5px rgba(0,122,255,0.15), inset 0 0.5px 0 rgba(0,122,255,0.12);
+  --glass-accent-shadow: 0 8px 40px rgba(0,0,0,0.05), 0 0 60px rgba(0,122,255,0.04), 0 1px 0 rgba(0,0,0,0.02);
 }
 
 @layer base {
@@ -151,26 +173,39 @@
     position: relative;
   }
 
-  /* iOS-style ambient background gradient */
+  /* ── Rich ambient glow — visible behind glass to make blur pop ── */
   body::before {
     content: "";
     position: fixed;
-    top: -40vh;
-    right: -20vw;
-    width: 70vw;
-    height: 90vh;
-    background: radial-gradient(ellipse at 50% 40%, color-mix(in srgb, var(--brand) 6%, transparent) 0%, transparent 60%);
+    top: -30vh;
+    right: -15vw;
+    width: 65vw;
+    height: 80vh;
+    background: radial-gradient(ellipse at 50% 30%, color-mix(in srgb, var(--brand) 14%, transparent) 0%, color-mix(in srgb, var(--brand) 4%, transparent) 40%, transparent 65%);
     pointer-events: none;
     z-index: 0;
   }
   body::after {
     content: "";
     position: fixed;
-    bottom: -30vh;
-    left: -15vw;
-    width: 60vw;
-    height: 80vh;
-    background: radial-gradient(ellipse at 40% 60%, color-mix(in srgb, var(--accent) 5%, transparent) 0%, transparent 60%);
+    bottom: -25vh;
+    left: -10vw;
+    width: 55vw;
+    height: 70vh;
+    background: radial-gradient(ellipse at 30% 50%, color-mix(in srgb, var(--accent) 10%, transparent) 0%, color-mix(in srgb, var(--accent) 3%, transparent) 40%, transparent 65%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Third glow — subtle purple center for depth */
+  body .bg-ambient-center {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80vw;
+    height: 60vh;
+    background: radial-gradient(ellipse at center, color-mix(in srgb, var(--system-purple) 3%, transparent) 0%, transparent 50%);
     pointer-events: none;
     z-index: 0;
   }
@@ -184,41 +219,73 @@
 
 @layer components {
 
-  /* === iOS Liquid Glass System === */
+  /* ═══════════════════════════════════════════
+     LIQUID GLASS — 5-layer frosted system
+     
+     Each glass layer has:
+       • Semi-transparent background (more opaque as depth increases)
+       • `backdrop-filter: blur()` — the frosted effect
+       • A subtle edge highlight on top (light catch)
+       • A grounded shadow below
+     
+     The glass pops because the ambient body glow
+     is clearly visible through the blur.
+     ═══════════════════════════════════════════ */
   .glass {
     background: var(--glass-bg);
     backdrop-filter: blur(var(--glass-blur));
     -webkit-backdrop-filter: blur(var(--glass-blur));
-    border: var(--glass-border);
-    box-shadow: var(--glass-shadow);
+    box-shadow: var(--glass-edge), var(--glass-shadow);
   }
   .glass-sm {
-    background: color-mix(in srgb, var(--glass-bg) 80%, transparent);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 0.5px solid color-mix(in srgb, var(--border) 60%, transparent);
-    box-shadow: 0 2px 12px rgba(0,0,0,0.3), 0 0 1px rgba(255,255,255,0.04) inset;
+    background: var(--glass-thin-bg);
+    backdrop-filter: blur(var(--glass-thin-blur));
+    -webkit-backdrop-filter: blur(var(--glass-thin-blur));
+    box-shadow: var(--glass-edge), var(--glass-shadow);
+  }
+  .glass-ultrathin {
+    background: var(--glass-ultrathin-bg);
+    backdrop-filter: blur(var(--glass-ultrathin-blur));
+    -webkit-backdrop-filter: blur(var(--glass-ultrathin-blur));
+    box-shadow: 0 0 0 0.5px rgba(255,255,255,0.04), inset 0 0.5px 0 rgba(255,255,255,0.06);
   }
   .glass-strong {
     background: var(--glass-strong-bg);
     backdrop-filter: blur(var(--glass-strong-blur));
     -webkit-backdrop-filter: blur(var(--glass-strong-blur));
-    border: var(--glass-strong-border);
-    box-shadow: var(--glass-strong-shadow);
+    box-shadow: var(--glass-strong-edge), var(--glass-strong-shadow);
   }
   .glass-elevated {
     background: var(--glass-elevated-bg);
     backdrop-filter: blur(var(--glass-elevated-blur));
     -webkit-backdrop-filter: blur(var(--glass-elevated-blur));
-    border: var(--glass-elevated-border);
-    box-shadow: var(--glass-elevated-shadow);
+    box-shadow: var(--glass-elevated-edge), var(--glass-elevated-shadow);
   }
   .glass-tinted {
     background: var(--glass-tinted-bg);
     backdrop-filter: blur(var(--glass-tinted-blur));
     -webkit-backdrop-filter: blur(var(--glass-tinted-blur));
-    border: var(--glass-tinted-border);
-    box-shadow: var(--glass-tinted-shadow);
+    box-shadow: var(--glass-tinted-edge), var(--glass-tinted-shadow);
+  }
+  .glass-accent {
+    background: var(--glass-accent-bg);
+    backdrop-filter: blur(var(--glass-tinted-blur));
+    -webkit-backdrop-filter: blur(var(--glass-tinted-blur));
+    box-shadow: var(--glass-accent-edge), var(--glass-accent-shadow);
+  }
+
+  /* ── Glass with vibrancy — text takes on a subtle glow ── */
+  .glass-vibrant {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur)) saturate(1.4);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.4);
+    box-shadow: var(--glass-edge), var(--glass-shadow);
+  }
+  .glass-strong-vibrant {
+    background: var(--glass-strong-bg);
+    backdrop-filter: blur(var(--glass-strong-blur)) saturate(1.3);
+    -webkit-backdrop-filter: blur(var(--glass-strong-blur)) saturate(1.3);
+    box-shadow: var(--glass-strong-edge), var(--glass-strong-shadow);
   }
 
   /* === iOS Rounded corners === */
@@ -227,28 +294,27 @@
   .ios-rounded-lg { border-radius: var(--radius-lg); }
   .ios-rounded-xl { border-radius: var(--radius-xl); }
 
-  /* === Card Hover === */
+  /* === Card Hover — glass lift effect === */
   .card-hover {
-    @apply transition-all duration-300;
+    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
   }
   .card-hover:hover {
-    background: color-mix(in srgb, var(--text) 6%, transparent);
-    border-color: rgba(255,255,255,0.14);
-    box-shadow: 0 0 24px color-mix(in srgb, var(--brand) 10%, transparent);
+    background: color-mix(in srgb, var(--text) 5%, transparent);
+    box-shadow: var(--glass-edge), 0 0 24px color-mix(in srgb, var(--brand) 12%, transparent), 0 8px 32px rgba(0,0,0,0.3), 0 1px 0 rgba(0,0,0,0.3);
+    transform: translateY(-1px);
   }
 
   .card-elevated {
     background: var(--glass-strong-bg);
     backdrop-filter: blur(var(--glass-strong-blur));
     -webkit-backdrop-filter: blur(var(--glass-strong-blur));
-    border: var(--glass-strong-border);
+    box-shadow: var(--glass-strong-edge), var(--glass-strong-shadow);
     border-radius: var(--radius-lg);
-    box-shadow: var(--glass-strong-shadow);
     transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
   }
   .card-elevated:hover {
-    box-shadow: var(--glass-elevated-shadow);
-    border-color: color-mix(in srgb, var(--brand) 20%, var(--border-strong));
+    box-shadow: var(--glass-elevated-edge), var(--glass-elevated-shadow);
+    transform: translateY(-2px);
   }
 
   /* === iOS Typography === */
@@ -305,12 +371,12 @@
   /* === iOS Label Styles === */
   .label-large {
     font-size: 1rem;
-    font-weight: 590; /* SF Semibold weight */
+    font-weight: 590;
     letter-spacing: -0.01em;
   }
   .label-medium {
     font-size: 0.875rem;
-    font-weight: 510; /* SF Medium weight */
+    font-weight: 510;
     letter-spacing: -0.01em;
   }
   .label-small {
@@ -366,7 +432,7 @@
     left: -50%;
     width: 200%;
     height: 200%;
-    background: radial-gradient(ellipse at center, color-mix(in srgb, var(--brand) 8%, transparent) 0%, transparent 60%);
+    background: radial-gradient(ellipse at center, color-mix(in srgb, var(--brand) 10%, transparent) 0%, transparent 60%);
     pointer-events: none;
     z-index: 0;
   }
@@ -382,19 +448,19 @@
   }
   .glow-dot-green {
     background-color: var(--brand);
-    box-shadow: 0 0 8px color-mix(in srgb, var(--brand) 60%, transparent);
+    box-shadow: 0 0 10px color-mix(in srgb, var(--brand) 70%, transparent), 0 0 20px color-mix(in srgb, var(--brand) 30%, transparent);
   }
   .glow-dot-amber {
     background-color: var(--system-yellow);
-    box-shadow: 0 0 8px color-mix(in srgb, var(--system-yellow) 60%, transparent);
+    box-shadow: 0 0 10px color-mix(in srgb, var(--system-yellow) 70%, transparent), 0 0 20px color-mix(in srgb, var(--system-yellow) 30%, transparent);
   }
   .glow-dot-red {
     background-color: var(--system-red);
-    box-shadow: 0 0 8px color-mix(in srgb, var(--system-red) 60%, transparent);
+    box-shadow: 0 0 10px color-mix(in srgb, var(--system-red) 70%, transparent), 0 0 20px color-mix(in srgb, var(--system-red) 30%, transparent);
   }
   .glow-dot-blue {
     background-color: var(--accent);
-    box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 60%, transparent);
+    box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 70%, transparent), 0 0 20px color-mix(in srgb, var(--accent) 30%, transparent);
   }
 
   .kbd {
@@ -561,9 +627,7 @@
     cursor: pointer;
     border: none;
   }
-  .ios-btn:active {
-    transform: scale(0.97);
-  }
+  .ios-btn:active { transform: scale(0.97); }
   .ios-btn-primary {
     background: var(--accent);
     color: #FFFFFF;
@@ -600,9 +664,7 @@
     transition: background 0.2s ease;
     position: relative;
   }
-  .ios-toggle.active {
-    background: var(--brand);
-  }
+  .ios-toggle.active { background: var(--brand); }
   .ios-toggle::after {
     content: '';
     position: absolute;
@@ -615,9 +677,7 @@
     box-shadow: 0 1px 4px rgba(0,0,0,0.3);
     transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
   }
-  .ios-toggle.active::after {
-    transform: translateX(16px);
-  }
+  .ios-toggle.active::after { transform: translateX(16px); }
 
   /* === Focus Ring (iOS style) === */
   .ios-focus-ring:focus-visible {
@@ -727,6 +787,51 @@
   .animate-fade-in {
     animation: fade-in 0.3s ease-out forwards;
   }
+
+  /* === Micro-interactions === */
+  .interactive-scale {
+    transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .interactive-scale:hover {
+    transform: scale(1.04);
+  }
+  .interactive-scale:active {
+    transform: scale(0.96);
+  }
+  .interactive-lift {
+    transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .interactive-lift:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  }
+  .interactive-lift:active {
+    transform: translateY(0);
+  }
+  .btn-micro {
+    transition: all 0.15s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .btn-micro:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+  .btn-micro:active {
+    transform: scale(0.92);
+  }
+
+  /* === Entrance stagger === */
+  .stagger-enter {
+    animation: stagger-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    opacity: 0;
+  }
+  .stagger-enter:nth-child(1) { animation-delay: 0ms; }
+  .stagger-enter:nth-child(2) { animation-delay: 80ms; }
+  .stagger-enter:nth-child(3) { animation-delay: 160ms; }
+  .stagger-enter:nth-child(4) { animation-delay: 240ms; }
+  .stagger-enter:nth-child(5) { animation-delay: 320ms; }
+  .stagger-enter:nth-child(6) { animation-delay: 400ms; }
+  .stagger-enter:nth-child(7) { animation-delay: 480ms; }
+  .stagger-enter:nth-child(8) { animation-delay: 560ms; }
 }
 
 @keyframes breathing {

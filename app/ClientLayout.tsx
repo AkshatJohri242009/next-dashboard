@@ -69,6 +69,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
       <AIPanel />
       <SwipeHandler />
       <ScrollToTop />
+      <div className="bg-ambient-center" />
       <VoiceButton />
       <JarvisPresence />
       <MobileNav />

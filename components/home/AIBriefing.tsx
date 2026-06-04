@@ -35,7 +35,7 @@ export function AIBriefing() {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      className="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6 sm:p-8 lg:p-10"
+      className="relative overflow-hidden rounded-2xl glass-tinted p-6 sm:p-8 lg:p-10"
     >
 
       <div className="relative">

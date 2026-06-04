@@ -112,7 +112,7 @@ export default function HomePage() {
             >
               {quickLinks.map(link => (
                 <Link key={link.href} href={link.href}
-                  className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] hover:border-white/20 transition-all group"
+                  className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] hover:border-white/20 interactive-scale group"
                 >
                   <link.icon className="w-4 h-4 text-brand shrink-0" />
                   <span className="text-xs font-medium text-white/60 group-hover:text-white/80">{link.label}</span>

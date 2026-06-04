@@ -11,7 +11,7 @@ export default function StudyDashboard() {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
       <div>
-        <h1 className="text-2xl md:text-3xl font-bold text-gradient">Learning OS</h1>
+        <h1 className="page-title">Learning OS</h1>
         <p className="text-sm text-text-tertiary mt-1">Your study session overview</p>
       </div>
 

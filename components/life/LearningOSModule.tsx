@@ -204,9 +204,9 @@ export function LearningOSModule() {
 
       <div className="space-y-1.5 max-h-80 overflow-y-auto">
         {filteredChapters.length === 0 && (
-          <div className="text-center py-8">
-            <BookOpen className="w-6 h-6 text-white/10 mx-auto mb-2" />
-            <p className="text-xs text-text-tertiary">No chapters yet. Add your first {selectedSubject} chapter.</p>
+          <div className="text-center py-10">
+            <BookOpen className="w-8 h-8 text-white/10 mx-auto mb-3" />
+            <p className="text-sm text-text-tertiary">No chapters yet</p><p className="text-xs text-text-muted mt-1">Add your first {selectedSubject} chapter to start tracking progress.</p>
           </div>
         )}
         {filteredChapters.map((chapter) => {

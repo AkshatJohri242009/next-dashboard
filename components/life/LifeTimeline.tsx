@@ -135,9 +135,9 @@ export function LifeTimeline() {
 
       <div className="space-y-3 max-h-96 overflow-y-auto pr-1">
         {sorted.length === 0 && (
-          <div className="text-center py-8">
-            <Clock className="w-6 h-6 text-white/10 mx-auto mb-2" />
-            <p className="text-xs text-text-tertiary">No events yet. Start building your life timeline.</p>
+          <div className="text-center py-10">
+            <Clock className="w-8 h-8 text-white/10 mx-auto mb-3" />
+            <p className="text-sm text-text-tertiary">No events yet</p><p className="text-xs text-text-muted mt-1">Start building your life timeline by adding key moments.</p>
           </div>
         )}
         {sorted.map((event, idx) => {

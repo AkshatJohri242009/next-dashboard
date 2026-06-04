@@ -51,7 +51,7 @@ export function FocusMode() {
   if (!open) return null
 
   return (
-    <div className="fixed inset-0 z-[100] bg-[#050506] flex flex-col">
+    <div className="fixed inset-0 z-[100] bg-[var(--bg)] flex flex-col">
       <div className="flex items-center justify-between px-6 h-14 border-b border-white/[0.06] shrink-0">
         <div className="flex items-center gap-2.5">
           <Target className="w-4 h-4 text-brand" />
