@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
-import { adminDb } from "@/lib/admin-supabase"
+import { adminDb, withTimestamps } from "@/lib/admin-supabase"
 
 const TYPE_TABLE_MAP: Record<string, string> = {
   goals: "Goal",
@@ -71,7 +71,6 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json()
-    const now = new Date().toISOString()
 
     if (SINGLETON_TABLES.has(table)) {
       const { data: existing } = await db.from(table).select("id").eq("userId", session.user.id).limit(1)
@@ -81,9 +80,10 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    const record = withTimestamps({ ...body, userId: session.user.id })
     const { data, error } = await db
       .from(table)
-      .insert({ ...body, userId: session.user.id, createdAt: now, updatedAt: now })
+      .insert(record)
       .select()
       .single()
 
