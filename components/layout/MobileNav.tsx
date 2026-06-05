@@ -59,7 +59,7 @@ export function MobileNav() {
     return (
       <div
         ref={navRef}
-        className="lg:hidden fixed z-50 flex flex-col"
+        className="fixed z-50 flex flex-col"
         style={{
           right: `${Math.max(8, navPosition.x)}px`,
           bottom: `${navPosition.y === 0 ? 80 : Math.max(80, navPosition.y)}px`,
@@ -69,16 +69,16 @@ export function MobileNav() {
       >
         {/* Top bar with drag handle + orientation toggle */}
         <div
-          className="flex items-center justify-end gap-0.5 px-2 py-1 rounded-t-xl cursor-grab active:cursor-grabbing select-none"
+          className="flex items-center justify-end gap-1 px-3 py-1 rounded-t-xl cursor-grab active:cursor-grabbing select-none bg-white/[0.04] border-b border-white/[0.06]"
           style={{ touchAction: "none" }}
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
           onPointerCancel={handlePointerUp}
         >
-          <span className="text-[10px] text-text-muted mr-1">Drag</span>
           <Move size={14} className="text-text-muted" />
-          <div className="w-px h-3 bg-white/10 mx-1" />
+          <span className="text-[10px] text-text-muted font-medium tracking-wide">DRAG TO MOVE</span>
+          <div className="w-px h-3 bg-white/[0.08] mx-1" />
           <button
             onClick={(e) => { e.stopPropagation(); setNavOrientation("horizontal") }}
             className="p-1 rounded-lg hover:bg-white/10 text-text-tertiary hover:text-text-secondary transition-colors"
@@ -115,7 +115,7 @@ export function MobileNav() {
   return (
     <div
       ref={navRef}
-      className="lg:hidden fixed z-50"
+      className="fixed z-50"
       style={{
         left: `${Math.max(0, navPosition.x)}px`,
         right: `${Math.max(0, -navPosition.x)}px`,
@@ -126,16 +126,16 @@ export function MobileNav() {
     >
       {/* Drag handle bar */}
       <div
-        className="flex items-center justify-end gap-0.5 px-2 py-0.5 cursor-grab active:cursor-grabbing select-none rounded-t-2xl"
+        className="flex items-center justify-end gap-1 px-3 py-1 cursor-grab active:cursor-grabbing select-none rounded-t-2xl bg-white/[0.04] border-b border-white/[0.06]"
         style={{ touchAction: "none" }}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
       >
-        <span className="text-[10px] text-text-muted mr-1">Drag</span>
         <Move size={14} className="text-text-muted" />
-        <div className="w-px h-3 bg-white/10 mx-1" />
+        <span className="text-[10px] text-text-muted font-medium tracking-wide">DRAG TO MOVE</span>
+        <div className="w-px h-3 bg-white/[0.08] mx-1" />
         <button
           onClick={(e) => { e.stopPropagation(); setNavOrientation("vertical") }}
           className="p-1 rounded-lg hover:bg-white/10 text-text-tertiary hover:text-text-secondary transition-colors"
