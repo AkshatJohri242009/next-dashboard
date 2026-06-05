@@ -259,15 +259,14 @@ export const useJarvisStore = create<JarvisState>((set, get) => ({
       } catch {}
     }
 
-    // Add relevant memories as additional context
+    // Build separate memories section (sent to executor, not merged into lifeContext)
     let memoriesSection = ""
     try {
       const similar = getSimilarMemories(message, 5)
       if (similar.length > 0) {
-        memoriesSection = "\nRelevant memories:\n" + similar.map(m => `- ${m.text} (${m.category}, ${m.date})`).join("\n")
+        memoriesSection = "RELEVANT MEMORIES:\n" + similar.map(m => `- ${m.text} (${m.category})`).join("\n")
       }
     } catch {}
-    lifeContext += memoriesSection
 
     // Optimistically add user message
     const userMsg: JarvisMessage = {
@@ -293,6 +292,7 @@ export const useJarvisStore = create<JarvisState>((set, get) => ({
           systemPrompt,
           mode,
           lifeContext,
+          memoriesSection,
         }),
         signal: abortController.signal,
       })
@@ -383,6 +383,7 @@ export const useJarvisStore = create<JarvisState>((set, get) => ({
             endpointUrl,
             systemPrompt,
             lifeContext,
+            memoriesSection,
             toolResult: {
               toolCallId: pendingToolCall.id,
               result,

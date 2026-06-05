@@ -205,6 +205,10 @@ interface DashboardState {
 
   mode: "work" | "study"
   setMode: (m: "work" | "study") => void
+  navOrientation: "horizontal" | "vertical"
+  setNavOrientation: (o: "horizontal" | "vertical") => void
+  navPosition: { x: number; y: number }
+  setNavPosition: (pos: { x: number; y: number }) => void
   lastWorkPath: string
   lastStudyPath: string
   setLastWorkPath: (path: string) => void
@@ -701,12 +705,21 @@ export const useStore = create<DashboardState>((set, get) => ({
   stockExpandedSymbol: null,
 
   mode: (storeGet<"work" | "study">("dashboard_mode")) || "work",
+  navOrientation: storeGet<"horizontal" | "vertical">("nav_orientation") || "horizontal",
+  navPosition: storeGet<{ x: number; y: number }>("nav_position") || { x: 0, y: 0 },
   theme: storeGet<ThemeConfig>("theme_v1") || { mode: "dark", brandColor: "#30D158", accentColor: "#007AFF", preset: "opencode-green" },
 
   setMode: (m) => {
     storeSet("dashboard_mode", m)
     set({ mode: m })
     autoSync()
+  },
+  setNavOrientation: (o) => {
+    storeSet("nav_orientation", o)
+    set({ navOrientation: o })
+  },
+  setNavPosition: (pos) => {
+    set({ navPosition: pos })
   },
   setTheme: (theme) => {
     storeSet("theme_v1", theme)

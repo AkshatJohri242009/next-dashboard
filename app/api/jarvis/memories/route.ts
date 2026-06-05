@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server"
 import { requireJarvisUser } from "@/lib/jarvis-auth"
 import { listMemories, addMemory, deleteMemory, togglePinMemory } from "@/lib/jarvis-db"
+import { checkMemoryPoisoning, sanitizeMemoryText } from "@/lib/ai/memory/poisoning"
+import { aiLogger } from "@/lib/ai/logger"
 
 export async function GET() {
   const { user, error } = await requireJarvisUser()
@@ -17,7 +19,26 @@ export async function POST(req: Request) {
   const { text, category, source, sessionId } = await req.json()
   if (!text) return NextResponse.json({ error: "Text required" }, { status: 400 })
 
-  const memory = await addMemory(user.userId, text, category, source, sessionId)
+  // Sanitize and check for memory poisoning
+  const clean = sanitizeMemoryText(text)
+  const poison = checkMemoryPoisoning(clean)
+
+  if (poison.flagged && !poison.safe) {
+    aiLogger.security("Memory poisoning blocked", {
+      userId: user.userId,
+      reason: poison.reason,
+    })
+    return NextResponse.json({ error: "Memory content flagged as potentially unsafe" }, { status: 400 })
+  }
+
+  if (poison.flagged) {
+    aiLogger.security("Memory flagged for review", {
+      userId: user.userId,
+      reason: poison.reason,
+    })
+  }
+
+  const memory = await addMemory(user.userId, clean, category, source, sessionId)
   return NextResponse.json({ memory })
 }
 

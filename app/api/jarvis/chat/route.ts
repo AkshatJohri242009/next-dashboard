@@ -2,8 +2,18 @@ import { NextResponse } from "next/server"
 import { requireJarvisUser } from "@/lib/jarvis-auth"
 import { getSession, createSession, updateSession, listMessages, addMessage, updateMessageSessionCount } from "@/lib/jarvis-db"
 import { TOOLS } from "@/lib/jarvis-tool-defs"
+import { applyRateLimit } from "@/lib/rate-limit"
+import { sanitizeInput } from "@/lib/ai/sanitize"
+import { wrapUserContent } from "@/lib/ai/prompts/injection-fence"
+import { buildSystemPrompt } from "@/lib/ai/prompts/system"
+import { buildContextWithBudget } from "@/lib/ai/context-manager"
+import { executeWithStreaming, buildExecutorBody, type ExecutorMessage } from "@/lib/ai/executor"
+import { aiLogger } from "@/lib/ai/logger"
+import { AI_CONFIG } from "@/lib/ai/config"
 
 const OPENJARVIS_URL = process.env.OPENJARVIS_URL || "http://127.0.0.1:8000"
+
+const injectionTracker = new Map<string, { count: number; hourStart: number }>()
 
 async function ojIsAvailable(): Promise<boolean> {
   try {
@@ -18,11 +28,38 @@ export async function POST(req: Request) {
   const { user, error } = await requireJarvisUser()
   if (error) return error
 
+  const rateLimitResult = applyRateLimit(req, {
+    maxRequests: AI_CONFIG.RATE_LIMIT_CHAT_PER_MIN,
+    windowMs: 60_000,
+  })
+  if (rateLimitResult) return rateLimitResult
+
   try {
-    const { sessionId, message, model, endpointUrl, apiKey, systemPrompt, lifeContext, toolResult } = await req.json()
+    const { sessionId, message, model, endpointUrl, apiKey, systemPrompt, lifeContext, memoriesSection, toolResult } = await req.json()
     if (!sessionId || !message) {
       return NextResponse.json({ error: "sessionId and message required" }, { status: 400 })
     }
+
+    // Sanitize user input (injection detection + clean)
+    const sanitized = sanitizeInput(message)
+    if (sanitized.blocked) {
+      aiLogger.security("Injection attempt blocked", {
+        userId: user.userId,
+        reason: sanitized.reason,
+      })
+      const now = Date.now()
+      const tracker = injectionTracker.get(user.userId) || { count: 0, hourStart: now }
+      if (now - tracker.hourStart > 3_600_000) { tracker.count = 0; tracker.hourStart = now }
+      tracker.count++
+      injectionTracker.set(user.userId, tracker)
+      if (tracker.count >= AI_CONFIG.MAX_INJECTION_ATTEMPTS_PER_HOUR) {
+        aiLogger.security("User blocked for repeated injection attempts", { userId: user.userId })
+        return NextResponse.json({ error: "Account temporarily restricted" }, { status: 429 })
+      }
+      return NextResponse.json({ error: sanitized.reason }, { status: 400 })
+    }
+
+    const fencedMessage = wrapUserContent(sanitized.clean)
 
     let session = await getSession(sessionId)
     if (!session) {
@@ -31,25 +68,34 @@ export async function POST(req: Request) {
 
     const history = await listMessages(sessionId)
 
-    const baseSystemPrompt = systemPrompt || session.system_prompt || "You are J.A.R.V.I.S., an AI strategist and personal assistant for LifeOS. Be concise, insightful, and personalized."
-    const enhancedPrompt = lifeContext
-      ? `${baseSystemPrompt}\n\nLIFEOS CONTEXT (real-time data):\n${lifeContext}\n\nUse this context to provide personalized, data-driven responses. If something needs attention, suggest actionable steps. You also have access to tools — use them to take action on the user's behalf when appropriate.`
-      : baseSystemPrompt
+    // Build system prompt using the new modular builder
+    const fullSystemPrompt = buildSystemPrompt({
+      lifeContext: lifeContext || undefined,
+      memoriesSection: memoriesSection || undefined,
+      customInstructions: systemPrompt || session.system_prompt || undefined,
+    })
 
-    const llmMessages: { role: string; content: string; tool_call_id?: string }[] = []
-    llmMessages.push({ role: "system", content: enhancedPrompt })
+    // Apply token budgeting
+    const budgeted = buildContextWithBudget(fullSystemPrompt, history)
+
+    if (budgeted.trimmedHistoryCount > 0) {
+      aiLogger.debug("Context window trimmed", {
+        trimmedCount: budgeted.trimmedHistoryCount,
+        totalTokens: budgeted.totalTokens,
+      })
+    }
+
+    // Build messages for LLM
+    const llmMessages: ExecutorMessage[] = [
+      { role: "system", content: budgeted.systemPrompt },
+      ...budgeted.history.map(m => ({ role: m.role as ExecutorMessage["role"], content: m.content })),
+    ]
 
     if (toolResult) {
-      for (const m of history) {
-        llmMessages.push({ role: m.role, content: m.content })
-      }
       llmMessages.push({ role: "tool", content: toolResult.result, tool_call_id: toolResult.toolCallId })
     } else {
-      for (const m of history) {
-        llmMessages.push({ role: m.role, content: m.content })
-      }
-      llmMessages.push({ role: "user", content: message })
-      await addMessage({ session_id: sessionId, role: "user", content: message })
+      llmMessages.push({ role: "user", content: fencedMessage })
+      await addMessage({ session_id: sessionId, role: "user", content: sanitized.clean })
     }
 
     const mod = model || process.env.JARVIS_DEFAULT_MODEL || "llama-3.3-70b-versatile"
@@ -75,96 +121,35 @@ export async function POST(req: Request) {
             fetchHeaders["Authorization"] = `Bearer ${resolvedApiKey}`
           }
 
-          const body: Record<string, unknown> = {
+          const body = buildExecutorBody(llmMessages, {
             model: mod,
-            messages: llmMessages,
+            includeTools: !toolResult,
+            tools: TOOLS,
             stream: true,
-            temperature: 0.7,
-            max_tokens: 4096,
-          }
-
-          if (!toolResult) {
-            body.tools = TOOLS
-            body.tool_choice = "auto"
-          }
-
-          const response = await fetch(targetUrl, {
-            method: "POST",
-            headers: fetchHeaders,
-            body: JSON.stringify(body),
           })
 
-          if (!response.ok) {
-            const errText = await response.text()
-            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: `API error (${response.status}): ${errText.substring(0, 200)}` })}\n\n`))
-            controller.enqueue(encoder.encode("data: [DONE]\n\n"))
-            controller.close()
-            return
-          }
-
-          const reader = response.body?.getReader()
-          if (!reader) throw new Error("No response body")
-
-          let fullAssistantContent = ""
-          const decoder = new TextDecoder()
-          const toolCallAcc: Record<number, { id: string; name: string; arguments: string }> = {}
-          let finishReason: string | null = null
-          let gotToolCall = false
-
-          while (true) {
-            const { done, value } = await reader.read()
-            if (done) break
-
-            const chunk = decoder.decode(value, { stream: true })
-            const lines = chunk.split("\n").filter(l => l.startsWith("data: "))
-            for (const line of lines) {
-              const data = line.replace("data: ", "").trim()
-              if (data === "[DONE]") continue
-              try {
-                const parsed = JSON.parse(data)
-                const choice = parsed.choices?.[0]
-
-                if (choice?.delta?.content) {
-                  fullAssistantContent += choice.delta.content
-                  controller.enqueue(encoder.encode(`data: ${JSON.stringify({ delta: choice.delta.content })}\n\n`))
-                }
-
-                if (choice?.delta?.tool_calls) {
-                  gotToolCall = true
-                  for (const tc of choice.delta.tool_calls) {
-                    const idx = tc.index
-                    if (tc.id) {
-                      toolCallAcc[idx] = { id: tc.id, name: tc.function?.name || "", arguments: tc.function?.arguments || "" }
-                    } else if (toolCallAcc[idx] && tc.function?.arguments) {
-                      toolCallAcc[idx].arguments += tc.function.arguments
-                    }
-                  }
-                }
-
-                if (choice?.finish_reason) {
-                  finishReason = choice.finish_reason
-                }
-              } catch {}
+          const result = await executeWithStreaming(
+            targetUrl,
+            fetchHeaders,
+            body,
+            (delta) => {
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ delta })}\n\n`))
             }
-          }
+          )
 
-          if (gotToolCall) {
-            for (const idx of Object.keys(toolCallAcc).map(Number).sort()) {
-              const tc = toolCallAcc[idx]
-              let parsedArgs: Record<string, unknown> = {}
-              try { parsedArgs = JSON.parse(tc.arguments) } catch {}
-              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "tool_call", id: tc.id, name: tc.name, arguments: parsedArgs })}\n\n`))
+          // Forward tool calls to client
+          if (result.toolCalls.length > 0) {
+            for (const tc of result.toolCalls) {
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "tool_call", ...tc })}\n\n`))
             }
-            controller.enqueue(encoder.encode("data: [DONE]\n\n"))
-            controller.close()
-            return
           }
 
           controller.enqueue(encoder.encode("data: [DONE]\n\n"))
           controller.close()
 
-          if (fullAssistantContent) {
-            await addMessage({ session_id: sessionId, role: "assistant", content: fullAssistantContent })
+          // Persist assistant message
+          if (result.content) {
+            await addMessage({ session_id: sessionId, role: "assistant", content: result.content })
           }
           await updateSession(sessionId, {
             last_accessed_at: new Date().toISOString(),

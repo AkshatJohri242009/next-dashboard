@@ -1,0 +1,123 @@
+# System Architecture Overview
+
+## High-Level System Diagram
+
+```ascii
+┌─────────────────────────────────────────────────────────────────────────┐
+│                           USER INTERFACE                                 │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────────┐  │
+│  │JarvisChat│ │VoiceButton│ │AIPanel   │ │Briefings │ │MemoryAmplifier│  │
+│  └────┬─────┘ └────┬─────┘ └────┬─────┘ └────┬─────┘ └──────┬───────┘  │
+│       │            │             │            │              │          │
+└───────┼────────────┼─────────────┼────────────┼──────────────┼──────────┘
+        │            │             │            │              │
+┌───────┼────────────┼─────────────┼────────────┼──────────────┼──────────┐
+│       │            │             │            │              │          │
+│  ┌────▼────────────▼─────────────▼────────────▼──────────────▼──────┐   │
+│  │                   AGENT CORE (orchestrator)                       │   │
+│  │  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌────────────────────┐  │   │
+│  │  │ Planner  │ │ Executor │ │  Critic  │ │ Reflection Engine  │  │   │
+│  │  └────┬─────┘ └────┬─────┘ └────┬─────┘ └────────┬───────────┘  │   │
+│  │       │            │             │                │              │   │
+│  │  ┌────▼────────────▼─────────────▼────────────────▼──────────┐   │   │
+│  │  │              CONTEXT MANAGER                                │   │   │
+│  │  │  (assembles context window from all sources per turn)       │   │   │
+│  │  └─────────────────────────┬───────────────────────────────────┘   │   │
+│  │                            │                                       │   │
+│  └────────────────────────────┼───────────────────────────────────────┘   │
+│                               │                                           │
+│  ┌────────────────────────────┼───────────────────────────────────────┐   │
+│  │                            ▼                                       │   │
+│  │  ┌──────────────────────────────────────────────────────────┐      │   │
+│  │  │                  LLM ROUTER                                │      │   │
+│  │  │  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────────┐ │      │   │
+│  │  │  │  Groq    │ │  OpenAI  │ │ Ollama   │ │  Anthropic   │ │      │   │
+│  │  │  └──────────┘ └──────────┘ └──────────┘ └──────────────┘ │      │   │
+│  │  └──────────────────────────────────────────────────────────┘      │   │
+│  │                                                                     │   │
+│  │  ┌──────────────────────────────────────────────────────────┐      │   │
+│  │  │                  TOOL ROUTER                                │      │   │
+│  │  │  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────────┐ │      │   │
+│  │  │  │ LifeOS   │ │ Memory   │ │ Voice    │ │  External    │ │      │   │
+│  │  │  │ Tools    │ │ Tools    │ │ Tools    │ │  Tools       │ │      │   │
+│  │  │  └──────────┘ └──────────┘ └──────────┘ └──────────────┘ │      │   │
+│  │  └──────────────────────────────────────────────────────────┘      │   │
+│  │                                                                     │   │
+│  └────────────────────────────┬───────────────────────────────────────┘   │
+│                               │                                           │
+│  ┌────────────────────────────┼───────────────────────────────────────┐   │
+│  │                            ▼                                       │   │
+│  │              MEMORY SYSTEM                                          │   │
+│  │  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌────────┐  │   │
+│  │  │  Turn    │ │ Session  │ │ Long-Term │ │ Project  │ │ Global │  │   │
+│  │  │  Buffer  │ │ Memory   │ │  Memory   │ │  Memory  │ │  KB    │  │   │
+│  │  │ (in-mem) │ │ (Redis)  │ │ (Supabase)│ │(Supabase)│ │(static)│  │   │
+│  │  └──────────┘ └──────────┘ └──────────┘ └──────────┘ └────────┘  │   │
+│  └────────────────────────────┬───────────────────────────────────────┘   │
+│                               │                                           │
+│  ┌────────────────────────────┼───────────────────────────────────────┐   │
+│  │                            ▼                                       │   │
+│  │              RAG PIPELINE                                           │   │
+│  │  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌────────────────────┐   │   │
+│  │  │ Chunker  │ │Embeddings│ │  Vector  │ │ Hybrid Retrieval   │   │   │
+│  │  │          │ │ (OpenAI) │ │   Store  │ │ (BM25 + Semantic)  │   │   │
+│  │  └──────────┘ └──────────┘ └──────────┘ └────────────────────┘   │   │
+│  └────────────────────────────┬───────────────────────────────────────┘   │
+│                               │                                           │
+│  ┌────────────────────────────┼───────────────────────────────────────┐   │
+│  │                            ▼                                       │   │
+│  │                    DATA LAYER                                       │   │
+│  │  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌────────────────────┐   │   │
+│  │  │Supabase  │ │localStorage│ │  Redis   │ │  File System      │   │   │
+│  │  │(PG + Vec)│ │ (fallback)│ │ (sessions)│ │  (documents)      │   │   │
+│  │  └──────────┘ └──────────┘ └──────────┘ └────────────────────┘   │   │
+│  └─────────────────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+## Data Flow (Single Turn)
+
+```
+User Message
+    │
+    ▼
+1. CONTEXT MANAGER assembles:
+   ├─ System Prompt Core (800t)
+   ├─ Injected Memories (500t)
+   ├─ Session Summary (400t)
+   ├─ Turn Buffer (1000t)
+   └─ Current Message
+    │
+    ▼
+2. PLANNER (if complex request)
+   ├─ Decomposes goal → steps
+   └─ Sends plan to Executor
+    │
+    ▼
+3. EXECUTOR
+   ├─ Calls LLM with context
+   ├─ Handles tool calls via TOOL ROUTER
+   └─ Streams response
+    │
+    ▼
+4. CRITIC (after response generated)
+   ├─ Scores response (0.0-1.0)
+   ├─ If < 0.6 → retry with feedback
+   └─ If ≥ 0.6 → deliver
+    │
+    ▼
+5. REFLECTION ENGINE (async)
+   ├─ Summarizes exchange
+   ├─ Extracts facts for memory
+   └─ Writes to long-term memory
+    │
+    ▼
+6. Response delivered to user
+```
+
+## Key Principles
+
+- **Async everywhere**: Memory writes, embedding generation, reflection never block the main response
+- **Graceful degradation**: If any subsystem fails, the core chat still works
+- **Observability**: Every subsystem emits structured logs
+- **Token efficiency**: Context window is assembled with priority ordering
