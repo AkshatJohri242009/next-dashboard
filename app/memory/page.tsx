@@ -7,7 +7,7 @@ import { Brain } from "lucide-react"
 export default function MemoryPage() {
   return (
     <div className="space-y-6 relative">
-      <div className="fixed top-1/4 left-[-200px] w-[450px] h-[450px] rounded-full bg-gradient-to-br from-info/10 to-brand/5 blur-[100px] opacity-20 pointer-events-none " />
+
       <div className="flex items-center gap-3 mb-2">
         <div className="w-8 h-8 rounded-xl bg-brand/20 flex items-center justify-center">
           <Brain className="w-4 h-4 text-brand" />

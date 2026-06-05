@@ -9,7 +9,7 @@ import { Sparkles } from "lucide-react"
 export default function VoicePage() {
   return (
     <div className="space-y-6 relative">
-      <div className="fixed top-1/4 right-[-200px] w-[500px] h-[500px] rounded-full bg-gradient-to-br from-brand/10 to-accent/5 blur-[120px] opacity-20 pointer-events-none animate-breathing" />
+
       <div className="flex items-center gap-3 mb-2">
         <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-brand-400 to-accent-500 flex items-center justify-center">
           <Sparkles className="w-4 h-4 text-white" />

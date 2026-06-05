@@ -4,25 +4,22 @@ import { useEffect, useRef, useCallback } from "react"
 import { useSession } from "next-auth/react"
 import { usePathname } from "next/navigation"
 import { motion } from "framer-motion"
-import { Sidebar } from "@/components/layout/Sidebar"
+import { Dock } from "@/components/layout/Dock"
 import { TopNav } from "@/components/layout/TopNav"
 import { CommandPalette } from "@/components/layout/CommandPalette"
 import { AIPanel } from "@/components/layout/AIPanel"
 import { SwipeHandler } from "@/components/layout/SwipeHandler"
 import { ScrollToTop } from "@/components/layout/ScrollToTop"
-import { MobileNav } from "@/components/layout/MobileNav"
 import { VoiceButton } from "@/components/jarvis/VoiceButton"
 import { JarvisPresence } from "@/components/jarvis/JarvisPresence"
 import { useStore, type JarvisAlert, applyTheme } from "@/lib/store"
 import { useJarvisStore } from "@/lib/jarvis-store"
 import { autoExtractMemories } from "@/lib/memory-engine"
-import { useMediaQuery } from "@/lib/use-media-query"
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const { data: session } = useSession()
-  const { sidebarOpen, loadGoals, loadHealth, loadGym, loadSleepLog, loadReminders, loadTrackedProjects, loadStudyData, loadStocks, fetchStockQuotes, stockHoldings, syncWithSupabase, theme, pushToTomorrow } = useStore()
-  const isMobile = useMediaQuery("(max-width: 1023px)")
+  const { loadGoals, loadHealth, loadGym, loadSleepLog, loadReminders, loadTrackedProjects, loadStudyData, loadStocks, fetchStockQuotes, stockHoldings, syncWithSupabase, theme, pushToTomorrow } = useStore()
   const lastDateRef = useRef(new Date().toISOString().slice(0, 10))
   const seededRef = useRef(false)
 
@@ -126,25 +123,18 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
 
   return (
     <>
-      <Sidebar />
       <CommandPalette />
       <AIPanel />
       <SwipeHandler />
       <ScrollToTop />
       <div className="bg-ambient-center" />
+      <Dock />
       <VoiceButton />
       <JarvisPresence />
-      <MobileNav />
 
-      <div
-        style={{
-          marginLeft: isMobile ? 0 : (sidebarOpen ? 240 : 72),
-          transition: "margin-left 0.3s cubic-bezier(0.22, 1, 0.36, 1)",
-        }}
-        className="min-h-screen"
-      >
+      <div className="min-h-screen">
         <TopNav />
-        <main className="p-4 md:p-6 lg:p-8 pb-[4.5rem] lg:pb-[env(safe-area-inset-bottom)] max-w-7xl mx-auto overflow-x-hidden">
+        <main className="p-4 md:p-6 lg:p-8 pb-24 max-w-7xl mx-auto overflow-x-hidden">
           <motion.div
             key={pathname}
             initial={{ opacity: 0, y: 12 }}

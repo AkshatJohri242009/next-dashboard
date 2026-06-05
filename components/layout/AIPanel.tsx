@@ -61,8 +61,8 @@ export function AIPanel() {
         >
           <div className="flex items-center justify-between h-14 px-4 border-b border-white/[0.06] shrink-0">
             <div className="flex items-center gap-2">
-              <div className={`w-6 h-6 rounded-lg flex items-center justify-center ${jarvisMode ? "bg-[#e06c75]/20" : "bg-brand/20"}`}>
-                {jarvisMode ? <Bot className="w-3.5 h-3.5 text-[#e06c75]" /> : <Sparkles className="w-3.5 h-3.5 text-brand" />}
+              <div className={`w-6 h-6 rounded-lg flex items-center justify-center ${jarvisMode ? "bg-[var(--system-red)]/20" : "bg-brand/20"}`}>
+                {jarvisMode ? <Bot className="w-3.5 h-3.5 text-[var(--system-red)]" /> : <Sparkles className="w-3.5 h-3.5 text-brand" />}
               </div>
               <span className="text-sm font-bold text-gradient">{jarvisMode ? "J.A.R.V.I.S" : "AI Assistant"}</span>
             </div>
@@ -70,7 +70,7 @@ export function AIPanel() {
               <button
                 onClick={() => setJarvisMode(!jarvisMode)}
                 className={`h-7 px-2 rounded-lg text-xs font-mono font-bold border transition-colors ${
-                  jarvisMode ? "bg-[#e06c75]/20 text-[#e06c75] border-[#e06c75]/30" : "bg-white/[0.04] text-text-tertiary border-white/[0.06] hover:text-text-secondary"
+                  jarvisMode ? "bg-[#e06c75]/20 text-[var(--system-red)] border-[var(--system-red)]/30" : "bg-white/[0.04] text-text-tertiary border-white/[0.06] hover:text-text-secondary"
                 }`}
               >
                 {jarvisMode ? "JARVIS" : "Gemini"}

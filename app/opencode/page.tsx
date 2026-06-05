@@ -42,8 +42,8 @@ export default function ProjectsPage() {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
       <div className="flex items-center gap-3">
-        <div className="w-8 h-8 rounded-xl bg-[#3b82f6]/20 border border-[#3b82f6]/30 flex items-center justify-center">
-          <FolderGit2 className="w-4 h-4 text-[#3b82f6]" />
+        <div className="w-8 h-8 rounded-xl bg-[var(--accent)]/20 border border-[var(--accent)]/30 flex items-center justify-center">
+          <FolderGit2 className="w-4 h-4 text-[var(--accent)]" />
         </div>
         <div>
           <h1 className="text-lg font-bold text-white">Projects</h1>

@@ -70,7 +70,7 @@ export function FocusOverlay({ show, onClose }: { show: boolean; onClose: () => 
           backgroundColor: "var(--bg)",
           display: "flex",
           flexDirection: "column",
-          color: "#fff",
+          color: "var(--text)",
           touchAction: "manipulation",
         }}
       >
@@ -81,7 +81,7 @@ export function FocusOverlay({ show, onClose }: { show: boolean; onClose: () => 
           justifyContent: "space-between",
           padding: "0 24px",
           height: 56,
-          borderBottom: "1px solid rgba(255,255,255,0.06)",
+          borderBottom: "1px solid var(--border)",
           flexShrink: 0,
         }}
       >
@@ -89,29 +89,29 @@ export function FocusOverlay({ show, onClose }: { show: boolean; onClose: () => 
           <Target size={16} color="var(--brand)" />
           <span style={{ fontSize: 14, fontWeight: 700, opacity: 0.7 }}>Focus Mode</span>
         </div>
-        <button onClick={onClose} style={{ width: 32, height: 32, borderRadius: 8, border: "none", background: "rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.7)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <button onClick={onClose} style={{ width: 32, height: 32, borderRadius: 8, border: "none", background: "color-mix(in srgb, var(--text) 10%, transparent)", color: "var(--text-secondary)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
           <X size={16} />
         </button>
       </div>
 
       <div style={{ flex: 1, display: "flex", flexDirection: "row", overflow: "auto" }}>
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 32, borderRight: "1px solid rgba(255,255,255,0.06)" }}>
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 32, borderRight: "1px solid var(--border)" }}>
           <div style={{ fontSize: 96, fontWeight: 700, letterSpacing: "-0.03em", fontVariantNumeric: "tabular-nums", marginBottom: 24 }}>
             {formatTime(timer)}
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
             <button onClick={() => setRunning(!running)}
-              style={{ width: 48, height: 48, borderRadius: "50%", border: "none", background: "var(--brand)", color: "#000", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              style={{ width: 48, height: 48, borderRadius: "50%", border: "none", background: "var(--brand)", color: "var(--bg)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
               {running ? <Pause size={20} /> : <Play size={20} style={{ marginLeft: 2 }} />}
             </button>
             <button onClick={() => { setTimer(25 * 60); setRunning(false) }}
-              style={{ height: 36, padding: "0 16px", borderRadius: 12, border: "1px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.5)", cursor: "pointer", fontSize: 12, display: "flex", alignItems: "center", gap: 6 }}>
+              style={{ height: 36, padding: "0 16px", borderRadius: 12, border: "1px solid color-mix(in srgb, var(--text) 10%, transparent)", background: "color-mix(in srgb, var(--text) 5%, transparent)", color: "color-mix(in srgb, var(--text) 50%, transparent)", cursor: "pointer", fontSize: 12, display: "flex", alignItems: "center", gap: 6 }}>
               <RotateCcw size={12} /> Reset
             </button>
             <div style={{ display: "flex", gap: 6, marginLeft: 8 }}>
               {[5, 15, 25, 30, 60].map(m => (
                 <button key={m} onClick={() => { setTimer(m * 60); setRunning(false) }}
-                  style={{ height: 36, padding: "0 14px", borderRadius: 12, border: "none", background: timer === m * 60 ? "rgba(255,255,255,0.1)" : "rgba(255,255,255,0.05)", color: timer === m * 60 ? "#fff" : "rgba(255,255,255,0.4)", cursor: "pointer", fontSize: 12, fontWeight: 500 }}>
+                  style={{ height: 36, padding: "0 14px", borderRadius: 12, border: "none", background: timer === m * 60 ? "color-mix(in srgb, var(--text) 10%, transparent)" : "color-mix(in srgb, var(--text) 5%, transparent)", color: timer === m * 60 ? "var(--text)" : "var(--text-tertiary)", cursor: "pointer", fontSize: 12, fontWeight: 500 }}>
                   {m}m
                 </button>
               ))}
@@ -126,7 +126,7 @@ export function FocusOverlay({ show, onClose }: { show: boolean; onClose: () => 
               </div>
               {running && (
                 <button onClick={logStudyForGoal}
-                  style={{ height: 32, padding: "0 14px", borderRadius: 10, border: "none", background: "rgba(107,227,164,0.15)", color: "#6be3a4", cursor: "pointer", fontSize: 11, fontWeight: 600, display: "flex", alignItems: "center", gap: 6 }}>
+                  style={{ height: 32, padding: "0 14px", borderRadius: 10, border: "none", background: "color-mix(in srgb, var(--brand) 15%, transparent)", color: "var(--brand)", cursor: "pointer", fontSize: 11, fontWeight: 600, display: "flex", alignItems: "center", gap: 6 }}>
                   <BookOpen size={12} /> Log {Math.floor(timer / 60)} min to progress
                 </button>
               )}
@@ -154,13 +154,13 @@ export function FocusOverlay({ show, onClose }: { show: boolean; onClose: () => 
                     onClick={() => setActiveGoal(isActive ? null : idx)}
                     style={{
                     borderRadius: 16,
-                    background: isActive ? "rgba(107,227,164,0.06)" : "rgba(255,255,255,0.02)",
-                    border: isActive ? "1px solid rgba(107,227,164,0.25)" : "1px solid rgba(255,255,255,0.06)",
+                    background: isActive ? "color-mix(in srgb, var(--brand) 6%, transparent)" : "color-mix(in srgb, var(--text) 2%, transparent)",
+                    border: isActive ? "1px solid color-mix(in srgb, var(--brand) 25%, transparent)" : "1px solid var(--border)",
                     cursor: "pointer",
                     transition: "all 0.15s",
                   }}>
                     <div style={{ padding: "12px 16px", display: "flex", alignItems: "center", gap: 10 }}>
-                      <div style={{ width: 10, height: 10, borderRadius: "50%", flexShrink: 0, background: g.done ? "var(--brand)" : isActive ? "#6be3a4" : "rgba(255,255,255,0.15)" }} />
+                      <div style={{ width: 10, height: 10, borderRadius: "50%", flexShrink: 0, background: g.done ? "var(--brand)" : isActive ? "var(--brand)" : "color-mix(in srgb, var(--text) 15%, transparent)" }} />
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <span style={{ fontSize: 14, fontWeight: isActive ? 600 : 500, opacity: g.done ? 0.3 : 0.8, textDecoration: g.done ? "line-through" : "none", display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                           {g.text}
@@ -171,7 +171,7 @@ export function FocusOverlay({ show, onClose }: { show: boolean; onClose: () => 
                               <span style={{ fontSize: 10, opacity: 0.3 }}>Progress</span>
                               <span style={{ fontSize: 10, opacity: 0.4, fontWeight: 600 }}>{pct}%</span>
                             </div>
-                            <div style={{ height: 4, borderRadius: 4, background: "rgba(255,255,255,0.06)", overflow: "hidden" }}>
+                            <div style={{ height: 4, borderRadius: 4, background: "var(--border)", overflow: "hidden" }}>
                               <div style={{ height: "100%", borderRadius: 4, background: "var(--brand)", opacity: 0.5, transition: "width 0.3s", width: `${pct}%` }} />
                             </div>
                           </div>
@@ -181,19 +181,19 @@ export function FocusOverlay({ show, onClose }: { show: boolean; onClose: () => 
                     {isActive && !g.done && (
                       <div style={{ padding: "4px 12px 12px 12px", display: "flex", gap: 6, flexWrap: "wrap" }}>
                         <button onClick={(e) => { e.stopPropagation(); setGoalProgress(idx, Math.min(100, pct + 10)) }}
-                          style={{ height: 26, padding: "0 10px", borderRadius: 8, border: "1px solid rgba(255,255,255,0.1)", background: "transparent", color: "rgba(255,255,255,0.5)", cursor: "pointer", fontSize: 10, fontWeight: 500 }}>
+                          style={{ height: 26, padding: "0 10px", borderRadius: 8, border: "1px solid color-mix(in srgb, var(--text) 10%, transparent)", background: "transparent", color: "color-mix(in srgb, var(--text) 50%, transparent)", cursor: "pointer", fontSize: 10, fontWeight: 500 }}>
                           +10%
                         </button>
                         <button onClick={(e) => { e.stopPropagation(); setGoalProgress(idx, Math.min(100, pct + 25)) }}
-                          style={{ height: 26, padding: "0 10px", borderRadius: 8, border: "1px solid rgba(255,255,255,0.1)", background: "transparent", color: "rgba(255,255,255,0.5)", cursor: "pointer", fontSize: 10, fontWeight: 500 }}>
+                          style={{ height: 26, padding: "0 10px", borderRadius: 8, border: "1px solid color-mix(in srgb, var(--text) 10%, transparent)", background: "transparent", color: "color-mix(in srgb, var(--text) 50%, transparent)", cursor: "pointer", fontSize: 10, fontWeight: 500 }}>
                           +25%
                         </button>
                         <button onClick={(e) => { e.stopPropagation(); setGoalProgress(idx, 100); toggleGoal(idx) }}
-                          style={{ height: 26, padding: "0 12px", borderRadius: 8, border: "none", background: "var(--brand)", color: "#000", cursor: "pointer", fontSize: 10, fontWeight: 700 }}>
+                          style={{ height: 26, padding: "0 12px", borderRadius: 8, border: "none", background: "var(--brand)", color: "var(--bg)", cursor: "pointer", fontSize: 10, fontWeight: 700 }}>
                           Mark Done
                         </button>
                         <button onClick={(e) => { e.stopPropagation(); setGoalProgress(idx, 0) }}
-                          style={{ height: 26, padding: "0 10px", borderRadius: 8, border: "1px solid rgba(255,255,255,0.1)", background: "transparent", color: "rgba(255,255,255,0.3)", cursor: "pointer", fontSize: 10, fontWeight: 500 }}>
+                          style={{ height: 26, padding: "0 10px", borderRadius: 8, border: "1px solid color-mix(in srgb, var(--text) 10%, transparent)", background: "transparent", color: "color-mix(in srgb, var(--text) 30%, transparent)", cursor: "pointer", fontSize: 10, fontWeight: 500 }}>
                           Reset
                         </button>
                       </div>

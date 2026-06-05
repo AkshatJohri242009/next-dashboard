@@ -34,9 +34,6 @@ export function TodoList() {
 
   return (
     <div className={cn("glass rounded-2xl p-3 sm:p-5 relative overflow-hidden", allDone && "ring-1 ring-brand-400/20")}>
-      {allDone && (
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(107,227,164,0.10),transparent_60%)] pointer-events-none" />
-      )}
 
       <div className="flex items-center justify-between mb-4">
         <div>
