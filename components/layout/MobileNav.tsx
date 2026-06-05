@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { useStore } from "@/lib/store"
 import { ROUTES } from "@/lib/routes"
-import { LayoutDashboard, PenSquare, Flame, Bot, Zap, Target, Heart, GripHorizontal, GripVertical, ArrowLeftRight } from "lucide-react"
+import { LayoutDashboard, PenSquare, Flame, Bot, Zap, Target, Heart, ArrowLeftRight, Move } from "lucide-react"
 
 const navItems = [
   { href: ROUTES.HOME, label: "Home", icon: LayoutDashboard },
@@ -69,21 +69,23 @@ export function MobileNav() {
       >
         {/* Top bar with drag handle + orientation toggle */}
         <div
-          className="flex items-center justify-end gap-1 px-2 py-1 rounded-t-xl cursor-grab active:cursor-grabbing select-none"
+          className="flex items-center justify-end gap-0.5 px-2 py-1 rounded-t-xl cursor-grab active:cursor-grabbing select-none"
           style={{ touchAction: "none" }}
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
           onPointerCancel={handlePointerUp}
         >
+          <span className="text-[10px] text-text-muted mr-1">Drag</span>
+          <Move size={14} className="text-text-muted" />
+          <div className="w-px h-3 bg-white/10 mx-1" />
           <button
-            onClick={() => setNavOrientation("horizontal")}
+            onClick={(e) => { e.stopPropagation(); setNavOrientation("horizontal") }}
             className="p-1 rounded-lg hover:bg-white/10 text-text-tertiary hover:text-text-secondary transition-colors"
             title="Switch to horizontal"
           >
             <ArrowLeftRight size={14} />
           </button>
-          <GripVertical size={14} className="text-text-muted" />
         </div>
 
         <nav className="glass-strong rounded-2xl border border-white/[0.08] flex flex-col items-center gap-1 px-2 py-3">
@@ -124,21 +126,23 @@ export function MobileNav() {
     >
       {/* Drag handle bar */}
       <div
-        className="flex items-center justify-end gap-1 px-3 py-0.5 cursor-grab active:cursor-grabbing select-none"
+        className="flex items-center justify-end gap-0.5 px-2 py-0.5 cursor-grab active:cursor-grabbing select-none rounded-t-2xl"
         style={{ touchAction: "none" }}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
       >
+        <span className="text-[10px] text-text-muted mr-1">Drag</span>
+        <Move size={14} className="text-text-muted" />
+        <div className="w-px h-3 bg-white/10 mx-1" />
         <button
-          onClick={() => setNavOrientation("vertical")}
+          onClick={(e) => { e.stopPropagation(); setNavOrientation("vertical") }}
           className="p-1 rounded-lg hover:bg-white/10 text-text-tertiary hover:text-text-secondary transition-colors"
           title="Switch to vertical"
         >
           <ArrowLeftRight size={14} />
         </button>
-        <GripHorizontal size={16} className="text-text-muted" />
       </div>
 
       <nav className="glass-strong rounded-2xl border border-white/[0.08] flex items-center justify-around px-2 h-20 pb-[env(safe-area-inset-bottom)]">
