@@ -8,6 +8,7 @@ import { wrapUserContent } from "@/lib/ai/prompts/injection-fence"
 import { buildSystemPrompt } from "@/lib/ai/prompts/system"
 import { buildContextWithBudget } from "@/lib/ai/context-manager"
 import { executeWithStreaming, buildExecutorBody, type ExecutorMessage } from "@/lib/ai/executor"
+import { getMemories, saveMemory, parseMemorySave, stripMemorySave } from "@/lib/ai/memory"
 import { aiLogger } from "@/lib/ai/logger"
 import { AI_CONFIG } from "@/lib/ai/config"
 
@@ -35,12 +36,12 @@ export async function POST(req: Request) {
   if (rateLimitResult) return rateLimitResult
 
   try {
-    const { sessionId, message, model, endpointUrl, apiKey, systemPrompt, lifeContext, memoriesSection, toolResult } = await req.json()
+    const { sessionId, message, model, endpointUrl, apiKey, systemPrompt, toolResult } = await req.json()
     if (!sessionId || !message) {
       return NextResponse.json({ error: "sessionId and message required" }, { status: 400 })
     }
 
-    // Sanitize user input (injection detection + clean)
+    // Sanitize user input
     const sanitized = sanitizeInput(message)
     if (sanitized.blocked) {
       aiLogger.security("Injection attempt blocked", {
@@ -68,15 +69,25 @@ export async function POST(req: Request) {
 
     const history = await listMessages(sessionId)
 
-    // Build system prompt using the new modular builder
+    // Truncate very long conversations: keep last 30 turns
+    let trimmedHistory = history
+    if (history.length > 40) {
+      trimmedHistory = history.slice(-30)
+      aiLogger.debug("Conversation history truncated", {
+        originalCount: history.length,
+        trimmedCount: history.length - 30,
+      })
+    }
+
+    // Fetch persistent memories and inject into system prompt
+    const memoryBlock = await getMemories(user.userId)
     const fullSystemPrompt = buildSystemPrompt({
-      lifeContext: lifeContext || undefined,
-      memoriesSection: memoriesSection || undefined,
+      memoryBlock,
       customInstructions: systemPrompt || session.system_prompt || undefined,
     })
 
     // Apply token budgeting
-    const budgeted = buildContextWithBudget(fullSystemPrompt, history)
+    const budgeted = buildContextWithBudget(fullSystemPrompt, trimmedHistory)
 
     if (budgeted.trimmedHistoryCount > 0) {
       aiLogger.debug("Context window trimmed", {
@@ -137,6 +148,17 @@ export async function POST(req: Request) {
             }
           )
 
+          // Parse and persist memory_save blocks from the response
+          let cleanContent = result.content
+          if (cleanContent) {
+            const parsed = parseMemorySave(cleanContent)
+            if (parsed) {
+              await saveMemory(user.userId, parsed.key, parsed.value, parsed.importance)
+              aiLogger.info("Memory saved", { key: parsed.key, importance: parsed.importance })
+            }
+            cleanContent = stripMemorySave(cleanContent)
+          }
+
           // Forward tool calls to client
           if (result.toolCalls.length > 0) {
             for (const tc of result.toolCalls) {
@@ -147,9 +169,9 @@ export async function POST(req: Request) {
           controller.enqueue(encoder.encode("data: [DONE]\n\n"))
           controller.close()
 
-          // Persist assistant message
-          if (result.content) {
-            await addMessage({ session_id: sessionId, role: "assistant", content: result.content })
+          // Persist assistant message (with memory block stripped)
+          if (cleanContent) {
+            await addMessage({ session_id: sessionId, role: "assistant", content: cleanContent })
           }
           await updateSession(sessionId, {
             last_accessed_at: new Date().toISOString(),

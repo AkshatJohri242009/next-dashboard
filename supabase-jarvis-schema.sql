@@ -138,5 +138,23 @@ create table if not exists jarvis_auth_sessions (
 
 create index if not exists idx_jarvis_auth_sessions_expires on jarvis_auth_sessions(expires_at);
 
+-- ============================
+-- Persistent AI Memory (key-value)
+-- Stores user facts across sessions
+-- ============================
+create table if not exists memories (
+  id            uuid primary key default gen_random_uuid(),
+  user_id       text not null,
+  key           text not null,
+  value         text not null,
+  importance    float not null default 0.5,
+  created_at    timestamptz default now(),
+  updated_at    timestamptz default now(),
+  last_accessed timestamptz default now(),
+  unique(user_id, key)
+);
+
+create index if not exists idx_memories_user_importance on memories(user_id, importance desc, last_accessed desc);
+
 -- Note: RLS policies use a service-role client, so we skip per-user RLS
 -- and handle auth at the API route level instead.
