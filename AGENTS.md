@@ -1,4 +1,4 @@
-# Session Context — June 3, 2026
+# Session Context — June 4, 2026
 
 ## Project
 **LifeOS** — AI-powered Personal Operating System (Next.js 14, Supabase, Zustand, Recharts, Framer Motion, 52 static routes) with JARVIS 2.0 intelligence layer: voice system, memory engine, correlation engine, future self engine, annual life report, automation engine, plus full health/fitness/sleep tracking, and premium design system.
@@ -147,6 +147,43 @@
 
 ### `lib/voice-intents.ts` — UPDATED
 - `addGoal` intent forwards `action.params?.priority` as `"low" | "medium" | "high"` to store
+
+### `app/ClientLayout.tsx` — FIXED (June 4)
+- **Removed `AnimatePresence mode="wait"`** wrapper around page content
+- Sub-pages (`/journal`, `/focus`, `/habits`, etc.) were showing black screen because `AnimatePresence mode="wait"` would start the exit animation and then never properly enter the new page, leaving the motion.div stuck at `opacity: 0`
+- Simplified to bare `<motion.div>` with `initial` / `animate` — still fades in on navigation, no exit animation
+
+### `lib/store.ts` — PERSISTENCE FIX (June 5)
+- **Added `lifeos_pending_goals`** — a persistent non-date-based list of all incomplete goals, so they never disappear after 7 days
+- **`addGoal()`** now writes to both today's key AND the pending list
+- **`toggleGoal()`** syncs completion status to pending list
+- **`deleteGoal()`** removes from both today and pending list
+- **`loadGoals()`** replaced the 7-day scan with reading from `lifeos_pending_goals` — all pending goals always appear
+- **`pushToTomorrow()`** no longer removes incomplete goals from today — keeps the original day intact
+
+### `app/missions/page.tsx` — UNIFIED VIEW (June 5)
+- Added `<TodaysMission />` component at the top of the Missions page
+- Same goals widget from the home page now appears on `/missions` too — add, toggle, delete from either page
+- Uses the same Zustand store, so both pages always show identical data
+
+### JARVIS Improvements — June 5
+
+#### Tool Calling (Function Calling)
+- **`lib/jarvis-tool-defs.ts`** — 8 tool definitions (addGoal, toggleGoal, deleteGoal, logWater, logHabit, journalEntry, getGoals, getContext) with typed JSON schemas for Groq function calling
+- **`lib/jarvis-tools.ts`** — `executeToolCall()` runs each tool client-side, reading/writing localStorage (goals, health, habits, journal)
+- **`app/api/jarvis/chat/route.ts`** — Detects `finish_reason: "tool_calls"` in the Groq stream, accumulates tool call chunks, sends `type: "tool_call"` SSE events to the client. On follow-up requests with `toolResult`, sends tool response back to the model
+- **`lib/jarvis-store.ts`** — `sendMessage()` now handles `tool_call` events: executes the tool, adds a system message showing the result, then sends a follow-up request with the tool result and streams the final response
+- JARVIS can now create/update/delete goals, log water, log habits, write journal entries, and query context — all by just asking in chat
+
+#### Proactive JARVIS Alerts
+- **`lib/store.ts`** — Added `jarvisAlerts: JarvisAlert[]` to the Zustand store with `setJarvisAlerts()` action
+- **`app/ClientLayout.tsx`** — Runs proactive checks every 60s: goals not started after 2pm, low water after 12pm, no journal entry after 8pm — pushes alerts to the bell notification panel
+- **`components/layout/NotificationPanel.tsx`** — Shows JARVIS alerts alongside water/sleep notifications, dismisses all on panel close
+
+#### Goal Persistence (also June 5)
+- `lifeos_pending_goals` key stores all incomplete goals permanently
+- `loadGoals()` scans 365 days back for existing goals + migrates them into pending list
+- Goals never disappear unless explicitly deleted or marked done
 
 ## Next Steps
 - **RLS policies** for JARVIS Supabase tables (~30 min)

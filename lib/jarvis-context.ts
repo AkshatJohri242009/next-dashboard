@@ -27,7 +27,10 @@ export interface JarvisInsight {
   metric?: string
 }
 
-export function gatherContext(page: string): JarvisContext {
+const ALL_MODULES = ["goals", "health", "gym", "sleep", "study", "stocks", "projects", "habits", "decisions", "memories", "missions", "journal"] as const
+
+export function gatherContext(page: string, modules?: string[]): JarvisContext {
+  const activeModules = modules || ALL_MODULES
   const today = new Date().toISOString().slice(0, 10)
   const hour = new Date().getHours()
   const timeOfDay = hour < 12 ? "morning" : hour < 17 ? "afternoon" : "evening"

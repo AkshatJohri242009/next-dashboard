@@ -3,6 +3,8 @@
 import { create } from "zustand"
 import type { Goal, GymState, Habit, HealthState } from "./types"
 import type { JarvisSession, JarvisMessage, JarvisMemory, JarvisDocument, JarvisEndpoint, LLMProvider, JarvisUser } from "./jarvis-types"
+import { executeToolCall } from "./jarvis-tools"
+import { getSimilarMemories } from "./memory-engine"
 
 interface JarvisState {
   // Auth
@@ -257,6 +259,16 @@ export const useJarvisStore = create<JarvisState>((set, get) => ({
       } catch {}
     }
 
+    // Add relevant memories as additional context
+    let memoriesSection = ""
+    try {
+      const similar = getSimilarMemories(message, 5)
+      if (similar.length > 0) {
+        memoriesSection = "\nRelevant memories:\n" + similar.map(m => `- ${m.text} (${m.category}, ${m.date})`).join("\n")
+      }
+    } catch {}
+    lifeContext += memoriesSection
+
     // Optimistically add user message
     const userMsg: JarvisMessage = {
       id: `temp-${Date.now()}`,
@@ -300,6 +312,7 @@ export const useJarvisStore = create<JarvisState>((set, get) => ({
       const decoder = new TextDecoder()
       let fullText = ""
       let buffer = ""
+      let pendingToolCall: { id: string; name: string; arguments: Record<string, unknown> } | null = null
 
       while (true) {
         const { done, value } = await reader.read()
@@ -323,11 +336,115 @@ export const useJarvisStore = create<JarvisState>((set, get) => ({
               fullText += parsed.delta
               set({ streamingText: fullText })
             }
+            if (parsed.type === "tool_call") {
+              pendingToolCall = { id: parsed.id, name: parsed.name, arguments: parsed.arguments || {} }
+            }
           } catch {}
         }
       }
 
-      // Add assistant message
+      // Handle tool call if present
+      if (pendingToolCall) {
+        // Add any streamed text as assistant message first
+        if (fullText) {
+          const partialMsg: JarvisMessage = {
+            id: `msg-${Date.now()}`,
+            session_id: currentSessionId,
+            role: "assistant",
+            content: fullText,
+            metadata: {},
+            created_at: new Date().toISOString(),
+          }
+          set((s) => ({ messages: [...s.messages, partialMsg] }))
+        }
+
+        // Execute the tool
+        const result = executeToolCall({ id: pendingToolCall.id, name: pendingToolCall.name, arguments: pendingToolCall.arguments })
+
+        // Show tool result as a system message in the UI
+        const toolMsg: JarvisMessage = {
+          id: `tool-${Date.now()}`,
+          session_id: currentSessionId,
+          role: "system",
+          content: `🛠 ${pendingToolCall.name}: ${result}`,
+          metadata: {},
+          created_at: new Date().toISOString(),
+        }
+        set((s) => ({ messages: [...s.messages, toolMsg] }))
+
+        // Send follow-up request with tool result
+        const followUp = await fetch("/api/jarvis/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            sessionId: currentSessionId,
+            message: "(Tool result follow-up)",
+            model,
+            endpointUrl,
+            systemPrompt,
+            lifeContext,
+            toolResult: {
+              toolCallId: pendingToolCall.id,
+              result,
+            },
+          }),
+          signal: abortController.signal,
+        })
+
+        if (!followUp.ok) {
+          const err = await followUp.json()
+          set({ error: err.error || "Tool follow-up failed", chatLoading: false })
+          return
+        }
+
+        const reader2 = followUp.body?.getReader()
+        if (!reader2) {
+          set({ error: "No response body", chatLoading: false })
+          return
+        }
+
+        let followUpText = ""
+        let buffer2 = ""
+        while (true) {
+          const { done, value } = await reader2.read()
+          if (done) break
+          buffer2 += decoder.decode(value, { stream: true })
+          const lines = buffer2.split("\n")
+          buffer2 = lines.pop() || ""
+          for (const line of lines) {
+            if (!line.startsWith("data: ")) continue
+            const data = line.replace("data: ", "").trim()
+            if (data === "[DONE]") continue
+            try {
+              const parsed = JSON.parse(data)
+              if (parsed.error) {
+                set({ error: parsed.error, chatLoading: false })
+                return
+              }
+              if (parsed.delta) {
+                followUpText += parsed.delta
+                set({ streamingText: followUpText })
+              }
+            } catch {}
+          }
+        }
+
+        if (followUpText) {
+          const finalMsg: JarvisMessage = {
+            id: `msg-${Date.now()}`,
+            session_id: currentSessionId,
+            role: "assistant",
+            content: followUpText,
+            metadata: {},
+            created_at: new Date().toISOString(),
+          }
+          set((s) => ({ messages: [...s.messages, finalMsg], streamingText: "" }))
+        }
+        set({ chatLoading: false })
+        return
+      }
+
+      // Add assistant message (no tool call)
       if (fullText) {
         const assistantMsg: JarvisMessage = {
           id: `msg-${Date.now()}`,

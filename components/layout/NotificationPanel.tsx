@@ -1,6 +1,6 @@
 "use client"
 
-import { Bell, X, Droplets, Moon, Square } from "lucide-react"
+import { Bell, X, Droplets, Moon, Square, Lightbulb } from "lucide-react"
 import { useStore } from "@/lib/store"
 import { useEffect, useRef } from "react"
 
@@ -13,6 +13,7 @@ export function NotificationPanel() {
     sleepTimerStart, stopSleepTimer,
     waterTimerMin, lastWaterNotif, markWaterNotif,
     lastSleepNotif, markSleepNotif,
+    jarvisAlerts, setJarvisAlerts,
   } = useStore()
   const panelRef = useRef<HTMLDivElement>(null)
 
@@ -55,9 +56,10 @@ export function NotificationPanel() {
   const now = Date.now()
   const waterDue = waterTimerMin > 0 && (now - lastWaterNotif) >= waterTimerMin * 60 * 1000
   const sleepDue = sleepTimerStart && (now - lastSleepNotif) >= SLEEP_INTERVAL
-  const badgeCount = Math.min((waterDue ? 1 : 0) + (sleepDue ? 1 : 0), 99)
+  const alertCount = jarvisAlerts.length
+  const badgeCount = Math.min((waterDue ? 1 : 0) + (sleepDue ? 1 : 0) + alertCount, 99)
 
-  const dismiss = () => setNotificationPanel(false)
+  const dismiss = () => { setNotificationPanel(false); setJarvisAlerts([]) }
 
   return (
     <div className="relative">
@@ -122,7 +124,19 @@ export function NotificationPanel() {
                   </div>
                 )}
 
-                {!waterDue && !sleepDue && (
+                {jarvisAlerts.map(alert => (
+                  <div key={alert.id} className="flex items-start gap-3 px-4 py-3.5 rounded-xl bg-accent-500/8 border border-accent-500/15">
+                    <div className="w-9 h-9 rounded-xl bg-accent-500/15 flex items-center justify-center shrink-0 text-sm">
+                      {alert.icon || <Lightbulb className="w-4 h-4 text-accent-400" />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-semibold text-white/90">{alert.title}</div>
+                      <div className="text-xs text-text-tertiary mt-0.5">{alert.body}</div>
+                    </div>
+                  </div>
+                ))}
+
+                {!waterDue && !sleepDue && alertCount === 0 && (
                   <div className="py-8 text-center text-sm text-text-tertiary italic">No notifications right now.</div>
                 )}
               </div>

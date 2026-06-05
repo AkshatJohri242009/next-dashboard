@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { requireJarvisUser } from "@/lib/jarvis-auth"
 import { getSession, createSession, updateSession, listMessages, addMessage, updateMessageSessionCount } from "@/lib/jarvis-db"
+import { TOOLS } from "@/lib/jarvis-tool-defs"
 
 const OPENJARVIS_URL = process.env.OPENJARVIS_URL || "http://127.0.0.1:8000"
 
@@ -18,7 +19,7 @@ export async function POST(req: Request) {
   if (error) return error
 
   try {
-    const { sessionId, message, mode, model, endpointUrl, apiKey, systemPrompt, lifeContext } = await req.json()
+    const { sessionId, message, model, endpointUrl, apiKey, systemPrompt, lifeContext, toolResult } = await req.json()
     if (!sessionId || !message) {
       return NextResponse.json({ error: "sessionId and message required" }, { status: 400 })
     }
@@ -28,18 +29,27 @@ export async function POST(req: Request) {
       session = await createSession(user.userId, { id: sessionId, name: "New Chat" })
     }
 
-    await addMessage({ session_id: sessionId, role: "user", content: message })
     const history = await listMessages(sessionId)
 
     const baseSystemPrompt = systemPrompt || session.system_prompt || "You are J.A.R.V.I.S., an AI strategist and personal assistant for LifeOS. Be concise, insightful, and personalized."
     const enhancedPrompt = lifeContext
-      ? `${baseSystemPrompt}\n\nLIFEOS CONTEXT (real-time data):\n${lifeContext}\n\nUse this context to provide personalized, data-driven responses. If something needs attention, suggest actionable steps.`
+      ? `${baseSystemPrompt}\n\nLIFEOS CONTEXT (real-time data):\n${lifeContext}\n\nUse this context to provide personalized, data-driven responses. If something needs attention, suggest actionable steps. You also have access to tools — use them to take action on the user's behalf when appropriate.`
       : baseSystemPrompt
 
-    const llmMessages: { role: string; content: string }[] = []
+    const llmMessages: { role: string; content: string; tool_call_id?: string }[] = []
     llmMessages.push({ role: "system", content: enhancedPrompt })
-    for (const m of history) {
-      llmMessages.push({ role: m.role, content: m.content })
+
+    if (toolResult) {
+      for (const m of history) {
+        llmMessages.push({ role: m.role, content: m.content })
+      }
+      llmMessages.push({ role: "tool", content: toolResult.result, tool_call_id: toolResult.toolCallId })
+    } else {
+      for (const m of history) {
+        llmMessages.push({ role: m.role, content: m.content })
+      }
+      llmMessages.push({ role: "user", content: message })
+      await addMessage({ session_id: sessionId, role: "user", content: message })
     }
 
     const mod = model || process.env.JARVIS_DEFAULT_MODEL || "llama-3.3-70b-versatile"
@@ -49,7 +59,6 @@ export async function POST(req: Request) {
       process.env.OPENAI_API_KEY ||
       ""
 
-    // Route through OpenJarvis if available, otherwise direct to Groq
     const ojAvailable = await ojIsAvailable()
     const targetUrl = ojAvailable
       ? `${OPENJARVIS_URL}/v1/chat/completions`
@@ -66,16 +75,23 @@ export async function POST(req: Request) {
             fetchHeaders["Authorization"] = `Bearer ${resolvedApiKey}`
           }
 
+          const body: Record<string, unknown> = {
+            model: mod,
+            messages: llmMessages,
+            stream: true,
+            temperature: 0.7,
+            max_tokens: 4096,
+          }
+
+          if (!toolResult) {
+            body.tools = TOOLS
+            body.tool_choice = "auto"
+          }
+
           const response = await fetch(targetUrl, {
             method: "POST",
             headers: fetchHeaders,
-            body: JSON.stringify({
-              model: mod,
-              messages: llmMessages,
-              stream: true,
-              temperature: 0.7,
-              max_tokens: 4096,
-            }),
+            body: JSON.stringify(body),
           })
 
           if (!response.ok) {
@@ -89,8 +105,11 @@ export async function POST(req: Request) {
           const reader = response.body?.getReader()
           if (!reader) throw new Error("No response body")
 
-          let fullResponse = ""
+          let fullAssistantContent = ""
           const decoder = new TextDecoder()
+          const toolCallAcc: Record<number, { id: string; name: string; arguments: string }> = {}
+          let finishReason: string | null = null
+          let gotToolCall = false
 
           while (true) {
             const { done, value } = await reader.read()
@@ -103,19 +122,50 @@ export async function POST(req: Request) {
               if (data === "[DONE]") continue
               try {
                 const parsed = JSON.parse(data)
-                const delta = parsed.choices?.[0]?.delta?.content || ""
-                if (delta) {
-                  fullResponse += delta
-                  controller.enqueue(encoder.encode(`data: ${JSON.stringify({ delta })}\n\n`))
+                const choice = parsed.choices?.[0]
+
+                if (choice?.delta?.content) {
+                  fullAssistantContent += choice.delta.content
+                  controller.enqueue(encoder.encode(`data: ${JSON.stringify({ delta: choice.delta.content })}\n\n`))
+                }
+
+                if (choice?.delta?.tool_calls) {
+                  gotToolCall = true
+                  for (const tc of choice.delta.tool_calls) {
+                    const idx = tc.index
+                    if (tc.id) {
+                      toolCallAcc[idx] = { id: tc.id, name: tc.function?.name || "", arguments: tc.function?.arguments || "" }
+                    } else if (toolCallAcc[idx] && tc.function?.arguments) {
+                      toolCallAcc[idx].arguments += tc.function.arguments
+                    }
+                  }
+                }
+
+                if (choice?.finish_reason) {
+                  finishReason = choice.finish_reason
                 }
               } catch {}
             }
           }
 
+          if (gotToolCall) {
+            for (const idx of Object.keys(toolCallAcc).map(Number).sort()) {
+              const tc = toolCallAcc[idx]
+              let parsedArgs: Record<string, unknown> = {}
+              try { parsedArgs = JSON.parse(tc.arguments) } catch {}
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "tool_call", id: tc.id, name: tc.name, arguments: parsedArgs })}\n\n`))
+            }
+            controller.enqueue(encoder.encode("data: [DONE]\n\n"))
+            controller.close()
+            return
+          }
+
           controller.enqueue(encoder.encode("data: [DONE]\n\n"))
           controller.close()
 
-          await addMessage({ session_id: sessionId, role: "assistant", content: fullResponse })
+          if (fullAssistantContent) {
+            await addMessage({ session_id: sessionId, role: "assistant", content: fullAssistantContent })
+          }
           await updateSession(sessionId, {
             last_accessed_at: new Date().toISOString(),
           } as any)

@@ -1,13 +1,27 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useCallback } from "react"
 import { useJarvisStore } from "@/lib/jarvis-store"
-import { Bot, Send, Plus, Trash2, Menu, X, MessageSquare, Lightbulb, Brain, Zap, Loader2, ChevronDown, PanelLeftClose, PanelLeft, Pencil, Check, Settings, Search, Archive, Star, LogOut, UserPlus, LogIn } from "lucide-react"
+import { Bot, Send, Plus, Trash2, Menu, X, MessageSquare, Lightbulb, Brain, Zap, Loader2, ChevronDown, PanelLeftClose, PanelLeft, Pencil, Check, Settings, Search, Archive, Star, LogOut, UserPlus, LogIn, Copy, CheckCheck } from "lucide-react"
+import ReactMarkdown from "react-markdown"
+import remarkGfm from "remark-gfm"
 
-function ChatMessage({ role, content }: { role: string; content: string }) {
+function ChatMessage({ role, content, createdAt }: { role: string; content: string; createdAt?: string }) {
   const isUser = role === "user"
+  const [copied, setCopied] = useState(false)
+
+  const handleCopy = useCallback(async () => {
+    await navigator.clipboard.writeText(content)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }, [content])
+
+  const timeStr = createdAt
+    ? new Date(createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+    : ""
+
   return (
-    <div className={`flex gap-3 ${isUser ? "flex-row-reverse" : ""}`}>
+    <div className={`flex gap-3 group ${isUser ? "flex-row-reverse" : ""}`}>
       <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
         isUser ? "bg-brand/20 text-brand" : "bg-accent/20 text-accent"
       }`}>
@@ -16,7 +30,22 @@ function ChatMessage({ role, content }: { role: string; content: string }) {
       <div className={`max-w-[80%] rounded-2xl px-4 py-2.5 ${
         isUser ? "bg-brand/20 text-white" : "glass text-white/90"
       }`}>
-        <p className="text-sm whitespace-pre-wrap leading-relaxed">{content}</p>
+        {role === "assistant" ? (
+          <div className="text-sm leading-relaxed prose prose-invert max-w-none prose-p:my-1 prose-code:bg-white/10 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-xs prose-pre:bg-white/5 prose-pre:border prose-pre:border-white/10 prose-ul:my-1 prose-ol:my-1 prose-li:my-0 prose-headings:my-2 prose-headings:text-white/90 prose-a:text-brand prose-strong:text-white/80 prose-blockquote:border-l-brand prose-blockquote:opacity-80">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+          </div>
+        ) : (
+          <p className="text-sm whitespace-pre-wrap leading-relaxed">{content}</p>
+        )}
+        <div className={`flex items-center gap-2 mt-1 ${isUser ? "justify-start" : "justify-between"}`}>
+          <span className="text-[10px] text-white/30">{timeStr}</span>
+          <button
+            onClick={handleCopy}
+            className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-white/10 text-white/30 hover:text-white/60 transition-all"
+          >
+            {copied ? <CheckCheck size={12} /> : <Copy size={12} />}
+          </button>
+        </div>
       </div>
     </div>
   )
@@ -451,7 +480,7 @@ export default function JarvisChat() {
           ) : (
             <>
               {messages.map((m) => (
-                <ChatMessage key={m.id} role={m.role} content={m.content} />
+                <ChatMessage key={m.id} role={m.role} content={m.content} createdAt={m.created_at} />
               ))}
               {streamingText && (
                 <ChatMessage role="assistant" content={streamingText} />

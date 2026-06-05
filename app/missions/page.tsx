@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { MissionsModule } from "@/components/life/MissionsModule"
 import { JarvisInsightBar } from "@/components/life/JarvisInsightBar"
+import { TodaysMission } from "@/components/home/TodaysMission"
 import { Flag, Target, CheckCircle2, Clock } from "lucide-react"
 
 const container = {
@@ -61,6 +62,10 @@ export default function MissionsPage() {
           </p>
           <p className="metric-label">Milestones</p>
         </div>
+      </motion.div>
+
+      <motion.div variants={item}>
+        <TodaysMission />
       </motion.div>
 
       <motion.div variants={item} className="card-elevated p-4 sm:p-6">

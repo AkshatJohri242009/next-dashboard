@@ -3,7 +3,7 @@
 import { useEffect, useRef, useCallback } from "react"
 import { useSession } from "next-auth/react"
 import { usePathname } from "next/navigation"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion } from "framer-motion"
 import { Sidebar } from "@/components/layout/Sidebar"
 import { TopNav } from "@/components/layout/TopNav"
 import { CommandPalette } from "@/components/layout/CommandPalette"
@@ -13,7 +13,7 @@ import { ScrollToTop } from "@/components/layout/ScrollToTop"
 import { MobileNav } from "@/components/layout/MobileNav"
 import { VoiceButton } from "@/components/jarvis/VoiceButton"
 import { JarvisPresence } from "@/components/jarvis/JarvisPresence"
-import { useStore } from "@/lib/store"
+import { useStore, type JarvisAlert, applyTheme } from "@/lib/store"
 import { useJarvisStore } from "@/lib/jarvis-store"
 import { autoExtractMemories } from "@/lib/memory-engine"
 import { useMediaQuery } from "@/lib/use-media-query"
@@ -79,12 +79,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     autoExtractMemories()
     seedIfNew()
     document.title = "LifeOS"
-    const root = document.documentElement
-    root.style.setProperty("--brand", theme.brandColor)
-    root.style.setProperty("--brand-500", theme.brandColor)
-    root.style.setProperty("--accent", theme.accentColor)
-    root.style.setProperty("--accent-500", theme.accentColor)
-    root.classList.toggle("light", theme.mode === "light")
+    applyTheme(theme)
     const syncInterval = setInterval(() => {
       syncWithSupabase()
       loadGoals()
@@ -96,12 +91,36 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
       loadStudyData()
       loadStocks()
       fetchStockQuotes()
-      const today = new Date().toISOString().slice(0, 10)
-      if (today !== lastDateRef.current) {
-        lastDateRef.current = today
+
+      // Proactive JARVIS alerts
+      try {
+        const today = new Date().toISOString().slice(0, 10)
+        const alerts: JarvisAlert[] = []
+        const goals: { text: string; done: boolean }[] = JSON.parse(localStorage.getItem("goals:" + today) || "[]")
+        const pending = goals.filter(g => !g.done)
+        if (goals.length > 0 && goals.length === pending.length && new Date().getHours() >= 14) {
+          alerts.push({ id: "goals-pending", icon: "🎯", title: "Goals not started", body: `${pending.length} goal(s) still pending. Start with the highest priority.`, type: "goal" })
+        }
+        const health: { waterMl?: number } = JSON.parse(localStorage.getItem("health_dashboard_v1") || "{}")
+        if ((health.waterMl || 0) < 500 && new Date().getHours() >= 12) {
+          alerts.push({ id: "water-low", icon: "💧", title: "Low hydration", body: `Only ${Math.round((health.waterMl || 0) / 2000 * 100)}% of daily water target.`, type: "health" })
+        }
+        const journal = JSON.parse(localStorage.getItem("lifeos_journal") || "[]") as { createdAt?: string }[]
+        const todayJournal = journal.filter(e => e.createdAt?.startsWith(today))
+        if (todayJournal.length === 0 && new Date().getHours() >= 20) {
+          alerts.push({ id: "journal-missed", icon: "📝", title: "No journal today", body: "Reflect on your day — even a quick entry helps.", type: "journal" })
+        }
+        loadTrackedProjects()
+        const { setJarvisAlerts } = useStore.getState()
+        setJarvisAlerts(alerts)
+      } catch {}
+
+      const newToday = new Date().toISOString().slice(0, 10)
+      if (newToday !== lastDateRef.current) {
+        lastDateRef.current = newToday
         pushToTomorrow()
       }
-    }, 30000)
+    }, 60000)
     return () => clearInterval(syncInterval)
   }, [loadGoals, loadHealth, loadGym, loadSleepLog, loadReminders, loadTrackedProjects, loadStudyData, loadStocks, fetchStockQuotes, syncWithSupabase, theme, pushToTomorrow, seedIfNew])
 
@@ -126,17 +145,14 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
       >
         <TopNav />
         <main className="p-4 md:p-6 lg:p-8 pb-[4.5rem] lg:pb-[env(safe-area-inset-bottom)] max-w-7xl mx-auto overflow-x-hidden">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={pathname}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-            >
-              {children}
-            </motion.div>
-          </AnimatePresence>
+          <motion.div
+            key={pathname}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+          >
+            {children}
+          </motion.div>
         </main>
       </div>
     </>

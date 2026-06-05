@@ -2,13 +2,24 @@
 
 import { create } from "zustand"
 import { ROUTES } from "./routes"
-import type { Goal, HealthState, GymState, Reminder, GitHubRepo, TrackedProject, SleepEntry, StockHolding, StockQuote, ThemeConfig } from "./types"
+import type { Goal, HealthState, GymState, Reminder, GitHubRepo, TrackedProject, SleepEntry, StockHolding, StockQuote, ThemeConfig, ThemePresetName } from "./types"
+import { THEME_PRESETS } from "./types"
 import {
   getActiveDateString, getTomorrowDateString,
   keyFor, todayKey, tomorrowKey, toDateString,
 } from "./utils"
 import { pullFromSupabase, pushToSupabase, type SyncEntry } from "./supabase"
 import type { StudyTask } from "./study-types"
+
+const PENDING_KEY = "lifeos_pending_goals"
+
+function getPendingGoals(): Goal[] {
+  return storeGet<Goal[]>(PENDING_KEY) || []
+}
+
+function setPendingGoals(goals: Goal[]) {
+  storeSet(PENDING_KEY, goals)
+}
 
 const recentlyModified = new Set<string>()
 let clearRecentlyModified: ReturnType<typeof setTimeout> | null = null
@@ -30,12 +41,32 @@ function storeSet(key: string, value: unknown) {
   markModified(key)
 }
 
-function applyTheme(theme: ThemeConfig) {
+export function applyTheme(theme: ThemeConfig) {
   const root = document.documentElement
-  root.style.setProperty("--brand", theme.brandColor)
-  root.style.setProperty("--accent", theme.accentColor)
-  root.style.setProperty("--brand-500", theme.brandColor)
-  root.style.setProperty("--accent-500", theme.accentColor)
+  const preset = THEME_PRESETS[theme.preset] || THEME_PRESETS["opencode-green"]
+  const mode = theme.mode === "light" ? "light" : "dark"
+  const colors = preset[mode]
+
+  root.style.setProperty("--brand", theme.brandColor || colors.brand)
+  root.style.setProperty("--brand-500", theme.brandColor || colors.brand500)
+  root.style.setProperty("--accent", theme.accentColor || colors.accent)
+  root.style.setProperty("--accent-500", theme.accentColor || colors.accent500)
+  root.style.setProperty("--bg", colors.bg)
+  root.style.setProperty("--bg-secondary", colors.bgSecondary)
+  root.style.setProperty("--bg-elevated", colors.bgElevated)
+  root.style.setProperty("--text", colors.text)
+  root.style.setProperty("--text-secondary", colors.textSecondary)
+  root.style.setProperty("--text-tertiary", colors.textTertiary)
+  root.style.setProperty("--text-muted", colors.textMuted)
+  root.style.setProperty("--border", colors.border)
+  root.style.setProperty("--border-strong", colors.borderStrong)
+  root.style.setProperty("--glass-bg", colors.glassBg)
+  root.style.setProperty("--glass-strong-bg", colors.glassStrongBg)
+  root.style.setProperty("--glass-elevated-bg", colors.glassElevatedBg)
+  root.style.setProperty("--glass-tinted-bg", colors.glassTintedBg)
+  root.style.setProperty("--glass-tinted-edge", colors.glassTintedEdge)
+  root.style.setProperty("--glass-accent-bg", colors.glassAccentBg)
+  root.style.setProperty("--glass-accent-edge", colors.glassAccentEdge)
   root.classList.toggle("light", theme.mode === "light")
 }
 
@@ -66,7 +97,7 @@ export function allLocalState(): Record<string, unknown> {
         "study_scores_v1", "study_errors_v1",
         "stocks_holdings_v1", "stocks_quotes_v1",
         "theme_v1",
-        "lifeos_journal", "lifeos_chapters", "lifeos_missions", "lifeos_decisions", "lifeos_brain", "lifeos_timeline", "lifeos_habits",
+        "lifeos_journal", "lifeos_chapters", "lifeos_missions", "lifeos_decisions", "lifeos_brain", "lifeos_timeline", "lifeos_habits", "lifeos_pending_goals",
       ].includes(key)
     )) {
       try { state[key] = JSON.parse(localStorage.getItem(key)!) }
@@ -81,6 +112,14 @@ function getGoals(key: string): Goal[] {
   return Array.isArray(g) ? g : []
 }
 
+export interface JarvisAlert {
+  id: string
+  icon: string
+  title: string
+  body: string
+  type: "goal" | "health" | "habit" | "journal"
+}
+
 interface DashboardState {
   goals: Goal[]
   tomorrowGoals: Goal[]
@@ -93,6 +132,7 @@ interface DashboardState {
   notificationPanelOpen: boolean
   mobileMenuOpen: boolean
   activePage: string
+  jarvisAlerts: JarvisAlert[]
 
   sleepTimerStart: number | null
   sleepLog: SleepEntry[]
@@ -113,6 +153,7 @@ interface DashboardState {
   setFocusOpen: (open: boolean) => void
   setCommandPalette: (open: boolean) => void
   setAIPanel: (open: boolean) => void
+  setJarvisAlerts: (alerts: JarvisAlert[]) => void
   setNotificationPanel: (open: boolean) => void
   setMobileMenu: (open: boolean) => void
   setActivePage: (page: string) => void
@@ -186,6 +227,7 @@ interface DashboardState {
 
   theme: ThemeConfig
   setTheme: (theme: ThemeConfig) => void
+  applyPreset: (presetName: ThemePresetName) => void
 }
 
 const defaultHealth: HealthState = {
@@ -218,6 +260,7 @@ export const useStore = create<DashboardState>((set, get) => ({
   supabaseReady: false,
   syncCount: 0,
 
+  jarvisAlerts: [],
   reminders: [],
   waterTimerMin: 45,
   lastWaterNotif: 0,
@@ -249,18 +292,29 @@ export const useStore = create<DashboardState>((set, get) => ({
 
   loadGoals: () => {
     let goals = getGoals(todayKey())
+    const pending = getPendingGoals()
+    const migrated = pending.length > 0
     const today = getActiveDateString()
     const yesterday = new Date(today + "T12:00:00")
-    for (let i = 1; i <= 7; i++) {
+    for (let i = 1; i <= 365; i++) {
       const d = new Date(yesterday.getTime() - i * 86400000)
       const dateStr = toDateString(d)
       if (dateStr === today) continue
       const dayGoals = getGoals(keyFor(dateStr))
-      dayGoals.forEach(g => {
+      for (const g of dayGoals) {
         if (!g.done && !goals.some(e => e.text === g.text)) {
           goals.push({ ...g, pushedCount: (g.pushedCount || 0) + 1 })
+          if (!migrated && !pending.some(p => p.text === g.text)) {
+            pending.push({ ...g })
+          }
         }
-      })
+      }
+    }
+    if (!migrated) setPendingGoals(pending)
+    for (const g of pending) {
+      if (!g.done && !goals.some(e => e.text === g.text)) {
+        goals.push({ ...g, pushedCount: (g.pushedCount || 0) + 1 })
+      }
     }
     const tomorrowGoals = getGoals(tomorrowKey())
     const streakData = storeGet<{ count: number }>("goal_streak_v1")
@@ -284,8 +338,14 @@ export const useStore = create<DashboardState>((set, get) => ({
   addGoal: (text, options) => {
     const key = todayKey()
     const goals = getGoals(key)
-    goals.push({ text, done: false, reminderMin: options?.reminderMin, priority: options?.priority, dueDate: options?.dueDate, estimatedMinutes: options?.estimatedMinutes })
+    const newGoal: Goal = { text, done: false, reminderMin: options?.reminderMin, priority: options?.priority, dueDate: options?.dueDate, estimatedMinutes: options?.estimatedMinutes }
+    goals.push(newGoal)
     storeSet(key, goals)
+    const pending = getPendingGoals()
+    if (!pending.some(g => g.text === text)) {
+      pending.push(newGoal)
+      setPendingGoals(pending)
+    }
     set({ goals })
     if (options?.reminderMin && options.reminderMin > 0) {
       get().addReminder(text, "task", options.reminderMin, goals.length - 1)
@@ -300,6 +360,13 @@ export const useStore = create<DashboardState>((set, get) => ({
       goals[idx].done = !goals[idx].done
       goals[idx].doneAt = goals[idx].done ? Date.now() : undefined
       storeSet(key, goals)
+      const pending = getPendingGoals()
+      const pIdx = pending.findIndex(g => g.text === goals[idx].text)
+      if (pIdx >= 0) {
+        pending[pIdx].done = goals[idx].done
+        pending[pIdx].doneAt = goals[idx].doneAt
+        setPendingGoals(pending)
+      }
       set({ goals: [...goals] })
       autoSync()
     }
@@ -308,8 +375,13 @@ export const useStore = create<DashboardState>((set, get) => ({
   deleteGoal: (idx) => {
     const key = todayKey()
     const goals = getGoals(key)
+    const removed = goals[idx]
     goals.splice(idx, 1)
     storeSet(key, goals)
+    if (removed) {
+      const pending = getPendingGoals()
+      setPendingGoals(pending.filter(g => g.text !== removed.text))
+    }
     set({ goals: [...goals] })
     autoSync()
   },
@@ -369,7 +441,7 @@ export const useStore = create<DashboardState>((set, get) => ({
       }
     })
     storeSet(tomorrowKey(), tomorrow)
-    storeSet(todayKey(), today.filter(g => g.done))
+    storeSet(todayKey(), today)
     set({
       goals: getGoals(todayKey()),
       tomorrowGoals: getGoals(tomorrowKey()),
@@ -427,6 +499,7 @@ export const useStore = create<DashboardState>((set, get) => ({
   setFocusOpen: (open) => set({ focusOpen: open }),
   setCommandPalette: (open) => set({ commandPaletteOpen: open }),
   setAIPanel: (open) => set({ aiPanelOpen: open }),
+  setJarvisAlerts: (alerts) => set({ jarvisAlerts: alerts }),
   setNotificationPanel: (open) => set({ notificationPanelOpen: open }),
   setMobileMenu: (open) => set({ mobileMenuOpen: open }),
   setActivePage: (page) => set({ activePage: page }),
@@ -628,7 +701,7 @@ export const useStore = create<DashboardState>((set, get) => ({
   stockExpandedSymbol: null,
 
   mode: (storeGet<"work" | "study">("dashboard_mode")) || "work",
-  theme: storeGet<ThemeConfig>("theme_v1") || { mode: "dark", brandColor: "#3bcb85", accentColor: "#748ffc" },
+  theme: storeGet<ThemeConfig>("theme_v1") || { mode: "dark", brandColor: "#30D158", accentColor: "#007AFF", preset: "opencode-green" },
 
   setMode: (m) => {
     storeSet("dashboard_mode", m)
@@ -639,6 +712,23 @@ export const useStore = create<DashboardState>((set, get) => ({
     storeSet("theme_v1", theme)
     set({ theme })
     applyTheme(theme)
+    autoSync()
+  },
+
+  applyPreset: (presetName) => {
+    const preset = THEME_PRESETS[presetName]
+    if (!preset) return
+    const mode = get().theme.mode
+    const colors = preset[mode]
+    const newTheme: ThemeConfig = {
+      mode,
+      brandColor: colors.brand,
+      accentColor: colors.accent,
+      preset: presetName,
+    }
+    storeSet("theme_v1", newTheme)
+    set({ theme: newTheme })
+    applyTheme(newTheme)
     autoSync()
   },
   lastWorkPath: ROUTES.HOME,
