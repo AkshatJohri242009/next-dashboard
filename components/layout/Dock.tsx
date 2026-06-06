@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { useState, useRef, useEffect, useCallback } from "react"
+import { useState, useRef, useEffect, useCallback, memo } from "react"
 import {
   LayoutDashboard, PenSquare, Flame, Bot, Zap, Settings,
   MoreHorizontal, BookOpen, Brain, Flag, Clock, GitBranch,
@@ -137,17 +137,15 @@ function storeSet(key: string, value: unknown) {
   try { localStorage.setItem(key, JSON.stringify(value)) } catch {}
 }
 
-export function Dock() {
+function DockInner() {
   const pathname = usePathname()
-  const { mode, setCommandPalette, setMode, navPosition, setNavPosition } = useStore()
+  const { mode, setCommandPalette, navPosition, setNavPosition } = useStore()
   const [expanded, setExpanded] = useState(false)
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null)
   const dockRef = useRef<HTMLDivElement>(null)
   const barRef = useRef<HTMLDivElement>(null)
-  const isDesktop = useMediaQuery("(min-width: 1024px)")
   const isMobile = useMediaQuery("(max-width: 639px)")
 
-  // Orientation + sizing state (persisted)
   const [orientation, setOrientationState] = useState<NavOrientation>(
     () => storeGet(LS_ORIENTATION, "horizontal")
   )
@@ -165,11 +163,120 @@ export function Dock() {
     storeSet(LS_SIZE, s)
   }, [])
 
-  // Resize tracking
-  const isResizing = useRef(false)
-  const resizeStart = useRef({ x: 0, y: 0, size: 0 })
+  // ---------- REF-BASED DRAG (no React re-renders during drag) ----------
+  const isDraggingRef = useRef(false)
+  const dragOffset = useRef({ x: 0, y: 0 }) // cursor offset from element center
+  const committedRef = useRef({ x: navPosition.x, y: navPosition.y })
 
-  // Responsive default position: bottom-center on first load
+  // Keep committedRef in sync when navPosition changes externally
+  useEffect(() => {
+    committedRef.current = { x: navPosition.x, y: navPosition.y }
+  }, [navPosition])
+
+  const clampToViewport = useCallback((cx: number, cy: number) => {
+    const vw = window.innerWidth
+    const vh = window.innerHeight
+    const el = barRef.current
+    if (!el) return { x: cx, y: cy }
+    const w = el.offsetWidth
+    const h = el.offsetHeight
+    return {
+      x: Math.max(w / 2, Math.min(vw - w / 2, cx)),
+      y: Math.max(h / 2 + 4, Math.min(vh - h / 2 - 4, cy)),
+    }
+  }, [])
+
+  const onPointerDown = useCallback((e: React.PointerEvent) => {
+    if (isMobile || !dockRef.current) return
+    // Ignore if target is a link, button, or the resize handle
+    const target = e.target as HTMLElement
+    if (target.closest("a") || target.closest("button") || target.closest("[data-resize-handle]")) return
+
+    e.preventDefault()
+    const el = dockRef.current
+    const rect = el.getBoundingClientRect()
+    const centerX = rect.left + rect.width / 2
+    const centerY = rect.top + rect.height / 2
+    dragOffset.current = { x: e.clientX - centerX, y: e.clientY - centerY }
+
+    isDraggingRef.current = true
+    el.style.transition = "none"
+    el.setPointerCapture(e.pointerId)
+    el.addEventListener("pointermove", onPointerMove)
+    el.addEventListener("pointerup", onPointerUp)
+    el.addEventListener("pointercancel", onPointerUp)
+  }, [isMobile]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const onPointerMove = useCallback((e: PointerEvent) => {
+    if (!isDraggingRef.current) return
+    const el = dockRef.current
+    if (!el) return
+    const rawX = e.clientX - dragOffset.current.x
+    const rawY = e.clientY - dragOffset.current.y
+    const clamped = clampToViewport(rawX, rawY)
+    el.style.left = clamped.x + "px"
+    el.style.top = clamped.y + "px"
+  }, [clampToViewport])
+
+  const onPointerUp = useCallback(() => {
+    isDraggingRef.current = false
+    const el = dockRef.current
+    if (!el) return
+    el.removeEventListener("pointermove", onPointerMove)
+    el.removeEventListener("pointerup", onPointerUp)
+    el.removeEventListener("pointercancel", onPointerUp)
+    el.style.transition = ""
+    // Read current inline position (set during drag)
+    const left = parseFloat(el.style.left)
+    const top = parseFloat(el.style.top)
+    if (!isNaN(left) && !isNaN(top)) {
+      const w = el.offsetWidth
+      const h = el.offsetHeight
+      const pos = { x: left, y: top }
+      committedRef.current = pos
+      setNavPosition(pos)
+    }
+    // Clear inline styles so React's style takes over on next render
+    el.style.left = ""
+    el.style.top = ""
+  }, [setNavPosition]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ---------- RESIZE (also ref-based) ----------
+  const resizeRef = useRef({ active: false, startX: 0, startY: 0, startSize: 0 })
+
+  const onResizePointerDown = useCallback((e: React.PointerEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    const r = resizeRef.current
+    r.active = true
+    r.startX = e.clientX
+    r.startY = e.clientY
+    r.startSize = navSize
+    document.addEventListener("pointermove", onResizePointerMove)
+    document.addEventListener("pointerup", onResizePointerUp)
+  }, [navSize]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const onResizePointerMove = useCallback((e: PointerEvent) => {
+    const r = resizeRef.current
+    if (!r.active) return
+    if (orientation === "horizontal") {
+      const delta = e.clientX - r.startX
+      const newSize = Math.max(280, Math.min(window.innerWidth * 0.9, (r.startSize || 400) + delta * 2))
+      setNavSize(newSize)
+    } else {
+      const delta = e.clientY - r.startY
+      const newSize = Math.max(320, Math.min(window.innerHeight * 0.8, (r.startSize || 400) + delta))
+      setNavSize(newSize)
+    }
+  }, [orientation, setNavSize])
+
+  const onResizePointerUp = useCallback(() => {
+    resizeRef.current.active = false
+    document.removeEventListener("pointermove", onResizePointerMove)
+    document.removeEventListener("pointerup", onResizePointerUp)
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ---------- DEFAULT POSITION ON FIRST LOAD ----------
   useEffect(() => {
     if (navPosition.x === 0 && navPosition.y === 0) {
       const vw = window.innerWidth
@@ -178,34 +285,27 @@ export function Dock() {
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Re-clamp on resize
+  // ---------- RE-CLAMP ON RESIZE ----------
   useEffect(() => {
+    let rafId: number
     const handle = () => {
-      const vw = window.innerWidth
-      const vh = window.innerHeight
-      const barW = barRef.current?.offsetWidth || 400
-      const barH = barRef.current?.offsetHeight || 72
-      setNavPosition({
-        x: Math.max(barW / 2, Math.min(vw - barW / 2, navPosition.x)),
-        y: Math.max(barH / 2, Math.min(vh - barH / 2, navPosition.y)),
+      cancelAnimationFrame(rafId)
+      rafId = requestAnimationFrame(() => {
+        const pos = committedRef.current
+        const clamped = clampToViewport(pos.x, pos.y)
+        if (clamped.x !== pos.x || clamped.y !== pos.y) {
+          setNavPosition(clamped)
+        }
       })
     }
     window.addEventListener("resize", handle)
-    return () => window.removeEventListener("resize", handle)
-  }, [navPosition, setNavPosition])
-
-  // Clamp function for drag
-  const clamp = useCallback((x: number, y: number) => {
-    const vw = window.innerWidth
-    const vh = window.innerHeight
-    const barW = barRef.current?.offsetWidth || 400
-    const barH = barRef.current?.offsetHeight || 72
-    return {
-      x: Math.max(barW / 2, Math.min(vw - barW / 2, x)),
-      y: Math.max(barH / 2 + 8, Math.min(vh - barH / 2 - 8, y)),
+    return () => {
+      window.removeEventListener("resize", handle)
+      cancelAnimationFrame(rafId)
     }
-  }, [])
+  }, [clampToViewport, setNavPosition])
 
+  // ---------- CLICK OUTSIDE TO CLOSE EXPANDED MENU ----------
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (dockRef.current && !dockRef.current.contains(e.target as Node)) {
@@ -218,40 +318,7 @@ export function Dock() {
 
   useEffect(() => { setExpanded(false) }, [pathname])
 
-  // Resize pointer handlers
-  const onResizeStart = useCallback((e: React.PointerEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    isResizing.current = true
-    resizeStart.current = {
-      x: e.clientX,
-      y: e.clientY,
-      size: navSize || (orientation === "horizontal" ? 400 : 400),
-    }
-    document.addEventListener("pointermove", onResizeMove)
-    document.addEventListener("pointerup", onResizeEnd)
-  }, [navSize, orientation]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  const onResizeMove = useCallback((e: PointerEvent) => {
-    if (!isResizing.current) return
-    if (orientation === "horizontal") {
-      const delta = e.clientX - resizeStart.current.x
-      const newSize = Math.max(280, Math.min(window.innerWidth * 0.9, resizeStart.current.size + delta * 2))
-      setNavSize(newSize)
-    } else {
-      const delta = e.clientY - resizeStart.current.y
-      const newSize = Math.max(320, Math.min(window.innerHeight * 0.8, resizeStart.current.size + delta))
-      setNavSize(newSize)
-    }
-  }, [orientation, setNavSize])
-
-  const onResizeEnd = useCallback(() => {
-    isResizing.current = false
-    document.removeEventListener("pointermove", onResizeMove)
-    document.removeEventListener("pointerup", onResizeEnd)
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Mobile: render fixed bottom-center bar, no drag/toggle
+  // ---------- RENDER ----------
   if (isMobile) {
     return (
       <nav className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around px-3 py-2 h-[88px] glass-strong border-t border-white/[0.06] pb-[env(safe-area-inset-bottom)]">
@@ -278,7 +345,16 @@ export function Dock() {
   const isHorizontal = orientation === "horizontal"
 
   return (
-    <div ref={dockRef} className="fixed z-50 select-none" style={{ left: navPosition.x, top: navPosition.y, transform: "translate(-50%, -50%)" }}>
+    <div
+      ref={dockRef}
+      className="fixed z-50 select-none touch-none"
+      style={{
+        left: navPosition.x,
+        top: navPosition.y,
+        transform: "translate(-50%, -50%)",
+      }}
+      onPointerDown={onPointerDown}
+    >
       <AnimatePresence>
         {expanded && (
           <motion.div
@@ -316,16 +392,8 @@ export function Dock() {
         )}
       </AnimatePresence>
 
-      <motion.div
+      <div
         ref={barRef}
-        drag
-        dragMomentum={false}
-        onDrag={(_, info) => {
-          const clamped = clamp(navPosition.x + info.delta.x, navPosition.y + info.delta.y)
-          setNavPosition(clamped)
-        }}
-        onDragStart={() => setExpanded(false)}
-        dragElastic={0}
         className={cn(
           "glass-elevated shadow-2xl border border-white/[0.06] transition-[border-radius] duration-200",
           isHorizontal
@@ -338,12 +406,11 @@ export function Dock() {
           borderRadius: 16,
           cursor: "grab",
         }}
-        whileDrag={{ opacity: 0.85, scale: 1.02, boxShadow: "0 8px 32px rgba(0,0,0,0.4)" }}
       >
         {/* Drag handle */}
         <div className={cn(
           "flex items-center justify-center text-text-muted hover:text-text-secondary transition-colors",
-          isHorizontal ? "mr-1" : "mb-1"
+          isHorizontal ? "mr-1 pointer-events-none" : "mb-1 pointer-events-none"
         )}>
           <GripVertical className={cn("w-4 h-4", isHorizontal ? "" : "rotate-90")} />
         </div>
@@ -382,7 +449,7 @@ export function Dock() {
               onMouseEnter={() => setHoveredIdx(idx)}
               onMouseLeave={() => setHoveredIdx(null)}
             >
-              <motion.div
+              <div
                 className={cn(
                   "flex items-center justify-center transition-colors rounded-xl",
                   isHorizontal ? "h-10 w-10" : "h-9 w-9 shrink-0",
@@ -390,12 +457,9 @@ export function Dock() {
                     ? isHorizontal ? "text-brand-400" : "text-brand-400 bg-brand-500/10"
                     : "text-text-tertiary hover:text-text-secondary"
                 )}
-                whileHover={{ scale: 1.12 }}
-                whileTap={{ scale: 0.9 }}
-                transition={{ type: "spring", stiffness: 500, damping: 22 }}
               >
                 <Icon className="w-[22px] h-[22px]" />
-              </motion.div>
+              </div>
               <span className={cn(
                 "font-medium leading-tight text-center",
                 isHorizontal ? "text-[12px]" : "text-[13px]",
@@ -404,7 +468,7 @@ export function Dock() {
                 {item.label}
               </span>
               {active && isHorizontal && (
-                <motion.div layoutId="dock-active" className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-brand-400" transition={{ type: "spring", stiffness: 500, damping: 30 }} />
+                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-brand-400" />
               )}
               {active && !isHorizontal && (
                 <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-6 rounded-full bg-brand-400" />
@@ -463,21 +527,24 @@ export function Dock() {
 
         {/* Resize handle */}
         <div
+          data-resize-handle
           className={cn(
-            "absolute z-10 flex items-center justify-center text-text-muted opacity-40 hover:opacity-100 transition-opacity cursor-ew-resize",
+            "absolute z-10 flex items-center justify-center text-text-muted opacity-40 hover:opacity-100 transition-opacity",
             isHorizontal
-              ? "right-0 top-0 bottom-0 w-4"
+              ? "right-0 top-0 bottom-0 w-4 cursor-ew-resize"
               : "left-0 right-0 bottom-0 h-4 cursor-ns-resize"
           )}
           style={{ touchAction: "none" }}
-          onPointerDown={onResizeStart}
+          onPointerDown={onResizePointerDown}
         >
           <div className={cn(
             "bg-white/20 rounded-full",
             isHorizontal ? "w-1 h-8" : "h-1 w-8"
           )} />
         </div>
-      </motion.div>
+      </div>
     </div>
   )
 }
+
+export const Dock = memo(DockInner)
