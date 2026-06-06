@@ -78,7 +78,7 @@ export function MobileNav() {
   // Mobile: fixed bottom-center, no drag
   if (isMobile) {
     return (
-      <nav className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around px-3 py-2 h-22 glass-strong border-t border-white/[0.06] pb-[env(safe-area-inset-bottom)]">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around px-3 py-2 h-[88px] glass-strong border-t border-white/[0.06] pb-[env(safe-area-inset-bottom)]">
         {navItems.map((item) => {
           const active = pathname === item.href
           return (
@@ -132,7 +132,7 @@ export function MobileNav() {
         </div>
 
         {/* Nav links */}
-        <div className="flex items-center gap-1 px-4 py-3 h-22">
+        <div className="flex items-center gap-1 px-4 py-3 h-[88px]">
           {navItems.map((item) => {
             const active = pathname === item.href
             return (
