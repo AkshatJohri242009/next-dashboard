@@ -9,6 +9,7 @@ import { User, Mail, Calendar, Shield, Key, Trash2, LogOut, Sparkles } from "luc
 export default function ProfilePage() {
   const { data: session, update } = useSession()
   const router = useRouter()
+  const isDemoUser = session?.user?.email === (process.env.NEXT_PUBLIC_DEMO_EMAIL || "demo@lifeos.app")
   const [name, setName] = useState("")
   const [createdAt, setCreatedAt] = useState("")
   const [saving, setSaving] = useState(false)
@@ -159,6 +160,7 @@ export default function ProfilePage() {
         </div>
       </div>
 
+      {!isDemoUser && (
       <div className="glass-panel rounded-[18px] p-6 space-y-5">
         <h2 className="text-sm font-semibold text-text-primary flex items-center gap-2">
           <Key className="w-4 h-4 text-brand" /> Change Password
@@ -200,6 +202,7 @@ export default function ProfilePage() {
           )}
         </form>
       </div>
+      )}
 
       <div className="glass-panel rounded-[18px] p-6 space-y-5">
         <h2 className="text-sm font-semibold text-text-primary flex items-center gap-2">

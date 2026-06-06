@@ -47,7 +47,7 @@ export function getTimeOfDay(): "morning" | "afternoon" | "evening" {
   return "evening"
 }
 
-export function generateGreeting(username = "Akshat"): string {
+export function generateGreeting(username = "User"): string {
   const tod = getTimeOfDay()
   const greetings: Record<string, string> = {
     morning: "Good Morning",
@@ -103,7 +103,7 @@ export function calculateLifeScore(data: {
   }
 }
 
-export function generateBriefing(prevBriefing?: DailyBriefing): DailyBriefing {
+export function generateBriefing(username = "User", prevBriefing?: DailyBriefing): DailyBriefing {
   const tod = getTimeOfDay()
   const isMorning = tod === "morning"
   const today = new Date().toISOString().slice(0, 10)
@@ -183,7 +183,7 @@ export function generateBriefing(prevBriefing?: DailyBriefing): DailyBriefing {
   }
 
   return {
-    greeting: generateGreeting(),
+    greeting: generateGreeting(username),
     timeOfDay: tod,
     insights,
     recommendations,

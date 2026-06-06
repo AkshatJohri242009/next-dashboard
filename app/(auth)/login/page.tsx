@@ -4,7 +4,7 @@ import { useState } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
-import { Sparkles, Mail, Lock, Github } from "lucide-react"
+import { Sparkles, Mail, Lock, Github, Play } from "lucide-react"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -15,6 +15,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
+  const [demoLoading, setDemoLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -30,6 +31,26 @@ export default function LoginPage() {
     if (result?.error) {
       setError("Invalid email or password")
       setLoading(false)
+    } else {
+      router.push(callbackUrl)
+      router.refresh()
+    }
+  }
+
+  const handleDemoLogin = async () => {
+    setDemoLoading(true)
+    setError("")
+
+    const demoEmail = process.env.NEXT_PUBLIC_DEMO_EMAIL || "demo@lifeos.app"
+    const result = await signIn("credentials", {
+      email: demoEmail,
+      password: "demo1234",
+      redirect: false,
+    })
+
+    if (result?.error) {
+      setError("Demo login failed. Please try again.")
+      setDemoLoading(false)
     } else {
       router.push(callbackUrl)
       router.refresh()
@@ -99,6 +120,24 @@ export default function LoginPage() {
       </form>
 
       <div className="relative my-6">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-white/10" />
+        </div>
+        <div className="relative flex justify-center">
+          <span className="px-3 text-xs text-text-tertiary bg-[var(--surface-card)]">or</span>
+        </div>
+      </div>
+
+      <button
+        onClick={handleDemoLogin}
+        disabled={demoLoading}
+        className="w-full h-11 rounded-xl bg-white/10 border border-white/20 text-text-primary font-semibold text-sm hover:bg-white/15 disabled:opacity-50 transition-all flex items-center justify-center gap-2 mb-6"
+      >
+        <Play className="w-4 h-4 text-brand" />
+        {demoLoading ? "Starting demo..." : "Try Demo"}
+      </button>
+
+      <div className="relative mb-6">
         <div className="absolute inset-0 flex items-center">
           <div className="w-full border-t border-white/10" />
         </div>

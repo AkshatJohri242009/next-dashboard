@@ -205,8 +205,6 @@ interface DashboardState {
 
   mode: "work" | "study"
   setMode: (m: "work" | "study") => void
-  navOrientation: "horizontal" | "vertical"
-  setNavOrientation: (o: "horizontal" | "vertical") => void
   navPosition: { x: number; y: number }
   setNavPosition: (pos: { x: number; y: number }) => void
   lastWorkPath: string
@@ -705,8 +703,7 @@ export const useStore = create<DashboardState>((set, get) => ({
   stockExpandedSymbol: null,
 
   mode: (storeGet<"work" | "study">("dashboard_mode")) || "work",
-  navOrientation: storeGet<"horizontal" | "vertical">("nav_orientation") || "horizontal",
-  navPosition: storeGet<{ x: number; y: number }>("nav_position") || { x: 0, y: 0 },
+  navPosition: storeGet<{ x: number; y: number }>("lifeos-navbar-position") || { x: 0, y: 0 },
   theme: storeGet<ThemeConfig>("theme_v1") || { mode: "dark", brandColor: "#30D158", accentColor: "#007AFF", preset: "opencode-green" },
 
   setMode: (m) => {
@@ -714,11 +711,8 @@ export const useStore = create<DashboardState>((set, get) => ({
     set({ mode: m })
     autoSync()
   },
-  setNavOrientation: (o) => {
-    storeSet("nav_orientation", o)
-    set({ navOrientation: o })
-  },
   setNavPosition: (pos) => {
+    storeSet("lifeos-navbar-position", pos)
     set({ navPosition: pos })
   },
   setTheme: (theme) => {

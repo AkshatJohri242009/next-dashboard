@@ -42,7 +42,7 @@ function getTimeOfDay(): "morning" | "afternoon" | "evening" {
   return "evening"
 }
 
-export function generateMorningBriefing(username = "Akshat"): DailyBriefing {
+export function generateMorningBriefing(username = "User"): DailyBriefing {
   const tod = getTimeOfDay()
   const sections: BriefingSection[] = []
   const today = new Date().toISOString().slice(0, 10)
@@ -115,7 +115,7 @@ export function generateMorningBriefing(username = "Akshat"): DailyBriefing {
   }
 }
 
-export function generateEveningReview(username = "Akshat"): DailyBriefing {
+export function generateEveningReview(username = "User"): DailyBriefing {
   const sections: BriefingSection[] = []
   const today = new Date().toISOString().slice(0, 10)
   const goals: Goal[] = loadJSON(`goals:${today}`) || []

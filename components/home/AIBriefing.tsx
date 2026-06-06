@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion"
 import { useEffect, useState } from "react"
+import { useSession } from "next-auth/react"
 import { Sparkles, TrendingUp, TrendingDown, Minus, Target, Lightbulb, Zap, ArrowRight } from "lucide-react"
 import { generateBriefing, type DailyBriefing } from "@/lib/life-engine"
 import { recommendPriorities } from "@/lib/automation-engine"
@@ -9,11 +10,14 @@ import Link from "next/link"
 import { ROUTES } from "@/lib/routes"
 
 export function AIBriefing() {
+  const { data: session } = useSession()
+  const userName = session?.user?.name || "User"
   const [briefing, setBriefing] = useState<DailyBriefing | null>(null)
   const [priority, setPriority] = useState("")
 
   useEffect(() => {
-    setBriefing(generateBriefing())
+    setBriefing(generateBriefing(userName))
+  }, [userName])
     try {
       const result = recommendPriorities()
       if (result.success && result.data?.recommendations?.[0]) {

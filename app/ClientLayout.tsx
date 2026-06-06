@@ -121,8 +121,17 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     return () => clearInterval(syncInterval)
   }, [loadGoals, loadHealth, loadGym, loadSleepLog, loadReminders, loadTrackedProjects, loadStudyData, loadStocks, fetchStockQuotes, syncWithSupabase, theme, pushToTomorrow, seedIfNew])
 
+  const isDemoUser = session?.user?.email === (process.env.NEXT_PUBLIC_DEMO_EMAIL || "demo@lifeos.app")
+
   return (
     <>
+      {isDemoUser && (
+        <div className="fixed top-0 left-0 right-0 z-50 bg-brand/20 backdrop-blur-md border-b border-brand/30 py-1.5 px-4 text-center">
+          <span className="text-xs font-medium text-brand">Demo Mode</span>
+          <span className="text-xs text-text-secondary ml-2">Exploring LifeOS — data is temporary</span>
+        </div>
+      )}
+
       <CommandPalette />
       <AIPanel />
       <SwipeHandler />
@@ -132,7 +141,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
       <VoiceButton />
       <JarvisPresence />
 
-      <div className="min-h-screen">
+      <div className={`min-h-screen ${isDemoUser ? "pt-10" : ""}`}>
         <TopNav />
         <main className="p-4 md:p-6 lg:p-8 pb-24 max-w-7xl mx-auto overflow-x-hidden">
           <motion.div

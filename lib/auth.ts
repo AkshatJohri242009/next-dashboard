@@ -3,6 +3,48 @@ import CredentialsProvider from "next-auth/providers/credentials"
 import GoogleProvider from "next-auth/providers/google"
 import GitHubProvider from "next-auth/providers/github"
 import { adminDb } from "./admin-supabase"
+import bcrypt from "bcryptjs"
+
+async function findOrCreateDemoUser(): Promise<{ id: string; name: string; email: string } | null> {
+  const db = adminDb
+  if (!db) return null
+
+  const demoEmail = process.env.DEMO_EMAIL || "demo@lifeos.app"
+  const demoPassword = process.env.DEMO_PASSWORD || "demo1234"
+
+  // Check if demo user already exists
+  const { data: existing } = await db.from("User").select("id, name, email").eq("email", demoEmail).limit(1)
+  if (existing && existing.length > 0) {
+    return existing[0] as { id: string; name: string; email: string }
+  }
+
+  // Create demo user
+  const id = crypto.randomUUID()
+  const now = new Date().toISOString()
+  const hashed = await bcrypt.hash(demoPassword, 12)
+
+  const { data: user, error } = await db.from("User").insert({
+    id,
+    name: "Demo User",
+    email: demoEmail,
+    password: hashed,
+    createdAt: now,
+    updatedAt: now,
+  }).select("id, name, email").single()
+
+  if (error || !user) return null
+
+  await db.from("UserProfile").insert({
+    userId: user.id,
+    displayName: "Demo User",
+    onboardingDone: false,
+    createdAt: now,
+    updatedAt: now,
+  })
+  await db.from("UserSettings").insert({ userId: user.id, createdAt: now, updatedAt: now })
+
+  return user as { id: string; name: string; email: string }
+}
 
 export const authOptions: NextAuthOptions = {
   session: { strategy: "jwt" },
@@ -19,6 +61,19 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null
+
+        const demoEmail = process.env.DEMO_EMAIL || "demo@lifeos.app"
+        const demoPassword = process.env.DEMO_PASSWORD || "demo1234"
+
+        // Demo login path
+        if (credentials.email === demoEmail) {
+          if (credentials.password !== demoPassword) return null
+          const demoUser = await findOrCreateDemoUser()
+          if (!demoUser) return null
+          return { id: demoUser.id, email: demoUser.email, name: demoUser.name, image: null }
+        }
+
+        // Normal login path
         const db = adminDb
         if (!db) return null
 
@@ -31,7 +86,6 @@ export const authOptions: NextAuthOptions = {
         const user = users?.[0]
         if (!user || !user.password) return null
 
-        const bcrypt = await import("bcryptjs")
         const valid = await bcrypt.compare(credentials.password, user.password)
         if (!valid) return null
 

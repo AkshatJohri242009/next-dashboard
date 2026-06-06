@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react"
 import { motion } from "framer-motion"
+import { useSession } from "next-auth/react"
 import {
   Sun, Moon, Calendar, TrendingUp, TrendingDown, Minus, Volume2,
   Sparkles, Flame, Dumbbell, Brain, Activity,
@@ -26,13 +27,15 @@ const ICON_MAP: Record<string, any> = {
 }
 
 export function VoiceBriefingPanel() {
+  const { data: session } = useSession()
+  const userName = session?.user?.name || "User"
   const [type, setType] = useState<BriefingType>("morning")
   const [autoPlay, setAutoPlay] = useState(false)
   const [isSpeaking, setIsSpeaking] = useState(false)
   const [showDetails, setShowDetails] = useState<Record<string, boolean>>({})
 
-  const morning = useMemo(() => generateMorningBriefing(), [])
-  const evening = useMemo(() => generateEveningReview(), [])
+  const morning = useMemo(() => generateMorningBriefing(userName), [userName])
+  const evening = useMemo(() => generateEveningReview(userName), [userName])
   const weekly = useMemo(() => generateWeeklyBriefing(), [])
   const monthly = useMemo(() => generateMonthlyBriefing(), [])
 
