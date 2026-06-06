@@ -1,12 +1,13 @@
 "use client"
 
-import { useRef, useState, useCallback, useEffect } from "react"
+import { useRef, useCallback, useEffect, useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"
 import { useStore } from "@/lib/store"
 import { ROUTES } from "@/lib/routes"
-import { LayoutDashboard, PenSquare, Flame, Bot, Zap, Target, Heart, ArrowLeftRight, Move } from "lucide-react"
+import { LayoutDashboard, PenSquare, Flame, Bot, Zap, Target, Heart, GripHorizontal } from "lucide-react"
 
 const navItems = [
   { href: ROUTES.HOME, label: "Home", icon: LayoutDashboard },
@@ -18,134 +19,66 @@ const navItems = [
   { href: ROUTES.VOICE, label: "Voice", icon: Zap },
 ]
 
+const HANDLE_H = 20
+const NAV_H = 88
+
 export function MobileNav() {
   const pathname = usePathname()
-  const { mode, navOrientation, setNavOrientation, navPosition, setNavPosition } = useStore()
-  const navRef = useRef<HTMLDivElement>(null)
+  const { mode, navPosition, setNavPosition } = useStore()
+  const [isMobile, setIsMobile] = useState(false)
   const [dragging, setDragging] = useState(false)
-  const dragStart = useRef({ x: 0, y: 0, posX: 0, posY: 0 })
+  const dragRef = useRef({ startX: 0, startY: 0, posX: 0, posY: 0, moved: false })
+  const handleRef = useRef<HTMLDivElement>(null)
 
-  const handlePointerDown = useCallback((e: React.PointerEvent) => {
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 640)
+    check()
+    window.addEventListener("resize", check)
+    return () => window.removeEventListener("resize", check)
+  }, [])
+
+  const clamp = useCallback((x: number, y: number) => {
+    const vw = window.innerWidth
+    const vh = window.innerHeight
+    const navW = navItems.length * 60 + 40
+    return {
+      x: Math.max(-navW / 2 + 60, Math.min(vw - navW / 2 - 60, x)),
+      y: Math.max(8, Math.min(vh - NAV_H - 16, y)),
+    }
+  }, [])
+
+  const onPointerDown = useCallback((e: React.PointerEvent) => {
     e.preventDefault()
-    navRef.current?.setPointerCapture(e.pointerId)
-    dragStart.current = {
-      x: e.clientX,
-      y: e.clientY,
+    handleRef.current?.setPointerCapture(e.pointerId)
+    dragRef.current = {
+      startX: e.clientX,
+      startY: e.clientY,
       posX: navPosition.x,
       posY: navPosition.y,
+      moved: false,
     }
     setDragging(true)
   }, [navPosition])
 
-  const handlePointerMove = useCallback((e: React.PointerEvent) => {
+  const onPointerMove = useCallback((e: React.PointerEvent) => {
     if (!dragging) return
-    const dx = e.clientX - dragStart.current.x
-    const dy = e.clientY - dragStart.current.y
-    setNavPosition({
-      x: dragStart.current.posX + dx,
-      y: dragStart.current.posY + dy,
-    })
-  }, [dragging, setNavPosition])
+    const dx = e.clientX - dragRef.current.startX
+    const dy = e.clientY - dragRef.current.startY
+    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) dragRef.current.moved = true
+    const clamped = clamp(dragRef.current.posX + dx, dragRef.current.posY + dy)
+    setNavPosition(clamped)
+  }, [dragging, setNavPosition, clamp])
 
-  const handlePointerUp = useCallback(() => {
+  const onPointerUp = useCallback(() => {
     setDragging(false)
   }, [])
 
   if (mode === "study") return null
 
-  const isVertical = navOrientation === "vertical"
-
-  if (isVertical) {
+  // Mobile: fixed bottom-center, no drag
+  if (isMobile) {
     return (
-      <div
-        ref={navRef}
-        className="fixed z-50 flex flex-col"
-        style={{
-          right: `${Math.max(8, navPosition.x)}px`,
-          bottom: `${navPosition.y === 0 ? 80 : Math.max(80, navPosition.y)}px`,
-          transform: dragging ? "scale(1.02)" : "scale(1)",
-          transition: dragging ? "none" : "transform 0.2s ease",
-        }}
-      >
-        {/* Top bar with drag handle + orientation toggle */}
-        <div
-          className="flex items-center justify-end gap-1 px-3 py-1 rounded-t-xl cursor-grab active:cursor-grabbing select-none bg-white/[0.04] border-b border-white/[0.06]"
-          style={{ touchAction: "none" }}
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-          onPointerCancel={handlePointerUp}
-        >
-          <Move size={14} className="text-text-muted" />
-          <span className="text-[10px] text-text-muted font-medium tracking-wide">DRAG TO MOVE</span>
-          <div className="w-px h-3 bg-white/[0.08] mx-1" />
-          <button
-            onClick={(e) => { e.stopPropagation(); setNavOrientation("horizontal") }}
-            className="p-1 rounded-lg hover:bg-white/10 text-text-tertiary hover:text-text-secondary transition-colors"
-            title="Switch to horizontal"
-          >
-            <ArrowLeftRight size={14} />
-          </button>
-        </div>
-
-        <nav className="glass-strong rounded-2xl border border-white/[0.08] flex flex-col items-center gap-1 px-2 py-3">
-          {navItems.map((item) => {
-            const active = pathname === item.href
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  "flex flex-col items-center justify-center gap-0.5 w-14 h-14 rounded-xl transition-colors",
-                  active
-                    ? "text-brand-400 bg-brand/10"
-                    : "text-text-tertiary hover:text-text-secondary hover:bg-white/[0.04]",
-                )}
-              >
-                <item.icon className="w-5 h-5" />
-                <span className="text-[10px] font-medium leading-none">{item.label}</span>
-              </Link>
-            )
-          })}
-        </nav>
-      </div>
-    )
-  }
-
-  return (
-    <div
-      ref={navRef}
-      className="fixed z-50"
-      style={{
-        left: `${Math.max(0, navPosition.x)}px`,
-        right: `${Math.max(0, -navPosition.x)}px`,
-        bottom: `${Math.max(0, navPosition.y)}px`,
-        transform: dragging ? "scale(1.02)" : "scale(1)",
-        transition: dragging ? "none" : "transform 0.2s ease",
-      }}
-    >
-      {/* Drag handle bar */}
-      <div
-        className="flex items-center justify-end gap-1 px-3 py-1 cursor-grab active:cursor-grabbing select-none rounded-t-2xl bg-white/[0.04] border-b border-white/[0.06]"
-        style={{ touchAction: "none" }}
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerCancel={handlePointerUp}
-      >
-        <Move size={14} className="text-text-muted" />
-        <span className="text-[10px] text-text-muted font-medium tracking-wide">DRAG TO MOVE</span>
-        <div className="w-px h-3 bg-white/[0.08] mx-1" />
-        <button
-          onClick={(e) => { e.stopPropagation(); setNavOrientation("vertical") }}
-          className="p-1 rounded-lg hover:bg-white/10 text-text-tertiary hover:text-text-secondary transition-colors"
-          title="Switch to vertical"
-        >
-          <ArrowLeftRight size={14} />
-        </button>
-      </div>
-
-      <nav className="glass-strong rounded-2xl border border-white/[0.08] flex items-center justify-around px-2 h-20 pb-[env(safe-area-inset-bottom)]">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around px-3 py-2 h-22 glass-strong border-t border-white/[0.06] pb-[env(safe-area-inset-bottom)]">
         {navItems.map((item) => {
           const active = pathname === item.href
           return (
@@ -153,18 +86,80 @@ export function MobileNav() {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex flex-col items-center justify-center gap-0.5 min-w-0 px-2 h-14 rounded-xl transition-colors",
-                active
-                  ? "text-brand-400 bg-brand/10"
-                  : "text-text-tertiary hover:text-text-secondary hover:bg-white/[0.04]",
+                "flex flex-col items-center justify-center gap-1 min-w-0 px-2 py-1 rounded-xl transition-colors",
+                active ? "text-brand-400" : "text-text-tertiary hover:text-text-secondary",
               )}
             >
               <item.icon className="w-5 h-5" />
-              <span className="text-[11px] font-medium leading-none">{item.label}</span>
+              <span className="text-[11px] font-medium leading-tight">{item.label}</span>
             </Link>
           )
         })}
       </nav>
-    </div>
+    )
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className="fixed z-50 select-none"
+      style={{
+        left: navPosition.x,
+        top: navPosition.y,
+        transition: dragging ? "none" : "left 0.35s cubic-bezier(0.22, 1, 0.36, 1), top 0.35s cubic-bezier(0.22, 1, 0.36, 1)",
+      }}
+    >
+      <div
+        className={cn(
+          "glass-strong rounded-2xl border border-white/[0.08] transition-[transform,opacity] duration-150",
+          dragging && "scale-[1.03] opacity-80",
+        )}
+        style={{ willChange: dragging ? "transform" : "auto" }}
+      >
+        {/* Drag handle — top-right, only this initiates drag */}
+        <div
+          ref={handleRef}
+          className="absolute -top-2.5 right-3 z-10 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/[0.06] border border-white/[0.08] cursor-grab active:cursor-grabbing"
+          style={{ touchAction: "none" }}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onPointerCancel={onPointerUp}
+        >
+          <GripHorizontal size={13} className="text-text-muted" />
+          <span className="text-[9px] font-medium text-text-muted tracking-wider uppercase">Move</span>
+        </div>
+
+        {/* Nav links */}
+        <div className="flex items-center gap-1 px-4 py-3 h-22">
+          {navItems.map((item) => {
+            const active = pathname === item.href
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={(e) => {
+                  // If user was just dragging, don't navigate
+                  if (dragRef.current.moved) {
+                    e.preventDefault()
+                    dragRef.current.moved = false
+                  }
+                }}
+                className={cn(
+                  "flex flex-col items-center justify-center gap-1 w-14 h-16 rounded-xl transition-colors",
+                  active
+                    ? "text-brand-400 bg-brand/10"
+                    : "text-text-tertiary hover:text-text-secondary hover:bg-white/[0.04]",
+                )}
+              >
+                <item.icon className="w-5 h-5" />
+                <span className="text-[12px] font-medium leading-tight text-center">{item.label}</span>
+              </Link>
+            )
+          })}
+        </div>
+      </div>
+    </motion.div>
   )
 }

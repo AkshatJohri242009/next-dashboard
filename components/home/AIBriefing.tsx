@@ -18,6 +18,8 @@ export function AIBriefing() {
   useEffect(() => {
     setBriefing(generateBriefing(userName))
   }, [userName])
+
+  useEffect(() => {
     try {
       const result = recommendPriorities()
       if (result.success && result.data?.recommendations?.[0]) {
