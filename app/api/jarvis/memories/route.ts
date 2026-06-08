@@ -49,7 +49,7 @@ export async function PUT(req: Request) {
   const { id, pinned } = await req.json()
   if (!id) return NextResponse.json({ error: "Memory id required" }, { status: 400 })
 
-  await togglePinMemory(id, pinned)
+  await togglePinMemory(id, user.userId, pinned)
   return NextResponse.json({ success: true })
 }
 
@@ -60,6 +60,6 @@ export async function DELETE(req: Request) {
   const { id } = await req.json()
   if (!id) return NextResponse.json({ error: "Memory id required" }, { status: 400 })
 
-  await deleteMemory(id)
+  await deleteMemory(id, user.userId)
   return NextResponse.json({ success: true })
 }

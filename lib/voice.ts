@@ -96,17 +96,22 @@ export function speakText(text: string, provider: TTSProviderName = "webspeech",
     return fetch("/api/jarvis/voice/tts", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text, provider, voice: voiceName }),
+      body: JSON.stringify({ text: sanitizeTextForSpeech(text), provider, voice: voiceName }),
     }).then(res => { if (!res.ok) throw new Error("TTS failed") })
   }
   return new Promise((resolve, reject) => {
     if (!window.speechSynthesis) return reject(new Error("Speech synthesis not supported"))
     window.speechSynthesis.cancel()
-    const utterance = new SpeechSynthesisUtterance(text)
-    utterance.rate = DEFAULT_CONFIG.speed
-    if (voiceName) {
+    const clean = sanitizeTextForSpeech(text)
+    const utterance = new SpeechSynthesisUtterance(clean)
+    const settings = getVoiceSettings()
+    utterance.rate = settings.rate || 1.0
+    utterance.pitch = settings.pitch || 1.0
+    utterance.volume = settings.volume || 0.9
+    const voice = voiceName || settings.voiceName
+    if (voice) {
       const voices = window.speechSynthesis.getVoices()
-      const match = voices.find(v => v.name === voiceName)
+      const match = voices.find(v => v.name === voice)
       if (match) utterance.voice = match
     }
     utterance.onend = () => resolve()
@@ -142,4 +147,88 @@ export async function startListening(timeoutMs = 10000): Promise<string> {
     sr.onend = () => clearTimeout(timer)
     try { sr.start() } catch { clearTimeout(timer); reject(new Error("Failed to start listening")) }
   })
+}
+
+/** Interim speech recognition — fires onResult with live transcript, ends on silence */
+export function startListeningInterim(
+  onResult: (transcript: string, isFinal: boolean) => void,
+  onEnd: (finalTranscript: string) => void,
+  onError?: (error: string) => void,
+  lang = "en-US",
+  continuous = false,
+): () => void {
+  if (!isSpeechSupported()) {
+    onError?.("Speech recognition not supported")
+    return () => {}
+  }
+  const SpeechRecognitionAPI = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+  const sr = new SpeechRecognitionAPI()
+  sr.continuous = continuous
+  sr.interimResults = true
+  sr.lang = lang
+
+  let finalTranscript = ""
+
+  sr.onresult = (event: SpeechRecognitionEvent) => {
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      const text = event.results[i][0].transcript
+      const isFinal = event.results[i].isFinal
+      if (isFinal) finalTranscript = text
+      onResult(text, isFinal)
+    }
+  }
+  sr.onerror = () => onError?.("Speech recognition error")
+  sr.onend = () => onEnd(finalTranscript)
+  try { sr.start() } catch { onError?.("Failed to start listening") }
+
+  return () => { try { sr.stop() } catch {} }
+}
+
+/**
+ * Strips markdown syntax and URLs from text before passing to speech synthesis.
+ * Converts: # → removed, **bold** → bold, * → pause, `code` → code, > → removed,
+ * ``` fences → removed, tables → prose, URLs → "link"
+ */
+export function sanitizeTextForSpeech(text: string): string {
+  return text
+    // Remove code fences and their content (too technical to read aloud)
+    .replace(/```[\s\S]*?```/g, "")
+    // Remove inline code
+    .replace(/`([^`]+)`/g, "$1")
+    // Remove image/link references but keep alt text
+    .replace(/!\[([^\]]*)\]\([^)]+\)/g, "$1")
+    .replace(/\[([^\]]*)\]\([^)]+\)/g, "$1")
+    // Replace URLs with "link"
+    .replace(/https?:\/\/\S+/gi, "link")
+    // Remove heading markers
+    .replace(/^#{1,6}\s*/gm, "")
+    // Remove bold/italic markers
+    .replace(/(\*{1,3}|_{1,3})(.*?)\1/g, "$2")
+    // Remove strikethrough
+    .replace(/~~(.*?)~~/g, "$1")
+    // Remove horizontal rules
+    .replace(/^---+\s*$/gm, "")
+    // Remove blockquote markers
+    .replace(/^>\s*/gm, "")
+    // Remove table pipes and dividers
+    .replace(/[|]:?-+:?/g, "")
+    .replace(/^\|/gm, "")
+    .replace(/\|$/gm, "")
+    // Convert bullet points to commas
+    .replace(/^[\s]*[-*+]\s+/gm, "")
+    // Clean up excessive whitespace
+    .replace(/\n{3,}/g, "\n\n")
+    .replace(/ +/g, " ")
+    .trim()
+}
+
+/** Reads voice settings from localStorage with defaults */
+export function getVoiceSettings() {
+  if (typeof window === "undefined") return {}
+  return {
+    voiceName: localStorage.getItem("lifeos-jarvis-voice") || "",
+    rate: parseFloat(localStorage.getItem("lifeos-jarvis-rate") || "1.0"),
+    pitch: parseFloat(localStorage.getItem("lifeos-jarvis-pitch") || "1.0"),
+    volume: parseFloat(localStorage.getItem("lifeos-jarvis-volume") || "0.9"),
+  }
 }

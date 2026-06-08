@@ -146,6 +146,12 @@ function DockInner() {
   const barRef = useRef<HTMLDivElement>(null)
   const isMobile = useMediaQuery("(max-width: 639px)")
 
+  // Active route matching — exact OR prefix match for nested routes
+  const isActive = (href: string) => {
+    if (href === ROUTES.HOME) return pathname === href
+    return pathname === href || pathname.startsWith(href + "/")
+  }
+
   const [orientation, setOrientationState] = useState<NavOrientation>(
     () => storeGet(LS_ORIENTATION, "horizontal")
   )
@@ -321,22 +327,16 @@ function DockInner() {
   // ---------- RENDER ----------
   if (isMobile) {
     return (
-      <nav className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around px-3 py-2 h-[88px] glass-strong border-t border-white/[0.06] pb-[env(safe-area-inset-bottom)]">
-        <Link href={ROUTES.HOME} className={cn("flex flex-col items-center justify-center gap-1 px-2 py-1 rounded-xl transition-colors", pathname === ROUTES.HOME ? "text-brand-400" : "text-text-tertiary")}>
-          <LayoutDashboard className="w-5 h-5" /><span className="text-[11px] font-medium">Home</span>
-        </Link>
-        <Link href={ROUTES.JOURNAL} className={cn("flex flex-col items-center justify-center gap-1 px-2 py-1 rounded-xl transition-colors", pathname === ROUTES.JOURNAL ? "text-brand-400" : "text-text-tertiary")}>
-          <PenSquare className="w-5 h-5" /><span className="text-[11px] font-medium">Journal</span>
-        </Link>
-        <Link href={ROUTES.HABITS} className={cn("flex flex-col items-center justify-center gap-1 px-2 py-1 rounded-xl transition-colors", pathname === ROUTES.HABITS ? "text-brand-400" : "text-text-tertiary")}>
-          <Flame className="w-5 h-5" /><span className="text-[11px] font-medium">Habits</span>
-        </Link>
-        <Link href={ROUTES.ODYSSEY} className={cn("flex flex-col items-center justify-center gap-1 px-2 py-1 rounded-xl transition-colors", pathname === ROUTES.ODYSSEY ? "text-brand-400" : "text-text-tertiary")}>
-          <Bot className="w-5 h-5" /><span className="text-[11px] font-medium">JARVIS</span>
-        </Link>
-        <Link href={ROUTES.FOCUS} className={cn("flex flex-col items-center justify-center gap-1 px-2 py-1 rounded-xl transition-colors", pathname === ROUTES.FOCUS ? "text-brand-400" : "text-text-tertiary")}>
-          <Zap className="w-5 h-5" /><span className="text-[11px] font-medium">Focus</span>
-        </Link>
+      <nav className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around px-3 py-2 h-[88px] glass-strong border-t border-white/[0.06] pb-[env(safe-area-inset-bottom)]" role="navigation" aria-label="Main navigation">
+        {DOCK_PRIMARY.map((item) => {
+          const Icon = item.icon
+          const active = isActive(item.href)
+          return (
+            <Link key={item.href} href={item.href} className={cn("flex flex-col items-center justify-center gap-1 px-2 py-1 rounded-xl transition-colors", active ? "text-brand-400" : "text-text-tertiary")} aria-current={active ? "page" : undefined}>
+              <Icon className="w-5 h-5" /><span className="text-[11px] font-medium">{item.label}</span>
+            </Link>
+          )
+        })}
       </nav>
     )
   }
@@ -354,6 +354,8 @@ function DockInner() {
         transform: "translate(-50%, -50%)",
       }}
       onPointerDown={onPointerDown}
+      role="navigation"
+      aria-label="Main navigation"
     >
       <AnimatePresence>
         {expanded && (
@@ -368,18 +370,19 @@ function DockInner() {
                 ? "absolute bottom-full mb-3 left-1/2 -translate-x-1/2 min-w-[300px] sm:min-w-[360px] max-w-[420px]"
                 : "absolute right-full mr-3 top-1/2 -translate-y-1/2 min-w-[260px] max-w-[320px]"
             )}
+            role="menu"
           >
             {sections.map((section) => (
-              <div key={section.label} className="mb-4 last:mb-0">
+              <div key={section.label} className="mb-4 last:mb-0" role="none">
                 <p className="text-[11px] font-bold tracking-widest text-text-muted uppercase mb-2 px-1">
                   {section.label}
                 </p>
                 <div className="grid grid-cols-2 gap-1">
                   {section.items.map((item) => {
                     const Icon = item.icon
-                    const active = pathname === item.href
+                    const active = isActive(item.href)
                     return (
-                      <Link key={item.href} href={item.href} className={cn("flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-all interactive-scale", active ? "text-white bg-brand-500/10 border border-brand-500/20" : "text-text-tertiary hover:text-text-secondary hover:bg-white/[0.04]")}>
+                      <Link key={item.href} href={item.href} className={cn("flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-all interactive-scale", active ? "text-white bg-brand-500/10 border border-brand-500/20" : "text-text-tertiary hover:text-text-secondary hover:bg-white/[0.04]")} role="menuitem" aria-current={active ? "page" : undefined}>
                         <Icon className="w-4 h-4 shrink-0" />
                         <span>{item.label}</span>
                       </Link>
@@ -435,7 +438,7 @@ function DockInner() {
         {/* Primary nav items */}
         {DOCK_PRIMARY.map((item, idx) => {
           const Icon = item.icon
-          const active = pathname === item.href
+          const active = isActive(item.href)
           return (
             <Link
               key={item.href}
@@ -448,6 +451,8 @@ function DockInner() {
               )}
               onMouseEnter={() => setHoveredIdx(idx)}
               onMouseLeave={() => setHoveredIdx(null)}
+              aria-current={active ? "page" : undefined}
+              title={item.label}
             >
               <div
                 className={cn(
@@ -506,9 +511,10 @@ function DockInner() {
           className={cn(
             "flex items-center justify-center rounded-xl transition-all btn-micro",
             isHorizontal ? "h-10 w-10" : "h-10 w-10 mb-1",
-            pathname === ROUTES.SETTINGS ? "text-brand-400" : "text-text-tertiary hover:text-text-secondary hover:bg-white/[0.06]"
+            isActive(ROUTES.SETTINGS) ? "text-brand-400" : "text-text-tertiary hover:text-text-secondary hover:bg-white/[0.06]"
           )}
           title="Settings"
+          aria-current={isActive(ROUTES.SETTINGS) ? "page" : undefined}
         >
           <Settings className="w-[22px] h-[22px]" />
         </Link>

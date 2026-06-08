@@ -28,7 +28,7 @@ export async function PUT(req: Request) {
   const { id, ...updates } = await req.json()
   if (!id) return NextResponse.json({ error: "Document id required" }, { status: 400 })
 
-  await updateDocument(id, updates as any)
+  await updateDocument(id, user.userId, updates as any)
   return NextResponse.json({ success: true })
 }
 
@@ -39,6 +39,6 @@ export async function DELETE(req: Request) {
   const { id } = await req.json()
   if (!id) return NextResponse.json({ error: "Document id required" }, { status: 400 })
 
-  await deleteDocument(id)
+  await deleteDocument(id, user.userId)
   return NextResponse.json({ success: true })
 }

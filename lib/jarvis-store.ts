@@ -52,6 +52,8 @@ interface JarvisState {
 
   loadMessages: (sessionId: string) => Promise<void>
   sendMessage: (message: string) => Promise<void>
+  regenerate: () => Promise<void>
+  editMessage: (messageId: string, newContent: string) => Promise<void>
   cancelStream: () => void
 
   loadMemories: () => Promise<void>
@@ -87,9 +89,9 @@ export const useJarvisStore = create<JarvisState>((set, get) => ({
   memoriesLoading: false,
   documents: [],
   documentsLoading: false,
-  model: "llama-3.3-70b-versatile",
-  endpointUrl: "https://api.groq.com/openai/v1",
-  systemPrompt: "You are J.A.R.V.I.S., an AI assistant. Be concise, helpful, and use the user's context to provide personalized responses.",
+  model: typeof window !== "undefined" ? localStorage.getItem("lifeos-jarvis-model") || "llama-3.3-70b-versatile" : "llama-3.3-70b-versatile",
+  endpointUrl: typeof window !== "undefined" ? localStorage.getItem("lifeos-jarvis-endpoint") || "https://api.groq.com/openai/v1" : "https://api.groq.com/openai/v1",
+  systemPrompt: typeof window !== "undefined" ? localStorage.getItem("lifeos-jarvis-prompt") || "You are J.A.R.V.I.S., an AI assistant." : "You are J.A.R.V.I.S., an AI assistant.",
   mode: "chat",
   providers: [],
   endpoints: [],
@@ -236,7 +238,7 @@ export const useJarvisStore = create<JarvisState>((set, get) => ({
       session_id: currentSessionId,
       role: "user",
       content: message,
-      metadata: {},
+      metadata: { model },
       created_at: new Date().toISOString(),
     }
     set((s) => ({ messages: [...s.messages, userMsg] }))
@@ -272,6 +274,7 @@ export const useJarvisStore = create<JarvisState>((set, get) => ({
       const decoder = new TextDecoder()
       let fullText = ""
       let buffer = ""
+      let finishReason: string | null = null
       let pendingToolCall: { id: string; name: string; arguments: Record<string, unknown> } | null = null
 
       while (true) {
@@ -299,6 +302,9 @@ export const useJarvisStore = create<JarvisState>((set, get) => ({
             if (parsed.type === "tool_call") {
               pendingToolCall = { id: parsed.id, name: parsed.name, arguments: parsed.arguments || {} }
             }
+            if (parsed.type === "finish_reason") {
+              finishReason = parsed.reason
+            }
           } catch {}
         }
       }
@@ -312,7 +318,7 @@ export const useJarvisStore = create<JarvisState>((set, get) => ({
             session_id: currentSessionId,
             role: "assistant",
             content: fullText,
-            metadata: {},
+            metadata: { model, finish_reason: finishReason || undefined },
             created_at: new Date().toISOString(),
           }
           set((s) => ({ messages: [...s.messages, partialMsg] }))
@@ -327,7 +333,7 @@ export const useJarvisStore = create<JarvisState>((set, get) => ({
           session_id: currentSessionId,
           role: "system",
           content: `🛠 ${pendingToolCall.name}: ${result}`,
-          metadata: {},
+          metadata: { model },
           created_at: new Date().toISOString(),
         }
         set((s) => ({ messages: [...s.messages, toolMsg] }))
@@ -394,7 +400,7 @@ export const useJarvisStore = create<JarvisState>((set, get) => ({
             session_id: currentSessionId,
             role: "assistant",
             content: followUpText,
-            metadata: {},
+            metadata: { model, finish_reason: finishReason || undefined },
             created_at: new Date().toISOString(),
           }
           set((s) => ({ messages: [...s.messages, finalMsg], streamingText: "" }))
@@ -410,17 +416,215 @@ export const useJarvisStore = create<JarvisState>((set, get) => ({
           session_id: currentSessionId,
           role: "assistant",
           content: fullText,
-          metadata: {},
+          metadata: { model, finish_reason: finishReason || undefined },
           created_at: new Date().toISOString(),
         }
         set((s) => ({ messages: [...s.messages, assistantMsg], streamingText: "" }))
       }
+      // Reload sessions to pick up auto-title
+      get().loadSessions()
       } catch (err) {
       if ((err as Error).name !== "AbortError") {
         set({ error: (err as Error).message, chatLoading: false })
       }
     }
     set({ chatLoading: false })
+  },
+
+  regenerate: async () => {
+    const { currentSessionId, model, endpointUrl, systemPrompt, mode, messages } = get()
+    if (!currentSessionId) return
+
+    // Find last user message
+    const lastUserIdx = [...messages].reverse().findIndex(m => m.role === "user")
+    if (lastUserIdx === -1) return
+    const lastUserMsg = [...messages].reverse()[lastUserIdx]
+
+    // Truncate messages after last user message
+    const userMsgIndex = messages.indexOf(lastUserMsg)
+    set({ messages: messages.slice(0, userMsgIndex + 1), chatLoading: true, streamingText: "", error: null })
+
+    try {
+      abortController = new AbortController()
+      const res = await fetch("/api/jarvis/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sessionId: currentSessionId,
+          message: lastUserMsg.content,
+          model,
+          endpointUrl,
+          systemPrompt,
+          mode,
+          regenerate: true,
+        }),
+        signal: abortController.signal,
+      })
+
+      if (!res.ok) {
+        const err = await res.json()
+        set({ error: err.error || "Regenerate failed", chatLoading: false })
+        return
+      }
+
+      const reader = res.body?.getReader()
+      if (!reader) {
+        set({ error: "No response body", chatLoading: false })
+        return
+      }
+
+      const decoder = new TextDecoder()
+      let fullText = ""
+      let buffer = ""
+      let finishReason: string | null = null
+      let pendingToolCall: { id: string; name: string; arguments: Record<string, unknown> } | null = null
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        buffer += decoder.decode(value, { stream: true })
+        const lines = buffer.split("\n")
+        buffer = lines.pop() || ""
+        for (const line of lines) {
+          if (!line.startsWith("data: ")) continue
+          const data = line.replace("data: ", "").trim()
+          if (data === "[DONE]") continue
+          try {
+            const parsed = JSON.parse(data)
+            if (parsed.error) {
+              set({ error: parsed.error, chatLoading: false })
+              return
+            }
+            if (parsed.delta) {
+              fullText += parsed.delta
+              set({ streamingText: fullText })
+            }
+            if (parsed.type === "tool_call") {
+              pendingToolCall = { id: parsed.id, name: parsed.name, arguments: parsed.arguments || {} }
+            }
+            if (parsed.type === "finish_reason") {
+              finishReason = parsed.reason
+            }
+          } catch {}
+        }
+      }
+
+      if (pendingToolCall) {
+        if (fullText) {
+          const partialMsg: JarvisMessage = {
+            id: `msg-${Date.now()}`,
+            session_id: currentSessionId,
+            role: "assistant",
+            content: fullText,
+            metadata: { model, finish_reason: finishReason || undefined },
+            created_at: new Date().toISOString(),
+          }
+          set((s) => ({ messages: [...s.messages, partialMsg] }))
+        }
+        const result = executeToolCall({ id: pendingToolCall.id, name: pendingToolCall.name, arguments: pendingToolCall.arguments })
+        const toolMsg: JarvisMessage = {
+          id: `tool-${Date.now()}`,
+          session_id: currentSessionId,
+          role: "system",
+          content: `🛠 ${pendingToolCall.name}: ${result}`,
+          metadata: { model },
+          created_at: new Date().toISOString(),
+        }
+        set((s) => ({ messages: [...s.messages, toolMsg] }))
+
+        const followUp = await fetch("/api/jarvis/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            sessionId: currentSessionId,
+            message: "(Tool result follow-up)",
+            model,
+            endpointUrl,
+            systemPrompt,
+            toolResult: { toolCallId: pendingToolCall.id, result },
+          }),
+          signal: abortController.signal,
+        })
+        if (!followUp.ok) {
+          const err = await followUp.json()
+          set({ error: err.error || "Tool follow-up failed", chatLoading: false })
+          return
+        }
+        const reader2 = followUp.body?.getReader()
+        if (reader2) {
+          let followUpText = ""
+          let buffer2 = ""
+          let followUpFinishReason: string | null = null
+          while (true) {
+            const { done, value } = await reader2.read()
+            if (done) break
+            buffer2 += decoder.decode(value, { stream: true })
+            const lines = buffer2.split("\n")
+            buffer2 = lines.pop() || ""
+            for (const line of lines) {
+              if (!line.startsWith("data: ")) continue
+              const data = line.replace("data: ", "").trim()
+              if (data === "[DONE]") continue
+              try {
+                const parsed = JSON.parse(data)
+                if (parsed.error) { set({ error: parsed.error, chatLoading: false }); return }
+                if (parsed.delta) { followUpText += parsed.delta; set({ streamingText: followUpText }) }
+                if (parsed.type === "finish_reason") { followUpFinishReason = parsed.reason }
+              } catch {}
+            }
+          }
+          if (followUpText) {
+            set((s) => ({
+              messages: [...s.messages, { id: `msg-${Date.now()}`, session_id: currentSessionId, role: "assistant", content: followUpText, metadata: { model, finish_reason: followUpFinishReason || undefined }, created_at: new Date().toISOString() }],
+              streamingText: "",
+            }))
+          }
+        }
+        set({ chatLoading: false })
+        return
+      }
+
+      if (fullText) {
+        const assistantMsg: JarvisMessage = {
+          id: `msg-${Date.now()}`,
+          session_id: currentSessionId,
+          role: "assistant",
+          content: fullText,
+          metadata: { model, finish_reason: finishReason || undefined },
+          created_at: new Date().toISOString(),
+        }
+        set((s) => ({ messages: [...s.messages, assistantMsg], streamingText: "" }))
+      }
+    } catch (err) {
+      if ((err as Error).name !== "AbortError") {
+        set({ error: (err as Error).message })
+      }
+    }
+    set({ chatLoading: false })
+  },
+
+  editMessage: async (messageId, newContent) => {
+    const { currentSessionId, messages } = get()
+    if (!currentSessionId) return
+
+    const msgIndex = messages.findIndex(m => m.id === messageId)
+    if (msgIndex === -1) return
+
+    // Persist edit to server, then truncate subsequent messages
+    try {
+      await fetch("/api/jarvis/messages", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messageId, content: newContent, sessionId: currentSessionId }),
+      })
+    } catch {}
+
+    // Update locally and truncate subsequent
+    const updatedMsg = { ...messages[msgIndex], content: newContent }
+    set({ messages: [...messages.slice(0, msgIndex), updatedMsg] })
+
+    // Send edited message as new user message for a fresh response
+    await get().sendMessage(newContent)
   },
 
   cancelStream: () => {
@@ -500,9 +704,9 @@ export const useJarvisStore = create<JarvisState>((set, get) => ({
     set((s) => ({ documents: s.documents.filter((d) => d.id !== id) }))
   },
 
-  setModel: (model) => set({ model }),
-  setEndpointUrl: (endpointUrl) => set({ endpointUrl }),
-  setSystemPrompt: (prompt) => set({ systemPrompt: prompt }),
+  setModel: (model) => { localStorage.setItem("lifeos-jarvis-model", model); set({ model }) },
+  setEndpointUrl: (endpointUrl) => { localStorage.setItem("lifeos-jarvis-endpoint", endpointUrl); set({ endpointUrl }) },
+  setSystemPrompt: (prompt) => { localStorage.setItem("lifeos-jarvis-prompt", prompt); set({ systemPrompt: prompt }) },
   setMode: (mode) => set({ mode }),
   setProviders: (providers) => set({ providers }),
 }))

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { PenSquare, TrendingUp, TrendingDown, Minus, Brain, Trash2, Sparkles } from "lucide-react"
 import { markModified } from "@/lib/store"
+import { onDataChanged } from "@/lib/events"
 
 interface JournalEntry {
   id: string
@@ -40,6 +41,12 @@ export function JournalModule() {
 
   useEffect(() => {
     setEntries(loadEntries())
+    const unsub = onDataChanged(({ keys }) => {
+      if (keys.includes("lifeos_journal")) setEntries(loadEntries())
+    })
+    window.addEventListener("focus", () => setEntries(loadEntries()))
+    window.addEventListener("storage", () => setEntries(loadEntries()))
+    return () => { unsub(); window.removeEventListener("focus", () => {}); window.removeEventListener("storage", () => {}) }
   }, [])
 
   const saveEntry = () => {

@@ -4,14 +4,14 @@ import { useState } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
-import { Sparkles, Mail, Lock, Github, Play } from "lucide-react"
+import { Sparkles, User, Lock, Github, Play } from "lucide-react"
 
 export default function LoginPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get("callbackUrl") || "/"
 
-  const [email, setEmail] = useState("")
+  const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
@@ -23,13 +23,13 @@ export default function LoginPage() {
     setError("")
 
     const result = await signIn("credentials", {
-      email,
+      username,
       password,
       redirect: false,
     })
 
     if (result?.error) {
-      setError("Invalid email or password")
+      setError("Invalid username or password")
       setLoading(false)
     } else {
       router.push(callbackUrl)
@@ -41,9 +41,8 @@ export default function LoginPage() {
     setDemoLoading(true)
     setError("")
 
-    const demoEmail = process.env.NEXT_PUBLIC_DEMO_EMAIL || "demo@lifeos.app"
     const result = await signIn("credentials", {
-      email: demoEmail,
+      username: "demo",
       password: "demo1234",
       redirect: false,
     })
@@ -75,14 +74,14 @@ export default function LoginPage() {
         )}
 
         <div>
-          <label className="block text-sm font-medium text-text-secondary mb-1.5">Email</label>
+          <label className="block text-sm font-medium text-text-secondary mb-1.5">Username</label>
           <div className="relative">
-            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-tertiary" />
+            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-tertiary" />
             <input
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              placeholder="you@example.com"
+              type="text"
+              value={username}
+              onChange={e => setUsername(e.target.value)}
+              placeholder="your_username"
               required
               className="w-full h-11 pl-10 pr-4 rounded-xl bg-white/5 border border-white/10 text-text-primary placeholder:text-text-tertiary focus:outline-none focus:border-brand/50 focus:ring-1 focus:ring-brand/20 transition-all"
             />

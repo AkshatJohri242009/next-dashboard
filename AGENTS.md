@@ -1,4 +1,4 @@
-# Session Context — June 4, 2026
+# Session Context — June 6, 2026
 
 ## Project
 **LifeOS** — AI-powered Personal Operating System (Next.js 14, Supabase, Zustand, Recharts, Framer Motion, 52 static routes) with JARVIS 2.0 intelligence layer: voice system, memory engine, correlation engine, future self engine, annual life report, automation engine, plus full health/fitness/sleep tracking, and premium design system.
@@ -185,7 +185,55 @@
 - `loadGoals()` scans 365 days back for existing goals + migrates them into pending list
 - Goals never disappear unless explicitly deleted or marked done
 
+## Design Documentation Generated (June 6, 2026)
+- **`docs/DESIGN.md`** — Full design system documentation: Liquid Glass (5-layer), typography scale, motion system, color tokens, component patterns, dark/light mode, responsive breakpoints, accessibility requirements. Generated from OMEGA V4 framework.
+- **`docs/UX.md`** — UX principles: Three Second Rule, Attention Architecture, Navigation Model, Data Density strategy, Feedback System, User Psychology applications, Onboarding, Accessibility, Conversion Design per screen.
+- **`docs/COMPONENTS.md`** — Component catalog: 60+ components mapped by domain (Layout, Home, Life OS, Health, JARVIS, Study, Data), design system component classes, agent UI language, interaction patterns with timing/easing.
+
+## JARVIS Chat Upgrade — June 6, 2026
+
+### System Prompt & Content Quality
+- **Updated system prompt** (`lib/ai/systemPrompt.ts`) — Replaced generic AI assistant prompt with J.A.R.V.I.S.-specific structured prompt mandating markdown formatting, GFM tables, language-tagged code blocks, organized headers, memory save blocks
+- **Auto-title chat sessions** (`app/api/jarvis/chat/route.ts`) — First message in a "New Chat" session auto-generates title from first 60 chars; sessions reload after response to refresh sidebar
+
+### Markdown Rendering Overhaul
+- **Code block copy buttons** (`components/jarvis/JarvisChat.tsx`) — Custom `CodeBlock` component wraps `<pre>` with language label bar + hover copy button (touch-visible on mobile)
+- **Full GFM component overrides** — Styled tables, blockquotes, links, lists, headings, horizontal rules with LifeOS design tokens
+
+### ChatGPT/Claude-Quality Chat Features
+- **Premium streaming indicator** — Animated bouncing dots with "JARVIS is thinking" label replaces old `Loader2` + static text
+- **Smart auto-scroll + scroll-to-bottom button** — Tracks scroll position; auto-scrolls only within 200px of bottom; floating `↓` button appears when scrolled up
+- **Edit sent messages** — User messages show Pencil on hover; Ctrl+Enter to save, Escape to cancel; truncates subsequent messages and re-sends
+- **Regenerate assistant responses** — Last assistant message shows Refresh button; removes subsequent messages and re-streams
+- **Response feedback** — Thumbs Up/Down on assistant messages; persisted to localStorage
+- **Message grouping + date separators** — Consecutive same-role messages grouped under single avatar; "Today"/"Yesterday"/date headers between days
+- **Suggested follow-ups** — 4 quick-prompt chips in empty state
+- **Continue generating button** — Button on last assistant message sends "Continue from where you left off"
+- **Model badge** — Small monospace badge on assistant messages showing model name (e.g. "Llama 3.3 70B")
+
+### Theme System
+- **ThemePresetGrid extracted** (`components/layout/ThemePresetGrid.tsx`) — Shared `ThemePresetGrid` + `ThemeModeToggle` components, eliminating 85% code duplication between `ThemePanel.tsx` and `settings/page.tsx`
+
+### MobileNav
+- **Double-tap position reset** (`components/layout/MobileNav.tsx`) — Double-click drag handle to reset position to default (right edge, ~40% from top)
+
+### AIRecommendations
+- **Study insights added** (`lib/jarvis-context.ts`) — Home page now shows weak topics, revision cycle status, and low test score warnings in AI recommendations
+
+### Row-Level Security
+- **Updated RLS migration** (`supabase/migrations/20260602_rls_policies.sql`) — Policies rewritten to use `app.user_id` PG session variable instead of `auth.uid()`, compatible with custom auth system
+- **`getAuthedDb(userId)` helper** (`lib/jarvis-db.ts`) — Creates Supabase anon key client with user context via RPC; falls back to service_role key
+
+### SSR/ISR
+- **Home page + Settings page** — Converted to server shells with `dynamic(() => import(...), { ssr: false })` + `export const revalidate = 3600`; skeleton loading states; odyssey already had this pattern
+
+### Store & API
+- **`regenerate()` and `editMessage()`** added to Zustand store (`lib/jarvis-store.ts`) — Handles streaming, tool calls, follow-up requests
+- **`regenerate: true` flag** added to chat API route — Skips duplicate user message persistence
+- **Model in message metadata** — All messages now store `model` in their metadata field for badge display and auditing
+
 ## Next Steps
-- **RLS policies** for JARVIS Supabase tables (~30 min)
-- **SSR/ISR** for static pages (~3-5h)
-- **AIRecommendations dynamic** — replace hardcoded study recommendation with real data from `gatherContext()` (weak topics, upcoming exams, revision cycle)
+- **Continue button streaming detection** — Auto-detect truly truncated responses vs. complete ones
+- **RLS per-function update** — Migrate remaining 15+ DB functions from `jarvisDb` to `getAuthedDb(userId)`
+- **SSR/ISR for remaining pages** — Apply dynamic import + ISR pattern to other 50 routes
+- **Unified edit endpoint** — Add PUT `api/jarvis/messages` for proper server-side message edits

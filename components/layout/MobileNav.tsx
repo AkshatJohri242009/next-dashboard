@@ -29,6 +29,7 @@ export function MobileNav() {
   const [dragging, setDragging] = useState(false)
   const dragRef = useRef({ startX: 0, startY: 0, posX: 0, posY: 0, moved: false })
   const handleRef = useRef<HTMLDivElement>(null)
+  const lastTapRef = useRef(0)
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 640)
@@ -48,6 +49,16 @@ export function MobileNav() {
   }, [])
 
   const onPointerDown = useCallback((e: React.PointerEvent) => {
+    // Double-tap/double-click to reset position
+    const now = Date.now()
+    if (now - lastTapRef.current < 400) {
+      // Reset to default (right edge, ~40% from top)
+      setNavPosition({ x: window.innerWidth - navItems.length * 60 - 80, y: Math.max(8, window.innerHeight * 0.4 - NAV_H / 2) })
+      lastTapRef.current = 0
+      return
+    }
+    lastTapRef.current = now
+
     e.preventDefault()
     handleRef.current?.setPointerCapture(e.pointerId)
     dragRef.current = {
@@ -58,7 +69,7 @@ export function MobileNav() {
       moved: false,
     }
     setDragging(true)
-  }, [navPosition])
+  }, [navPosition, setNavPosition])
 
   const onPointerMove = useCallback((e: React.PointerEvent) => {
     if (!dragging) return

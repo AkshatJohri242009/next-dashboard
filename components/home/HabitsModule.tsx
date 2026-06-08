@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { CheckCircle2, Circle, Plus, Trash2, Flame } from "lucide-react"
 import { markModified } from "@/lib/store"
+import { onDataChanged } from "@/lib/events"
 
 interface Habit {
   id: string
@@ -63,6 +64,12 @@ export function HabitsModule() {
     } else {
       setHabits(existing)
     }
+    const unsub = onDataChanged(({ keys }) => {
+      if (keys.includes("lifeos_habits")) setHabits(loadHabits())
+    })
+    window.addEventListener("focus", () => setHabits(loadHabits()))
+    window.addEventListener("storage", () => setHabits(loadHabits()))
+    return () => { unsub(); window.removeEventListener("focus", () => {}); window.removeEventListener("storage", () => {}) }
   }, [])
 
   const today = new Date().toISOString().slice(0, 10)

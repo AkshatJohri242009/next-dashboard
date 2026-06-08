@@ -199,6 +199,15 @@ export function generatePageInsights(context: JarvisContext): JarvisInsight[] {
       if (context.sleep.timerActive) {
         insights.push({ message: "Sleep timer is running — rest is tracking.", type: "neutral" })
       }
+      if (context.study.weakTopics.length > 0) {
+        insights.push({ message: `Weak study topics: ${context.study.weakTopics.join(", ")} — focus on these.`, type: "negative" })
+      }
+      if (context.study.revisionCycle === "rest" && context.study.tasksTotal > 0) {
+        insights.push({ message: "Revision cycle is in rest phase — no study tasks done today.", type: "action" })
+      }
+      if (context.study.avgScore > 0 && context.study.avgScore < 60) {
+        insights.push({ message: `Average test score ${context.study.avgScore}% — below target. Review weak subjects.`, type: "negative" })
+      }
       break
 
     case "gym":

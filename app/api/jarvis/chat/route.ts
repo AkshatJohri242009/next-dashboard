@@ -2,13 +2,14 @@ import { NextResponse } from "next/server"
 import { requireJarvisUser } from "@/lib/jarvis-auth"
 import { getSession, createSession, updateSession, listMessages, addMessage, updateMessageSessionCount } from "@/lib/jarvis-db"
 import { TOOLS } from "@/lib/jarvis-tool-defs"
+import { validateToolCall, recordToolFailure, recordToolSuccess } from "@/lib/ai/tool-router"
 import { applyRateLimit } from "@/lib/rate-limit"
 import { sanitizeInput } from "@/lib/ai/sanitize"
 import { wrapUserContent } from "@/lib/ai/prompts/injection-fence"
 import { buildSystemPrompt } from "@/lib/ai/prompts/system"
 import { buildContextWithBudget } from "@/lib/ai/context-manager"
 import { executeWithStreaming, buildExecutorBody, type ExecutorMessage } from "@/lib/ai/executor"
-import { getMemories, saveMemory, parseMemorySave, stripMemorySave } from "@/lib/ai/memory"
+import { getMemories, saveMemory, parseMemorySave, stripInternalTags } from "@/lib/ai/memory"
 import { aiLogger } from "@/lib/ai/logger"
 import { AI_CONFIG } from "@/lib/ai/config"
 
@@ -36,7 +37,7 @@ export async function POST(req: Request) {
   if (rateLimitResult) return rateLimitResult
 
   try {
-    const { sessionId, message, model, endpointUrl, apiKey, systemPrompt, toolResult } = await req.json()
+    const { sessionId, message, model, endpointUrl, apiKey, systemPrompt, toolResult, regenerate } = await req.json()
     if (!sessionId || !message) {
       return NextResponse.json({ error: "sessionId and message required" }, { status: 400 })
     }
@@ -62,12 +63,12 @@ export async function POST(req: Request) {
 
     const fencedMessage = wrapUserContent(sanitized.clean)
 
-    let session = await getSession(sessionId)
+    let session = await getSession(sessionId, user.userId)
     if (!session) {
       session = await createSession(user.userId, { id: sessionId, name: "New Chat" })
     }
 
-    const history = await listMessages(sessionId)
+    const history = await listMessages(sessionId, user.userId)
 
     // Truncate very long conversations: keep last 30 turns
     let trimmedHistory = history
@@ -106,7 +107,18 @@ export async function POST(req: Request) {
       llmMessages.push({ role: "tool", content: toolResult.result, tool_call_id: toolResult.toolCallId })
     } else {
       llmMessages.push({ role: "user", content: fencedMessage })
-      await addMessage({ session_id: sessionId, role: "user", content: sanitized.clean })
+      if (!regenerate) {
+        await addMessage({ session_id: sessionId, role: "user", content: sanitized.clean }, user.userId)
+      }
+
+      // Auto-title session from first message
+      if (!regenerate && history.length === 0 && (!session.name || session.name === "New Chat" || session.name === "General")) {
+        const title = sanitized.clean.slice(0, 60).replace(/\n/g, " ").trim()
+        const shortTitle = title.length > 50 ? title.slice(0, 47) + "..." : title
+        if (shortTitle) {
+          await updateSession(sessionId, user.userId, { name: shortTitle } as any)
+        }
+      }
     }
 
     const mod = model || process.env.JARVIS_DEFAULT_MODEL || "llama-3.3-70b-versatile"
@@ -148,7 +160,7 @@ export async function POST(req: Request) {
             }
           )
 
-          // Parse and persist memory_save blocks from the response
+          // Parse and persist memory_save blocks from the response, then strip ALL internal tags
           let cleanContent = result.content
           if (cleanContent) {
             const parsed = parseMemorySave(cleanContent)
@@ -156,12 +168,22 @@ export async function POST(req: Request) {
               await saveMemory(user.userId, parsed.key, parsed.value, parsed.importance)
               aiLogger.info("Memory saved", { key: parsed.key, importance: parsed.importance })
             }
-            cleanContent = stripMemorySave(cleanContent)
+            cleanContent = stripInternalTags(cleanContent)
           }
 
-          // Forward tool calls to client
+          // Forward finish_reason to client for truncated response detection
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "finish_reason", reason: result.finishReason })}\n\n`))
+
+          // Forward tool calls to client (with validation)
           if (result.toolCalls.length > 0) {
             for (const tc of result.toolCalls) {
+              const validation = validateToolCall(tc.name)
+              if (!validation.allowed) {
+                aiLogger.warn("Tool call rejected", { name: tc.name, reason: validation.reason })
+                recordToolFailure(tc.name)
+                continue
+              }
+              recordToolSuccess(tc.name)
               controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "tool_call", ...tc })}\n\n`))
             }
           }
@@ -171,12 +193,12 @@ export async function POST(req: Request) {
 
           // Persist assistant message (with memory block stripped)
           if (cleanContent) {
-            await addMessage({ session_id: sessionId, role: "assistant", content: cleanContent })
+            await addMessage({ session_id: sessionId, role: "assistant", content: cleanContent }, user.userId)
           }
-          await updateSession(sessionId, {
+          await updateSession(sessionId, user.userId, {
             last_accessed_at: new Date().toISOString(),
           } as any)
-          await updateMessageSessionCount(sessionId)
+          await updateMessageSessionCount(sessionId, user.userId)
         } catch (err) {
           controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: (err as Error).message })}\n\n`))
           controller.enqueue(encoder.encode("data: [DONE]\n\n"))

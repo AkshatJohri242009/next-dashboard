@@ -15,6 +15,7 @@ import { JarvisPresence } from "@/components/jarvis/JarvisPresence"
 import { useStore, type JarvisAlert, applyTheme } from "@/lib/store"
 import { useJarvisStore } from "@/lib/jarvis-store"
 import { autoExtractMemories } from "@/lib/memory-engine"
+import { onDataChanged } from "@/lib/events"
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -118,7 +119,20 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
         pushToTomorrow()
       }
     }, 60000)
-    return () => clearInterval(syncInterval)
+    const unsub = onDataChanged(({ keys, source }) => {
+      const hasGoals = keys.some(k => k.startsWith("goals") || k === "lifeos_pending_goals")
+      const hasHealth = keys.includes("health_dashboard_v1")
+      const hasHabits = keys.includes("lifeos_habits")
+      const hasJournal = keys.includes("lifeos_journal")
+      if (hasGoals) loadGoals()
+      if (hasHealth) loadHealth()
+      if (hasHabits) { loadGym(); loadHealth() }
+      if (source === "jarvis") {
+        const store = useJarvisStore.getState()
+        store.checkAuth()
+      }
+    })
+    return () => { clearInterval(syncInterval); unsub() }
   }, [loadGoals, loadHealth, loadGym, loadSleepLog, loadReminders, loadTrackedProjects, loadStudyData, loadStocks, fetchStockQuotes, syncWithSupabase, theme, pushToTomorrow, seedIfNew])
 
   const isDemoUser = session?.user?.email === (process.env.NEXT_PUBLIC_DEMO_EMAIL || "demo@lifeos.app")

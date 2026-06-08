@@ -3,7 +3,7 @@ import { getUserByUsername } from "@/lib/jarvis-db"
 import { createSessionToken } from "@/lib/jarvis-auth"
 import bcrypt from "bcryptjs"
 
-const HARDCODED_USER = "aki"
+const HARDCODED_USER = "Akshat"
 const HARDCODED_PASS = "DPS2405$"
 
 export async function POST(req: Request) {

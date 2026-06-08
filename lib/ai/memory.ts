@@ -135,3 +135,18 @@ export function stripMemorySave(responseText: string): string {
   }
   return result.trim()
 }
+
+const INTERNAL_TAG_PATTERN = /<(memory_save|memory_update|memory_delete|tool_call|system)[\s\S]*?<\/\1>/gi
+
+/**
+ * Strips ALL internal operation tags from the response text
+ * so they are never visible to the user. Handles:
+ *   <memory_save>...</memory_save>
+ *   <memory_update>...</memory_update>
+ *   <memory_delete>...</memory_delete>
+ *   <tool_call>...</tool_call>
+ *   <system>...</system>
+ */
+export function stripInternalTags(responseText: string): string {
+  return responseText.replace(INTERNAL_TAG_PATTERN, "").trim()
+}

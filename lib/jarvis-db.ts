@@ -13,6 +13,19 @@ export const jarvisAnonDb = supabaseUrl && supabaseAnonKey
   ? createClient(supabaseUrl, supabaseAnonKey)
   : null
 
+// Get an authed DB client for RLS. Uses anon key + sets app.user_id via RPC.
+// Falls back to service_role client if userId is not provided.
+export async function getAuthedDb(userId?: string): Promise<typeof jarvisDb> {
+  if (!userId) return jarvisDb
+  if (!jarvisAnonDb) return jarvisDb
+  try {
+    await jarvisAnonDb.rpc("set_app_user", { p_user_id: userId })
+  } catch {
+    return jarvisDb
+  }
+  return jarvisAnonDb
+}
+
 // In-memory fallback store for when Supabase is unavailable
 const localStore: {
   users: Map<string, { id: string; username: string; password_hash: string; is_admin: boolean; privileges: Record<string, unknown>; created_at: string; updated_at: string }>
@@ -124,9 +137,10 @@ export async function getFirstUser(): Promise<JarvisUser | null> {
 // Sessions
 // ============================
 export async function listSessions(userId: string): Promise<JarvisSession[]> {
-  if (jarvisDb) {
+  const rlsDb = await getAuthedDb(userId)
+  if (rlsDb) {
     try {
-      const { data } = await jarvisDb.from("jarvis_sessions")
+      const { data } = await rlsDb.from("jarvis_sessions")
         .select("*")
         .eq("user_id", userId)
         .eq("is_archived", false)
@@ -139,10 +153,11 @@ export async function listSessions(userId: string): Promise<JarvisSession[]> {
   return Array.from(localStore.sessions.values()).filter(s => s.user_id === userId && !s.is_archived) as JarvisSession[]
 }
 
-export async function getSession(id: string): Promise<JarvisSession | null> {
-  if (jarvisDb) {
+export async function getSession(id: string, userId?: string): Promise<JarvisSession | null> {
+  const db = userId ? await getAuthedDb(userId) : jarvisDb
+  if (db) {
     try {
-      const { data } = await jarvisDb.from("jarvis_sessions").select("*").eq("id", id).maybeSingle()
+      const { data } = await db.from("jarvis_sessions").select("*").eq("id", id).maybeSingle()
       if (data) return data as JarvisSession | null
     } catch (e) {
       console.error("[jarvis-db] getSession supabase error:", e)
@@ -170,9 +185,10 @@ export async function createSession(userId: string, opts?: Partial<JarvisSession
     updated_at: now,
     last_accessed_at: now,
   }
-  if (jarvisDb) {
+  const rlsDb = await getAuthedDb(userId)
+  if (rlsDb) {
     try {
-      const { data } = await jarvisDb.from("jarvis_sessions").insert({ ...session, user_id: userId }).select().single()
+      const { data } = await rlsDb.from("jarvis_sessions").insert({ ...session, user_id: userId }).select().single()
       if (data) return data as unknown as JarvisSession
     } catch (e) {
       console.error("[jarvis-db] createSession supabase error:", e)
@@ -183,10 +199,11 @@ export async function createSession(userId: string, opts?: Partial<JarvisSession
   return fullSession
 }
 
-export async function updateSession(id: string, updates: Partial<JarvisSession>): Promise<void> {
-  if (jarvisDb) {
+export async function updateSession(id: string, userId?: string, updates: Partial<JarvisSession> = {}): Promise<void> {
+  const db = userId ? await getAuthedDb(userId) : jarvisDb
+  if (db) {
     try {
-      await jarvisDb.from("jarvis_sessions").update({ ...updates, updated_at: new Date().toISOString() }).eq("id", id)
+      await db.from("jarvis_sessions").update({ ...updates, updated_at: new Date().toISOString() }).eq("id", id)
       return
     } catch (e) {
       console.error("[jarvis-db] updateSession supabase error:", e)
@@ -198,10 +215,11 @@ export async function updateSession(id: string, updates: Partial<JarvisSession>)
   }
 }
 
-export async function deleteSession(id: string): Promise<void> {
-  if (jarvisDb) {
+export async function deleteSession(id: string, userId?: string): Promise<void> {
+  const db = userId ? await getAuthedDb(userId) : jarvisDb
+  if (db) {
     try {
-      await jarvisDb.from("jarvis_sessions").delete().eq("id", id)
+      await db.from("jarvis_sessions").delete().eq("id", id)
       return
     } catch (e) {
       console.error("[jarvis-db] deleteSession supabase error:", e)
@@ -214,10 +232,11 @@ export async function deleteSession(id: string): Promise<void> {
 // ============================
 // Messages
 // ============================
-export async function listMessages(sessionId: string): Promise<JarvisMessage[]> {
-  if (jarvisDb) {
+export async function listMessages(sessionId: string, userId?: string): Promise<JarvisMessage[]> {
+  const db = userId ? await getAuthedDb(userId) : jarvisDb
+  if (db) {
     try {
-      const { data } = await jarvisDb.from("jarvis_messages")
+      const { data } = await db.from("jarvis_messages")
         .select("*")
         .eq("session_id", sessionId)
         .order("created_at", { ascending: true })
@@ -229,7 +248,52 @@ export async function listMessages(sessionId: string): Promise<JarvisMessage[]> 
   return localStore.messages.get(sessionId) || []
 }
 
-export async function addMessage(msg: Partial<JarvisMessage>): Promise<JarvisMessage> {
+export async function updateMessage(messageId: string, userId?: string, content?: string): Promise<void> {
+  const db = userId ? await getAuthedDb(userId) : jarvisDb
+  if (db && content) {
+    try {
+      await db.from("jarvis_messages").update({ content, updated_at: new Date().toISOString() }).eq("id", messageId)
+    } catch (e) {
+      console.error("[jarvis-db] updateMessage supabase error:", e)
+    }
+  }
+  // Update in-memory
+  if (content) {
+    for (const [, msgs] of localStore.messages) {
+      const idx = msgs.findIndex(m => m.id === messageId)
+      if (idx !== -1) { msgs[idx] = { ...msgs[idx], content }; break }
+    }
+  }
+}
+
+export async function deleteMessagesAfter(sessionId: string, messageId: string, userId?: string): Promise<void> {
+  const db = userId ? await getAuthedDb(userId) : jarvisDb
+  if (db) {
+    try {
+      // Get all messages for this session, find the index, delete newer ones
+      const { data } = await db.from("jarvis_messages").select("id, created_at").eq("session_id", sessionId).order("created_at", { ascending: true })
+      if (data) {
+        const idx = data.findIndex(m => m.id === messageId)
+        if (idx !== -1) {
+          const idsToDelete = data.slice(idx + 1).map(m => m.id)
+          if (idsToDelete.length > 0) {
+            await db.from("jarvis_messages").delete().in("id", idsToDelete)
+          }
+        }
+      }
+    } catch (e) {
+      console.error("[jarvis-db] deleteMessagesAfter supabase error:", e)
+    }
+  }
+  // Update in-memory
+  const msgs = localStore.messages.get(sessionId)
+  if (msgs) {
+    const idx = msgs.findIndex(m => m.id === messageId)
+    if (idx !== -1) localStore.messages.set(sessionId, msgs.slice(0, idx + 1))
+  }
+}
+
+export async function addMessage(msg: Partial<JarvisMessage>, userId?: string): Promise<JarvisMessage> {
   const now = new Date().toISOString()
   const message = {
     id: msg.id || generateId(),
@@ -239,9 +303,10 @@ export async function addMessage(msg: Partial<JarvisMessage>): Promise<JarvisMes
     metadata: msg.metadata || {},
     created_at: now,
   } as JarvisMessage
-  if (jarvisDb) {
+  const db = userId ? await getAuthedDb(userId) : jarvisDb
+  if (db) {
     try {
-      await jarvisDb.from("jarvis_messages").insert(message)
+      await db.from("jarvis_messages").insert(message)
     } catch (e) {
       console.error("[jarvis-db] addMessage supabase error:", e)
     }
@@ -252,15 +317,16 @@ export async function addMessage(msg: Partial<JarvisMessage>): Promise<JarvisMes
   return message
 }
 
-export async function updateMessageSessionCount(sessionId: string): Promise<void> {
+export async function updateMessageSessionCount(sessionId: string, userId?: string): Promise<void> {
   let count = 0
-  if (jarvisDb) {
+  const db = userId ? await getAuthedDb(userId) : jarvisDb
+  if (db) {
     try {
-      const result = await jarvisDb.from("jarvis_messages")
+      const result = await db.from("jarvis_messages")
         .select("*", { count: "exact", head: true })
         .eq("session_id", sessionId)
       if (result.count !== null) count = result.count
-      await jarvisDb.from("jarvis_sessions")
+      await db.from("jarvis_sessions")
         .update({ message_count: count || 0, updated_at: new Date().toISOString() })
         .eq("id", sessionId)
       return
@@ -280,12 +346,15 @@ export async function updateMessageSessionCount(sessionId: string): Promise<void
 // Memories
 // ============================
 export async function listMemories(userId: string): Promise<JarvisMemory[]> {
-  if (!jarvisDb) return []
-  const { data } = await jarvisDb.from("jarvis_memories")
-    .select("*")
-    .eq("user_id", userId)
-    .order("created_at", { ascending: false })
-  return (data as JarvisMemory[]) || []
+  const rlsDb = await getAuthedDb(userId)
+  if (rlsDb) {
+    const { data } = await rlsDb.from("jarvis_memories")
+      .select("*")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+    return (data as JarvisMemory[]) || []
+  }
+  return []
 }
 
 export async function addMemory(userId: string, text: string, category = "fact", source = "user", sessionId?: string): Promise<JarvisMemory> {
@@ -301,39 +370,46 @@ export async function addMemory(userId: string, text: string, category = "fact",
     created_at: now,
     updated_at: now,
   }
-  if (jarvisDb) {
-    const { data } = await jarvisDb.from("jarvis_memories").insert(memory).select().single()
+  const rlsDb = await getAuthedDb(userId)
+  if (rlsDb) {
+    const { data } = await rlsDb.from("jarvis_memories").insert(memory).select().single()
     return data as unknown as JarvisMemory
   }
   return memory as unknown as JarvisMemory
 }
 
-export async function deleteMemory(id: string): Promise<void> {
-  if (!jarvisDb) return
-  await jarvisDb.from("jarvis_memories").delete().eq("id", id)
+export async function deleteMemory(id: string, userId?: string): Promise<void> {
+  const db = userId ? await getAuthedDb(userId) : jarvisDb
+  if (!db) return
+  await db.from("jarvis_memories").delete().eq("id", id)
 }
 
-export async function togglePinMemory(id: string, pinned: boolean): Promise<void> {
-  if (!jarvisDb) return
-  await jarvisDb.from("jarvis_memories").update({ is_pinned: pinned, updated_at: new Date().toISOString() }).eq("id", id)
+export async function togglePinMemory(id: string, userId?: string, pinned?: boolean): Promise<void> {
+  const db = userId ? await getAuthedDb(userId) : jarvisDb
+  if (!db || pinned === undefined) return
+  await db.from("jarvis_memories").update({ is_pinned: pinned, updated_at: new Date().toISOString() }).eq("id", id)
 }
 
 // ============================
 // Documents
 // ============================
 export async function listDocuments(userId: string): Promise<JarvisDocument[]> {
-  if (!jarvisDb) return []
-  const { data } = await jarvisDb.from("jarvis_documents")
-    .select("*")
-    .eq("user_id", userId)
-    .eq("is_archived", false)
-    .order("updated_at", { ascending: false })
-  return (data as JarvisDocument[]) || []
+  const rlsDb = await getAuthedDb(userId)
+  if (rlsDb) {
+    const { data } = await rlsDb.from("jarvis_documents")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("is_archived", false)
+      .order("updated_at", { ascending: false })
+    return (data as JarvisDocument[]) || []
+  }
+  return []
 }
 
-export async function getDocument(id: string): Promise<JarvisDocument | null> {
-  if (!jarvisDb) return null
-  const { data } = await jarvisDb.from("jarvis_documents").select("*").eq("id", id).maybeSingle()
+export async function getDocument(id: string, userId?: string): Promise<JarvisDocument | null> {
+  const db = userId ? await getAuthedDb(userId) : jarvisDb
+  if (!db) return null
+  const { data } = await db.from("jarvis_documents").select("*").eq("id", id).maybeSingle()
   return data as JarvisDocument | null
 }
 
@@ -352,42 +428,50 @@ export async function createDocument(userId: string, title: string, content = ""
     created_at: now,
     updated_at: now,
   }
-  if (jarvisDb) {
-    const { data } = await jarvisDb.from("jarvis_documents").insert(doc).select().single()
+  const rlsDb = await getAuthedDb(userId)
+  if (rlsDb) {
+    const { data } = await rlsDb.from("jarvis_documents").insert(doc).select().single()
     return data as unknown as JarvisDocument
   }
   return doc as unknown as JarvisDocument
 }
 
-export async function updateDocument(id: string, updates: Partial<JarvisDocument>): Promise<void> {
-  if (!jarvisDb) return
-  await jarvisDb.from("jarvis_documents").update({ ...updates, updated_at: new Date().toISOString() }).eq("id", id)
+export async function updateDocument(id: string, userId?: string, updates: Partial<JarvisDocument> = {}): Promise<void> {
+  const db = userId ? await getAuthedDb(userId) : jarvisDb
+  if (!db) return
+  await db.from("jarvis_documents").update({ ...updates, updated_at: new Date().toISOString() }).eq("id", id)
 }
 
-export async function deleteDocument(id: string): Promise<void> {
-  if (!jarvisDb) return
-  await jarvisDb.from("jarvis_documents").delete().eq("id", id)
+export async function deleteDocument(id: string, userId?: string): Promise<void> {
+  const db = userId ? await getAuthedDb(userId) : jarvisDb
+  if (!db) return
+  await db.from("jarvis_documents").delete().eq("id", id)
 }
 
 // ============================
 // Endpoints
 // ============================
 export async function listEndpoints(userId: string): Promise<JarvisEndpoint[]> {
-  if (!jarvisDb) return []
-  const { data } = await jarvisDb.from("jarvis_endpoints").select("*").eq("user_id", userId)
-  return (data as JarvisEndpoint[]) || []
+  const rlsDb = await getAuthedDb(userId)
+  if (rlsDb) {
+    const { data } = await rlsDb.from("jarvis_endpoints").select("*").eq("user_id", userId)
+    return (data as JarvisEndpoint[]) || []
+  }
+  return []
 }
 
 export async function createEndpoint(userId: string, endpoint: Partial<JarvisEndpoint>): Promise<JarvisEndpoint> {
   const ep = { ...endpoint, user_id: userId } as const
-  if (jarvisDb) {
-    const { data } = await jarvisDb.from("jarvis_endpoints").insert(ep as any).select().single()
+  const rlsDb = await getAuthedDb(userId)
+  if (rlsDb) {
+    const { data } = await rlsDb.from("jarvis_endpoints").insert(ep as any).select().single()
     return data as unknown as JarvisEndpoint
   }
   return ep as unknown as JarvisEndpoint
 }
 
-export async function deleteEndpoint(id: string): Promise<void> {
-  if (!jarvisDb) return
-  await jarvisDb.from("jarvis_endpoints").delete().eq("id", id)
+export async function deleteEndpoint(id: string, userId?: string): Promise<void> {
+  const db = userId ? await getAuthedDb(userId) : jarvisDb
+  if (!db) return
+  await db.from("jarvis_endpoints").delete().eq("id", id)
 }

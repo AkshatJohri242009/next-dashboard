@@ -5,20 +5,18 @@ import GitHubProvider from "next-auth/providers/github"
 import { adminDb } from "./admin-supabase"
 import bcrypt from "bcryptjs"
 
-async function findOrCreateDemoUser(): Promise<{ id: string; name: string; email: string } | null> {
+async function findOrCreateDemoUser(): Promise<{ id: string; name: string; email: string; username: string } | null> {
   const db = adminDb
   if (!db) return null
 
-  const demoEmail = process.env.DEMO_EMAIL || "demo@lifeos.app"
+  const demoUsername = "demo"
   const demoPassword = process.env.DEMO_PASSWORD || "demo1234"
 
-  // Check if demo user already exists
-  const { data: existing } = await db.from("User").select("id, name, email").eq("email", demoEmail).limit(1)
+  const { data: existing } = await db.from("User").select("id, name, email, username").eq("username", demoUsername).limit(1)
   if (existing && existing.length > 0) {
-    return existing[0] as { id: string; name: string; email: string }
+    return existing[0] as { id: string; name: string; email: string; username: string }
   }
 
-  // Create demo user
   const id = crypto.randomUUID()
   const now = new Date().toISOString()
   const hashed = await bcrypt.hash(demoPassword, 12)
@@ -26,11 +24,12 @@ async function findOrCreateDemoUser(): Promise<{ id: string; name: string; email
   const { data: user, error } = await db.from("User").insert({
     id,
     name: "Demo User",
-    email: demoEmail,
+    email: "demo@lifeos.app",
+    username: demoUsername,
     password: hashed,
     createdAt: now,
     updatedAt: now,
-  }).select("id, name, email").single()
+  }).select("id, name, email, username").single()
 
   if (error || !user) return null
 
@@ -43,7 +42,7 @@ async function findOrCreateDemoUser(): Promise<{ id: string; name: string; email
   })
   await db.from("UserSettings").insert({ userId: user.id, createdAt: now, updatedAt: now })
 
-  return user as { id: string; name: string; email: string }
+  return user as { id: string; name: string; email: string; username: string }
 }
 
 export const authOptions: NextAuthOptions = {
@@ -56,31 +55,29 @@ export const authOptions: NextAuthOptions = {
     CredentialsProvider({
       name: "credentials",
       credentials: {
-        email: { label: "Email", type: "email" },
+        username: { label: "Username", type: "text" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null
-
-        const demoEmail = process.env.DEMO_EMAIL || "demo@lifeos.app"
-        const demoPassword = process.env.DEMO_PASSWORD || "demo1234"
+        if (!credentials?.username || !credentials?.password) return null
 
         // Demo login path
-        if (credentials.email === demoEmail) {
+        if (credentials.username === "demo") {
+          const demoPassword = process.env.DEMO_PASSWORD || "demo1234"
           if (credentials.password !== demoPassword) return null
           const demoUser = await findOrCreateDemoUser()
           if (!demoUser) return null
           return { id: demoUser.id, email: demoUser.email, name: demoUser.name, image: null }
         }
 
-        // Normal login path
+        // Normal login path — look up by username only
         const db = adminDb
         if (!db) return null
 
         const { data: users } = await db
           .from("User")
-          .select("id, name, email, image, password")
-          .or(`email.eq.${credentials.email},username.eq.${credentials.email}`)
+          .select("id, name, email, username, image, password")
+          .eq("username", credentials.username)
           .limit(1)
 
         const user = users?.[0]

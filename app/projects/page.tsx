@@ -1,23 +1,12 @@
-"use client"
+import dynamic from "next/dynamic"
 
-import { motion } from "framer-motion"
-import { ProjectTracker } from "@/components/projects/ProjectTracker"
-import { GlassPanel } from "@/components/ui/GlassPanel"
+export const revalidate = 3600
 
-export default function ProjectsPage() {
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
-    >
-      <GlassPanel variant="strong" glow="accent">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-1 h-4 rounded-full bg-accent-400" />
-          <span className="section-label">GitHub Projects</span>
-        </div>
-        <ProjectTracker />
-      </GlassPanel>
-    </motion.div>
-  )
+const Client = dynamic(() => import("./ProjectsClient"), {
+  ssr: false,
+  loading: () => <div className="min-h-screen animate-pulse bg-white/[0.02] rounded-2xl" />,
+})
+
+export default function Page() {
+  return <Client />
 }

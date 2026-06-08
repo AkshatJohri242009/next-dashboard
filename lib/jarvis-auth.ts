@@ -5,8 +5,8 @@ import { jarvisDb } from "./jarvis-db"
 // In-memory fallback for auth sessions
 const localAuthSessions = new Map<string, { token: string; userId: string; expiresAt: Date }>()
 
-const HARDCODED_TOKEN = "aki_hardcoded_session_token_v1"
-const HARDCODED_USER_ID = "aki_hardcoded_user_id"
+const HARDCODED_TOKEN = "Akshat_hardcoded_session_token_v1"
+const HARDCODED_USER_ID = "Akshat_hardcoded_user_id"
 
 export async function createSessionToken(userId: string): Promise<string> {
   if (userId === HARDCODED_USER_ID) return HARDCODED_TOKEN
@@ -33,7 +33,7 @@ export async function removeSessionToken(token: string): Promise<void> {
 
 export async function getJarvisUserFromToken(token: string): Promise<{ userId: string; username: string; isAdmin: boolean } | null> {
   if (token === HARDCODED_TOKEN) {
-    return { userId: HARDCODED_USER_ID, username: "aki", isAdmin: true }
+    return { userId: HARDCODED_USER_ID, username: "Akshat", isAdmin: true }
   }
   // Check local store first
   const local = localAuthSessions.get(token)
