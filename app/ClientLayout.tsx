@@ -16,6 +16,7 @@ import { useStore, type JarvisAlert, applyTheme } from "@/lib/store"
 import { useJarvisStore } from "@/lib/jarvis-store"
 import { autoExtractMemories } from "@/lib/memory-engine"
 import { onDataChanged } from "@/lib/events"
+import { useToast, ToastContainer } from "@/lib/use-toast"
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -23,6 +24,17 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   const { loadGoals, loadHealth, loadGym, loadSleepLog, loadReminders, loadTrackedProjects, loadStudyData, loadStocks, fetchStockQuotes, stockHoldings, syncWithSupabase, theme, pushToTomorrow } = useStore()
   const lastDateRef = useRef(new Date().toISOString().slice(0, 10))
   const seededRef = useRef(false)
+  const { toasts, addToast, dismiss } = useToast()
+
+  // Listen for global toast events
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail as { message: string; type: string }
+      addToast(detail.message, detail.type as "success" | "error" | "info")
+    }
+    window.addEventListener("lifeos-toast", handler)
+    return () => window.removeEventListener("lifeos-toast", handler)
+  }, [addToast])
 
   const seedIfNew = useCallback(async () => {
     if (!session?.user?.id || seededRef.current) return
@@ -154,10 +166,11 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
       <Dock />
       <VoiceButton />
       <JarvisPresence />
+      <ToastContainer toasts={toasts} dismiss={dismiss} />
 
-      <div className={`min-h-screen ${isDemoUser ? "pt-10" : ""}`}>
+      <div className={`min-h-screen min-h-dvh ${isDemoUser ? "pt-10" : ""}`}>
         <TopNav />
-        <main className="p-4 md:p-6 lg:p-8 pb-24 max-w-7xl mx-auto overflow-x-hidden">
+        <main className="p-4 md:p-6 lg:p-8 pb-[88px] max-w-7xl mx-auto overflow-x-hidden">
           <motion.div
             key={pathname}
             initial={{ opacity: 0, y: 12 }}

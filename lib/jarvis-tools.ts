@@ -4,6 +4,7 @@ import type { Goal, Habit } from "./types"
 import type { ToolCall } from "./jarvis-tool-defs"
 import { markModified } from "./store"
 import { dispatchDataChanged } from "./events"
+import { showToast } from "./use-toast"
 
 export function executeToolCall(call: ToolCall): string {
   switch (call.name) {
@@ -68,6 +69,7 @@ function executeAddGoal(args: { text: string; priority?: string; dueDate?: strin
   storeSet("lifeos_pending_goals", pending)
 
   dispatchDataChanged(["goals", "lifeos_pending_goals"], "jarvis")
+  showToast("Goal added", "success")
   return `Added goal: "${args.text.trim()}"`
 }
 
@@ -89,6 +91,7 @@ function executeToggleGoal(args: { text: string }): string {
   }
 
   dispatchDataChanged(["goals", "lifeos_pending_goals"], "jarvis")
+  showToast("Goal toggled", "info")
   return `Toggled goal "${args.text.trim()}" to ${goals[idx].done ? "done" : "undone"}`
 }
 
@@ -104,6 +107,7 @@ function executeDeleteGoal(args: { text: string }): string {
   storeSet("lifeos_pending_goals", pending.filter(g => g.text !== args.text.trim()))
 
   dispatchDataChanged(["goals", "lifeos_pending_goals"], "jarvis")
+  showToast("Goal deleted", "info")
   return `Deleted goal: "${args.text.trim()}"`
 }
 

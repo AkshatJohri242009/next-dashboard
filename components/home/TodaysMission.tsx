@@ -126,7 +126,15 @@ export function TodaysMission() {
 
       <div className="space-y-1 max-h-64 overflow-y-auto">
         {goals.length === 0 && !showInput && (
-          <p className="text-sm text-text-tertiary text-center py-6">No goals yet. Tap + to add one.</p>
+          <div className="text-center py-6">
+            <p className="text-sm text-text-tertiary mb-3">No goals yet. What do you want to accomplish?</p>
+            <button onClick={() => setShowInput(true)}
+              className="inline-flex items-center gap-1.5 h-9 px-4 rounded-xl bg-brand-500/20 border border-brand-500/30 text-xs font-medium text-brand-400 hover:bg-brand-500/30 transition-all"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              Add Goal
+            </button>
+          </div>
         )}
         {goals.map((goal, idx) => (
           <motion.div

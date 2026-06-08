@@ -116,10 +116,10 @@ const studySections: NavSection[] = [
 
 const DOCK_PRIMARY: NavItem[] = [
   { href: ROUTES.HOME, label: "Home", icon: LayoutDashboard },
-  { href: ROUTES.JOURNAL, label: "Journal", icon: PenSquare },
-  { href: ROUTES.HABITS, label: "Habits", icon: Flame },
-  { href: ROUTES.ODYSSEY, label: "JARVIS", icon: Bot },
-  { href: ROUTES.FOCUS, label: "Focus", icon: Zap },
+  { href: ROUTES.HEALTH, label: "Health", icon: Activity },
+  { href: ROUTES.GYM, label: "Gym", icon: Dumbbell },
+  { href: ROUTES.SLEEP, label: "Sleep", icon: Moon },
+  { href: ROUTES.ODYSSEY, label: "AI", icon: Bot },
 ]
 
 const LS_ORIENTATION = "lifeos-navbar-orientation"
@@ -327,13 +327,14 @@ function DockInner() {
   // ---------- RENDER ----------
   if (isMobile) {
     return (
-      <nav className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around px-3 py-2 h-[88px] glass-strong border-t border-white/[0.06] pb-[env(safe-area-inset-bottom)]" role="navigation" aria-label="Main navigation">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around px-2 py-1 h-[72px] glass-strong border-t border-white/[0.06] pb-[env(safe-area-inset-bottom)]" role="navigation" aria-label="Main navigation">
         {DOCK_PRIMARY.map((item) => {
           const Icon = item.icon
           const active = isActive(item.href)
           return (
-            <Link key={item.href} href={item.href} className={cn("flex flex-col items-center justify-center gap-1 px-2 py-1 rounded-xl transition-colors", active ? "text-brand-400" : "text-text-tertiary")} aria-current={active ? "page" : undefined}>
-              <Icon className="w-5 h-5" /><span className="text-[11px] font-medium">{item.label}</span>
+            <Link key={item.href} href={item.href} className={`flex flex-col items-center justify-center gap-0.5 px-3 py-1.5 rounded-2xl transition-all min-w-[56px] min-h-[48px] ${active ? "bg-white/10 text-brand-400" : "text-text-tertiary active:bg-white/[0.04]"}`} aria-current={active ? "page" : undefined}>
+              <Icon className={`w-5 h-5 ${active ? "text-brand-400" : ""}`} />
+              <span className="text-[10px] font-semibold leading-tight">{item.label}</span>
             </Link>
           )
         })}

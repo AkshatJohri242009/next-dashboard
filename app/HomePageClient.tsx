@@ -17,16 +17,6 @@ import {
   Zap, BookOpen, Mic, BarChart3, Search, Eye, FileText, ChevronDown
 } from "lucide-react"
 
-const stagger = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { staggerChildren: 0.08 } },
-}
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } },
-}
-
 const quickLinks = [
   { href: ROUTES.JOURNAL, label: "Journal", icon: PenSquare },
   { href: ROUTES.LEARNING, label: "Learning", icon: BookOpen },
@@ -56,66 +46,53 @@ export default function HomePageClient() {
   }, [loadGoals, loadHealth, loadGym, loadSleepLog, loadStocks, fetchStockQuotes])
 
   return (
-    <motion.div variants={stagger} initial="hidden" animate="show" className="space-y-8 pb-8">
-      <motion.div variants={fadeUp}>
-        <AIBriefing />
-      </motion.div>
-      <motion.div variants={fadeUp}>
-        <TodaysMission />
-      </motion.div>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div className="space-y-5 sm:space-y-8 pb-8">
+      <GoalTicker />
+      <AIBriefing />
+      <TodaysMission />
+
+      <div className="hidden sm:grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <motion.div variants={fadeUp}>
-            <LifeScore />
-          </motion.div>
+          <LifeScore />
         </div>
         <div>
-          <motion.div variants={fadeUp}>
-            <AIRecommendations />
-          </motion.div>
+          <AIRecommendations />
         </div>
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <motion.div variants={fadeUp}>
-          <LearningProgress />
-        </motion.div>
-        <motion.div variants={fadeUp}>
-          <HabitsModule />
-        </motion.div>
+
+      <div className="hidden sm:grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <LearningProgress />
+        <HabitsModule />
       </div>
-      <motion.div variants={fadeUp}>
-        <div className="card-elevated p-4 sm:p-6">
-          <button
-            onClick={() => setQuickOpen(!quickOpen)}
-            className="flex items-center justify-between w-full"
+
+      <div className="card-elevated p-4 sm:p-6">
+        <button
+          onClick={() => setQuickOpen(!quickOpen)}
+          className="flex items-center justify-between w-full"
+        >
+          <div className="flex items-center gap-2.5">
+            <div className="w-1 h-4 rounded-full bg-brand-400" />
+            <span className="section-label">Quick Access</span>
+          </div>
+          <ChevronDown className={`w-4 h-4 text-white/30 transition-transform ${quickOpen ? "rotate-180" : ""}`} />
+        </button>
+        {quickOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            className="mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2"
           >
-            <div className="flex items-center gap-2.5">
-              <div className="w-1 h-4 rounded-full bg-brand-400" />
-              <span className="section-label">Quick Access</span>
-            </div>
-            <ChevronDown className={`w-4 h-4 text-white/30 transition-transform ${quickOpen ? "rotate-180" : ""}`} />
-          </button>
-          {quickOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              className="mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2"
-            >
-              {quickLinks.map(link => (
-                <Link key={link.href} href={link.href}
-                  className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] hover:border-white/20 interactive-scale group"
-                >
-                  <link.icon className="w-4 h-4 text-brand shrink-0" />
-                  <span className="text-xs font-medium text-white/60 group-hover:text-white/80">{link.label}</span>
-                </Link>
-              ))}
-            </motion.div>
-          )}
-        </div>
-      </motion.div>
-      <motion.div variants={fadeUp}>
-        <GoalTicker />
-      </motion.div>
-    </motion.div>
+            {quickLinks.map(link => (
+              <Link key={link.href} href={link.href}
+                className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] hover:border-white/20 interactive-scale group"
+              >
+                <link.icon className="w-4 h-4 text-brand shrink-0" />
+                <span className="text-xs font-medium text-white/60 group-hover:text-white/80">{link.label}</span>
+              </Link>
+            ))}
+          </motion.div>
+        )}
+      </div>
+    </div>
   )
 }
