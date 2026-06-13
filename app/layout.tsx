@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next"
 import dynamic from "next/dynamic"
 import ClientLayout from "./ClientLayout"
+import { SmoothScrollProvider } from "@/components/motion/SmoothScroll"
 import "./globals.css"
 
 const AuthProvider = dynamic(() => import("@/components/AuthProvider"), { ssr: false })
@@ -35,9 +36,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
-        <AuthProvider>
-          <ClientLayout>{children}</ClientLayout>
-        </AuthProvider>
+        <SmoothScrollProvider>
+          <AuthProvider>
+            <ClientLayout>{children}</ClientLayout>
+          </AuthProvider>
+        </SmoothScrollProvider>
       </body>
     </html>
   )

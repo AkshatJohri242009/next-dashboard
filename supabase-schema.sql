@@ -1,4 +1,4 @@
--- Run this in the Supabase SQL Editor (https://supabase.com/dashboard/project/_/sql/new)
+  -- Run this in the Supabase SQL Editor (https://supabase.com/dashboard/project/_/sql/new)
 
 -- Drop existing table if recreating
 -- drop table if exists dashboard_state;

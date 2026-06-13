@@ -9,7 +9,7 @@ import {
   MoreHorizontal, BookOpen, Brain, Flag, Clock, GitBranch,
   TrendingUp, FolderGit2, Code2, Timer, Eye, Activity,
   Dumbbell, Weight, Moon, Mic, Volume2, BarChart3,
-  FileText, Calendar, Search, Sparkles,
+  FileText, Calendar, Search, Sparkles, Target,
   GripVertical, RotateCw,
   type LucideIcon,
 } from "lucide-react"
@@ -116,9 +116,9 @@ const studySections: NavSection[] = [
 
 const DOCK_PRIMARY: NavItem[] = [
   { href: ROUTES.HOME, label: "Home", icon: LayoutDashboard },
+  { href: ROUTES.MISSIONS, label: "Missions", icon: Target },
   { href: ROUTES.HEALTH, label: "Health", icon: Activity },
-  { href: ROUTES.GYM, label: "Gym", icon: Dumbbell },
-  { href: ROUTES.SLEEP, label: "Sleep", icon: Moon },
+  { href: ROUTES.JOURNAL, label: "Journal", icon: PenSquare },
   { href: ROUTES.ODYSSEY, label: "AI", icon: Bot },
 ]
 

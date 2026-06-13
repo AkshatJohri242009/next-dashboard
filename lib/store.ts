@@ -88,6 +88,11 @@ export function allLocalState(): Record<string, unknown> {
       key.startsWith("water_") ||
       key.startsWith("tracked_") ||
       key.startsWith("featured_") ||
+      key.startsWith("lifeos_") ||
+      key.startsWith("lifeos-jarvis-") ||
+      key.startsWith("jarvis_") ||
+      key.startsWith("lifeos-theme") ||
+      key.startsWith("lifeos-navbar-") ||
       [
         "goal_streak_v1", "health_dashboard_v1", "gym_dashboard_v1",
         "last_sleep_hours", "weight_entries_v1", "reminders_v1",
@@ -97,7 +102,6 @@ export function allLocalState(): Record<string, unknown> {
         "study_scores_v1", "study_errors_v1",
         "stocks_holdings_v1", "stocks_quotes_v1",
         "theme_v1",
-        "lifeos_journal", "lifeos_chapters", "lifeos_missions", "lifeos_decisions", "lifeos_brain", "lifeos_timeline", "lifeos_habits", "lifeos_pending_goals",
       ].includes(key)
     )) {
       try { state[key] = JSON.parse(localStorage.getItem(key)!) }
@@ -159,6 +163,7 @@ interface DashboardState {
   setActivePage: (page: string) => void
   supabaseReady: boolean
   syncCount: number
+  syncStatus: "local" | "syncing" | "synced" | "offline"
   syncWithSupabase: () => Promise<void>
 
   reminders: Reminder[]
@@ -261,6 +266,7 @@ export const useStore = create<DashboardState>((set, get) => ({
   activePage: "main",
   supabaseReady: false,
   syncCount: 0,
+  syncStatus: "local",
 
   jarvisAlerts: [],
   reminders: [],
@@ -269,9 +275,13 @@ export const useStore = create<DashboardState>((set, get) => ({
   lastSleepNotif: 0,
 
   syncWithSupabase: async () => {
+    set({ syncStatus: "syncing" })
+    // Push local changes first
+    await pushToSupabase(allLocalState())
+    // Then pull remote
     const remote = await pullFromSupabase()
     if (remote === null) {
-      set({ supabaseReady: false })
+      set({ supabaseReady: false, syncStatus: "offline" })
       return
     }
     if (Object.keys(remote).length > 0) {
@@ -282,8 +292,20 @@ export const useStore = create<DashboardState>((set, get) => ({
         localStorage.setItem(key, JSON.stringify(entry.value))
         localStorage.setItem("_ts:" + key, entry.updatedAt)
       }
+      // Re-apply theme if theme_v1 was pulled remotely
+      if (remote["theme_v1"]) {
+        const theme = remote["theme_v1"].value as ThemeConfig
+        if (theme && theme.preset) {
+          applyTheme(theme)
+        }
+      }
+      // Re-apply JARVIS provider settings if they changed
+      if (remote["lifeos-jarvis-model"] || remote["lifeos-jarvis-endpoint"]) {
+        const { useJarvisStore } = await import("./jarvis-store")
+        useJarvisStore.getState().hydrateFromStorage()
+      }
     }
-    set({ supabaseReady: true, syncCount: get().syncCount + 1 })
+    set({ supabaseReady: true, syncCount: get().syncCount + 1, syncStatus: "synced" })
     get().loadGoals()
     get().loadHealth()
     get().loadGym()

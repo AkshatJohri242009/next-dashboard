@@ -70,6 +70,7 @@ interface JarvisState {
   setSystemPrompt: (prompt: string) => void
   setMode: (mode: "chat" | "agent" | "research") => void
   setProviders: (providers: LLMProvider[]) => void
+  hydrateFromStorage: () => void
 }
 
 let abortController: AbortController | null = null
@@ -707,6 +708,12 @@ export const useJarvisStore = create<JarvisState>((set, get) => ({
   setModel: (model) => { localStorage.setItem("lifeos-jarvis-model", model); set({ model }) },
   setEndpointUrl: (endpointUrl) => { localStorage.setItem("lifeos-jarvis-endpoint", endpointUrl); set({ endpointUrl }) },
   setSystemPrompt: (prompt) => { localStorage.setItem("lifeos-jarvis-prompt", prompt); set({ systemPrompt: prompt }) },
+  hydrateFromStorage: () => {
+    const model = localStorage.getItem("lifeos-jarvis-model") || "llama-3.3-70b-versatile"
+    const endpointUrl = localStorage.getItem("lifeos-jarvis-endpoint") || "https://api.groq.com/openai/v1"
+    const systemPrompt = localStorage.getItem("lifeos-jarvis-prompt") || "You are J.A.R.V.I.S., an AI assistant."
+    set({ model, endpointUrl, systemPrompt })
+  },
   setMode: (mode) => set({ mode }),
   setProviders: (providers) => set({ providers }),
 }))

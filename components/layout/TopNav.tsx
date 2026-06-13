@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
-import { Search, Command, Menu, X, Github, Palette, Target } from "lucide-react"
+import { Search, Command, Menu, X, Github, Palette, Target, Cloud, CloudOff, RefreshCw, CheckCircle2 } from "lucide-react"
 import { useEffect, useState, useRef } from "react"
 import { useStore } from "@/lib/store"
 import { NotificationPanel } from "./NotificationPanel"
@@ -10,8 +10,12 @@ import { ModeToggle } from "./ModeToggle"
 import { ThemePanel } from "./ThemePanel"
 import { FocusOverlay, useFocusOverlay } from "@/components/life/FocusOverlay"
 
+const syncIcon = { local: CloudOff, syncing: RefreshCw, synced: CheckCircle2, offline: CloudOff }
+const syncLabel = { local: "Local", syncing: "Syncing", synced: "Synced", offline: "Offline" }
+const syncColor = { local: "text-text-tertiary", syncing: "text-accent", synced: "text-brand-400", offline: "text-semantic-danger" }
+
 export function TopNav() {
-  const { setCommandPalette, setAIPanel, aiPanelOpen, mobileMenuOpen, setMobileMenu, mode } = useStore()
+  const { setCommandPalette, setAIPanel, aiPanelOpen, mobileMenuOpen, setMobileMenu, mode, syncStatus } = useStore()
   const focus = useFocusOverlay()
   const [dateStr, setDateStr] = useState("")
   const [themeOpen, setThemeOpen] = useState(false)
@@ -31,6 +35,8 @@ export function TopNav() {
     return () => document.removeEventListener("mousedown", handleClick)
   }, [themeOpen])
 
+  const SyncIcon = syncIcon[syncStatus]
+
   return (
     <header className="sticky top-0 z-20 h-14 flex items-center justify-between px-4 md:px-6 glass-sm rounded-none border-b-0">
       <div className="flex items-center gap-3">
@@ -41,7 +47,11 @@ export function TopNav() {
           {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
         </button>
         <Link href="/" className="text-sm font-bold text-gradient hidden sm:block mr-2">LifeOS</Link>
-        <span className="text-xs text-text-tertiary font-mono">{dateStr}</span>
+        <span className="text-xs text-text-tertiary font-mono hidden sm:block">{dateStr}</span>
+        <div className={`flex items-center gap-1 px-2 py-1 rounded-lg bg-white/[0.03] border border-white/[0.06] ${syncColor[syncStatus]}`}>
+          <SyncIcon className={`w-3 h-3 ${syncStatus === "syncing" ? "animate-spin" : ""}`} />
+          <span className="text-[10px] font-medium">{syncLabel[syncStatus]}</span>
+        </div>
       </div>
 
       <div className="flex items-center gap-2">
